@@ -1,0 +1,91 @@
+/**
+ * Cloudflare Worker — serves the static React app (via the [assets] binding)
+ * and the D1-backed API. P620 writes the content into D1; this Worker only
+ * reads it, plus accepts two writes from the browser: log a session, ask a
+ * tutor question.
+ *
+ * Routes:
+ *   GET  /api/data → latest plan/frontier/advisory + log + status + tutor Q&A
+ *   POST /api/log  → insert a study_log row
+ *   POST /api/ask  → insert a tutor_qa question (answered later by P620)
+ *   everything else → static assets (the built SPA)
+ */
+
+const json = (obj, status = 200) =>
+  new Response(JSON.stringify(obj), { status, headers: { "Content-Type": "application/json" } });
+
+export default {
+  async fetch(request, env) {
+    const { pathname } = new URL(request.url);
+
+    if (pathname === "/api/data" && request.method === "GET")  return getData(env);
+    if (pathname === "/api/log"  && request.method === "POST") return postLog(request, env);
+    if (pathname === "/api/ask"  && request.method === "POST") return postAsk(request, env);
+    if (pathname.startsWith("/api/")) return json({ error: "Not found" }, 404);
+
+    // Non-API requests → static assets (React app)
+    return env.ASSETS.fetch(request);
+  },
+};
+
+async function getData(env) {
+  try {
+    const db = env.DB;
+    const [plan, frontier, advisory, log, statusRows, questions] = await Promise.all([
+      db.prepare("SELECT date, content, generated_at FROM daily_plan ORDER BY generated_at DESC LIMIT 1").first(),
+      db.prepare("SELECT date, content, generated_at FROM frontier ORDER BY generated_at DESC LIMIT 1").first(),
+      db.prepare("SELECT date, content, generated_at FROM advisory ORDER BY generated_at DESC LIMIT 1").first(),
+      db.prepare("SELECT date, hours, topic, notes, created_at FROM study_log ORDER BY id DESC LIMIT 100").all(),
+      db.prepare("SELECT key, value, updated_at FROM status").all(),
+      db.prepare("SELECT id, date, question, answer, created_at, answered_at FROM tutor_qa ORDER BY id DESC LIMIT 50").all(),
+    ]);
+    const status = {};
+    for (const r of statusRows.results || []) status[r.key] = r.value;
+    return json({
+      plan: plan || null,
+      frontier: frontier || null,
+      advisory: advisory || null,
+      log: log.results || [],
+      status,
+      questions: questions.results || [],
+    });
+  } catch (e) {
+    return json({ error: e.message }, 500);
+  }
+}
+
+async function postLog(request, env) {
+  try {
+    const { hours, topic, notes } = await request.json();
+    if (!topic || !hours || Number(hours) <= 0) {
+      return json({ error: "topic and positive hours required" }, 400);
+    }
+    const date = new Date().toISOString().slice(0, 10);
+    const now = new Date().toISOString();
+    const res = await env.DB
+      .prepare("INSERT INTO study_log (date, hours, topic, notes, created_at) VALUES (?, ?, ?, ?, ?)")
+      .bind(date, Number(hours), String(topic), notes ? String(notes) : "", now)
+      .run();
+    return json({ ok: true, id: res.meta?.last_row_id });
+  } catch (e) {
+    return json({ error: e.message }, 500);
+  }
+}
+
+async function postAsk(request, env) {
+  try {
+    const { question } = await request.json();
+    if (!question || !String(question).trim()) {
+      return json({ error: "question required" }, 400);
+    }
+    const date = new Date().toISOString().slice(0, 10);
+    const now = new Date().toISOString();
+    const res = await env.DB
+      .prepare("INSERT INTO tutor_qa (date, question, created_at) VALUES (?, ?, ?)")
+      .bind(date, String(question).trim(), now)
+      .run();
+    return json({ ok: true, id: res.meta?.last_row_id });
+  } catch (e) {
+    return json({ error: e.message }, 500);
+  }
+}

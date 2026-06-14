@@ -12,8 +12,8 @@ P620 (Claude Max, local)  → all intelligence: briefing, plan, frontier, adviso
         ├── writes ────────→ Cloudflare D1 (daily_plan, frontier, advisory, status, tutor_qa)
         └── 6am email ─────→ T-Mobile email-to-SMS (9176500432@tmomail.net)
 
-Cloudflare Pages          → hosts the React web app (free), reads D1
-Cloudflare Pages Function → /api/data (read), /api/log + /api/ask (the only writes from web)
+Cloudflare Worker         → serves the React app (static [assets]) + the D1 API
+        /api/data (read), /api/log + /api/ask (the only writes from the browser)
 Cloudflare Access         → Google login gate, only nevynjduarte@gmail.com (free)
 ```
 
@@ -29,8 +29,8 @@ wrangler d1 create ai-study-planner          # paste the printed database_id int
 wrangler d1 execute ai-study-planner --remote --file=schema.sql
 ```
 
-Then in the Cloudflare Pages dashboard → Settings → Functions → D1 bindings, add a binding
-named **`DB`** pointing at the `ai-study-planner` database.
+The `DB` binding is declared in `wrangler.toml`, so it's applied automatically on deploy —
+no dashboard binding step needed.
 
 ## First time on P620
 
@@ -68,12 +68,17 @@ bash scripts/sync-to-d1.sh       # push it to D1 (or just rerun setup.sh)
 git add config/status.json && git commit -m "Month N" && git push
 ```
 
-## Web app deploy (Cloudflare Pages)
+## Web app deploy (Cloudflare Worker + static assets)
 
-1. pages.cloudflare.com → Create project → Connect to Git → `ai-study-planner`
-2. Framework: Vite | Build: `npm run build` | Output: `dist`
-3. Settings → Functions → D1 bindings → add `DB` → `ai-study-planner`
-4. Deploy. (No `ANTHROPIC_API_KEY` needed anymore — the frontend never calls Claude.)
+Deployed as a Worker via Workers Builds (connected to this Git repo):
+- Build command:  `npm run build`  (outputs to `dist/`)
+- Deploy command: `npx wrangler deploy`
+
+`wrangler.toml` defines everything — the Worker entry (`worker/index.js`), the static
+`[assets]` (`dist`), and the `DB` D1 binding — so the deploy is self-contained. No
+`ANTHROPIC_API_KEY` needed (the frontend never calls Claude).
+
+Validate locally before pushing: `npm run build && npx wrangler deploy --dry-run`.
 
 ### Add login gate (Cloudflare Access)
 1. dash.cloudflare.com → Zero Trust → Access → Applications → Add
@@ -88,10 +93,8 @@ ai-study-planner/
 ├── src/
 │   ├── main.jsx                 # React entry
 │   └── App.jsx                  # 6-tab planner — reads D1, logs sessions, asks tutor
-├── functions/api/
-│   ├── data.js                  # GET  /api/data  — read everything from D1
-│   ├── log.js                   # POST /api/log   — log a study session
-│   └── ask.js                   # POST /api/ask   — submit a tutor question
+├── worker/
+│   └── index.js                 # Worker: serves the app + /api/data, /api/log, /api/ask
 ├── scripts/
 │   ├── lib.sh                   # shared config + D1 helpers
 │   ├── setup.sh                 # one-time P620 setup (deps, cron, D1 sync)
