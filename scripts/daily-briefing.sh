@@ -23,13 +23,13 @@ BRIEFING="$(claude -p "$(cat "$DIR/briefing-prompt.txt")
 
 $(cat "$CTX")" 2>>"$LOG")"
 if [ -n "$BRIEFING" ]; then
-  if send_sms "$BRIEFING"; then
-    log_line "Briefing texted to $SMS_TO"
+  if send_push "AI Study Briefing - $(date +'%a, %b %-d')" "$BRIEFING" "$APP_URL"; then
+    log_line "Briefing pushed via ntfy"
   else
-    log_line "WARN: SMS send failed (check config/smtp.local.json)"
+    log_line "WARN: push failed (check config/notify.local.json)"
   fi
 else
-  log_line "WARN: empty briefing, no SMS sent"
+  log_line "WARN: empty briefing, nothing pushed"
 fi
 
 # 2) Today's 10-hour plan → D1

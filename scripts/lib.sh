@@ -17,7 +17,33 @@ case "$(uname -s)" in
     ;;
 esac
 
-SMS_TO="9176500432@tmomail.net"   # T-Mobile email-to-SMS gateway
+APP_URL="https://ai-study-planner.nevynjduarte.workers.dev"
+SMS_TO="9176500432@tmomail.net"   # T-Mobile email-to-SMS gateway (legacy fallback)
+
+# Send a push notification via ntfy (open-source). Reads server/topic from
+# config/notify.local.json. Supports a title, emoji tags, a tap-to-open link,
+# and Markdown formatting in the body.
+#   send_push "<title>" "<markdown body>" "<click url>"
+send_push() {
+  local title="$1" body="$2" click="$3" cfg="$PROJECT/config/notify.local.json"
+  [ -f "$cfg" ] || { echo "send_push: missing $cfg" >&2; return 1; }
+  # Use ntfy's JSON publishing API: message/title travel in JSON fields, so UTF-8
+  # (emoji, em dashes) and Markdown survive and the body isn't misread as a file.
+  local tmp server rc
+  tmp="$(mktemp)"
+  server="$(TITLE="$title" BODY="$body" CLICK="$click" node -e '
+    const fs=require("fs");
+    const cfg=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));
+    const payload={topic:cfg.ntfy_topic,title:process.env.TITLE,message:process.env.BODY,
+      click:process.env.CLICK,tags:["sunny","books"],markdown:true};
+    fs.writeFileSync(process.argv[2],JSON.stringify(payload));
+    process.stdout.write(cfg.ntfy_server||"https://ntfy.sh");
+  ' "$cfg" "$tmp")"
+  curl -fsS -H "Content-Type: application/json" --data-binary @"$tmp" "$server" >/dev/null
+  rc=$?
+  rm -f "$tmp"
+  return $rc
+}
 
 # Send the daily briefing as a text. On Windows (Git Bash) use a PowerShell SMTP
 # helper that reads config/smtp.local.json; on Linux fall back to `mail`.

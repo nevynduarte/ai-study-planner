@@ -36,20 +36,17 @@ DAY-OF-WEEK CONTEXT:
 - Sunday: Review notes, plan next week, update GitHub
 
 INSTRUCTIONS:
-1. Search the web for 1-2 important AI/ML papers or developments from the past 5 days relevant to the current month's focus
-2. Read ~/projects/ai-study-planner/config/status.json to get current month and any logged notes
-3. Write the briefing in EXACTLY this format, under 300 words total:
+1. Search the web for 1-2 important AI/ML papers or developments from the past 5 days relevant to the current month's focus.
+2. Use the CURRENT STATUS appended below for the month number and any logged notes.
+3. Write the briefing as concise Markdown — it is delivered as a phone push notification, ~120 words max. Do NOT add a date or title line (that is added automatically). Use exactly these three sections:
 
-📅 [Day, Month Date]
-Month [N]: [Month Title]
+**🎯 Today**
+- [2-3 specific, executable tasks: exact algorithms, papers, or code deliverables; reference the day-of-week focus]
 
-🎯 TODAY:
-[2-3 specific executable tasks. Exact algorithms, papers, or code deliverables. Reference the day-of-week focus.]
+**🔬 Frontier**
+[1-2 sentences on the most relevant recent paper/development and why it matters for D.E. Shaw / Woodline specifically.] Include the source as a Markdown link: [short title](https://real-url-from-your-search)
 
-🔬 FRONTIER:
-[1-2 sentences on most relevant recent paper/development and why it matters for D.E. Shaw / Woodline targets specifically.]
-
-⚡ DON'T SKIP:
+**⚡ Don't skip**
 [Single highest-ROI item that compounds most into tomorrow.]
 
-Keep it tight. This arrives as a text message at 6am.
+Use real, working URLs from your web search. No preamble, just the three sections.

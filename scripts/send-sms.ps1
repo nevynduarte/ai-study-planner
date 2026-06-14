@@ -11,7 +11,7 @@ if (-not (Test-Path $cfgPath)) {
 }
 
 $cfg  = Get-Content $cfgPath -Raw | ConvertFrom-Json
-$body = Get-Content $BodyFile -Raw
+$body = Get-Content $BodyFile -Raw -Encoding UTF8
 
 $sec  = ConvertTo-SecureString $cfg.pass -AsPlainText -Force
 $cred = New-Object System.Management.Automation.PSCredential($cfg.user, $sec)
@@ -25,6 +25,7 @@ $params = @{
   To         = $cfg.to
   Subject    = "AI Study Briefing"
   Body       = $body
+  Encoding   = [System.Text.Encoding]::UTF8
 }
 
 Send-MailMessage @params

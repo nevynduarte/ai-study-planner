@@ -6,4 +6,5 @@ dist/
 *.log
 logs/*.log
 config/smtp.local.json
+config/notify.local.json
 .wrangler/
