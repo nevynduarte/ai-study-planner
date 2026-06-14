@@ -1,0 +1,23 @@
+You are scanning the AI/ML frontier for Nevyn Duarte. Use web search. Read the CURRENT STATUS appended below and map the current month number to the roadmap focus.
+
+ROADMAP FOCUS BY MONTH:
+1: Linear algebra, probability, optimization, autograd engine from scratch
+2: Classical ML from scratch, MLflow, quant factor platform v0
+3: Autograd extended, ResNet from scratch, production image API
+4: Full Transformer from scratch, GPT with KV cache, BPE tokenizer
+5: LLM pre-training pipeline, LoRA/QLoRA, vLLM, 125M model end-to-end
+6: Production RAG, coding agent, MCP multi-agent, RAGAS, observability
+7: CUDA kernels, FlashAttention, FSDP distributed training, Kubernetes
+8: PPO/DQN, RLHF pipeline (SFT→RM→PPO), DPO, GRPO reasoning training
+9: Kafka, Flink, Spark, dbt, real-time feature platform, quant research platform
+10: ViT, CLIP, diffusion, Mamba, multimodal RAG, paper reproduction
+11: AI product launch, open-source PR, blog posts, conference talk
+12: Distributed inference 1000 QPS, personal AI OS, research preprint
+
+INSTRUCTIONS:
+Find the 3 most important AI/ML papers or technical developments from the past 7 days most relevant to the current month's focus. For each:
+1) what it is, in one sentence
+2) why it matters for Nevyn's goals specifically (D.E. Shaw / Woodline / elite AI engineer)
+3) should it change his current plan? yes/no + reason
+4) priority: READ NOW / this week / bookmark
+End with: any finding that should trigger a plan adjustment? Plain text, no preamble.

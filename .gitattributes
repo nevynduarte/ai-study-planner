@@ -1,0 +1,3 @@
+# Shell scripts must keep LF endings so they run on the P620 (Linux).
+*.sh text eol=lf
+scripts/*-prompt.txt text eol=lf

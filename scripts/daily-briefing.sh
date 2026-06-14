@@ -1,26 +1,55 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────
-# Daily 6am AI Study Briefing
-# Runs via cron on P620, uses Claude Code, sends via T-Mobile email-to-SMS
+# Daily 6am run on P620 (cron). Uses local Claude Max (no API key).
+#   1. SMS briefing  → T-Mobile email-to-SMS
+#   2. 10-hour plan  → D1 daily_plan
+#   3. Frontier digest (web search) → D1 frontier
 # ─────────────────────────────────────────────────────────────
+set -e
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$DIR/lib.sh"
 
-PROMPT_FILE="$HOME/projects/ai-study-planner/scripts/briefing-prompt.txt"
-TO="9176500432@tmomail.net"
-LOG="$HOME/projects/ai-study-planner/logs/briefing.log"
-
+TODAY="$(date +%Y-%m-%d)"
+LOG="$PROJECT/logs/briefing.log"
 mkdir -p "$(dirname "$LOG")"
-echo "[$(date)] Starting daily briefing..." >> "$LOG"
+log_line() { echo "[$(date)] $*" | tee -a "$LOG"; }
 
-# Run Claude Code with the prompt, capture output
-BRIEFING=$(claude -p "$(cat "$PROMPT_FILE")" 2>> "$LOG")
+log_line "Starting daily run..."
 
-if [ -z "$BRIEFING" ]; then
-  echo "[$(date)] ERROR: Empty response from Claude" >> "$LOG"
-  exit 1
+CTX="$(mktemp)"; build_context "$CTX"
+
+# 1) SMS briefing → email-to-SMS
+BRIEFING="$(claude -p "$(cat "$DIR/briefing-prompt.txt")
+
+$(cat "$CTX")" 2>>"$LOG")"
+if [ -n "$BRIEFING" ]; then
+  echo "$BRIEFING" | mail -s "AI Study Briefing" "$SMS_TO"
+  log_line "Briefing texted to $SMS_TO"
+else
+  log_line "WARN: empty briefing, no SMS sent"
 fi
 
-# Send via email-to-SMS (T-Mobile gateway)
-echo "$BRIEFING" | mail -s "AI Study Briefing" "$TO"
+# 2) Today's 10-hour plan → D1
+PLAN="$(claude -p "$(cat "$DIR/plan-prompt.txt")
 
-echo "[$(date)] Briefing sent to $TO" >> "$LOG"
-echo "[$(date)] ---" >> "$LOG"
+$(cat "$CTX")" 2>>"$LOG")"
+if [ -n "$PLAN" ]; then
+  d1_put_content daily_plan "$TODAY" "$PLAN"
+  log_line "Plan written to D1"
+else
+  log_line "WARN: empty plan"
+fi
+
+# 3) Frontier digest (web search) → D1
+FRONTIER="$(claude -p "$(cat "$DIR/frontier-prompt.txt")
+
+$(cat "$CTX")" 2>>"$LOG")"
+if [ -n "$FRONTIER" ]; then
+  d1_put_content frontier "$TODAY" "$FRONTIER"
+  log_line "Frontier written to D1"
+else
+  log_line "WARN: empty frontier"
+fi
+
+rm -f "$CTX"
+log_line "Daily run complete."

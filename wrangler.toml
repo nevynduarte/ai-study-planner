@@ -6,3 +6,14 @@ destination = "dist"
 
 [build.environment]
 NODE_VERSION = "20"
+
+# Cloudflare D1 — P620 writes results here; the Pages Functions read from it.
+# 1. Create the DB:   wrangler d1 create ai-study-planner
+# 2. Paste the printed database_id below (replace REPLACE_ME).
+# 3. Apply schema:    wrangler d1 execute ai-study-planner --remote --file=schema.sql
+# 4. In the Cloudflare Pages dashboard → Settings → Functions → D1 bindings,
+#    add a binding named "DB" pointing at the ai-study-planner database.
+[[d1_databases]]
+binding = "DB"
+database_name = "ai-study-planner"
+database_id = "REPLACE_ME"
