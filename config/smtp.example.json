@@ -1,0 +1,8 @@
+{
+  "host": "smtp.gmail.com",
+  "port": 587,
+  "user": "your-address@gmail.com",
+  "pass": "your-16-char-app-password",
+  "from": "your-address@gmail.com",
+  "to": "9176500432@tmomail.net"
+}

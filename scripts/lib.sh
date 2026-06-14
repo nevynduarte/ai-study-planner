@@ -5,9 +5,40 @@
 # Results are written to the remote D1 the Pages app reads from.
 # ─────────────────────────────────────────────────────────────
 
-PROJECT="${PROJECT:-$HOME/projects/ai-study-planner}"
+LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT="${PROJECT:-$(cd "$LIB_DIR/.." && pwd)}"   # repo root (parent of scripts/)
 DB_NAME="ai-study-planner"
+
+# Task Scheduler launches a minimal shell that can't find claude/wrangler/node.
+# Add their dirs to PATH on Windows (Git Bash) so scheduled runs work.
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    export PATH="$PATH:$HOME/.local/bin:$HOME/AppData/Roaming/npm:/c/Program Files/nodejs"
+    ;;
+esac
+
 SMS_TO="9176500432@tmomail.net"   # T-Mobile email-to-SMS gateway
+
+# Send the daily briefing as a text. On Windows (Git Bash) use a PowerShell SMTP
+# helper that reads config/smtp.local.json; on Linux fall back to `mail`.
+send_sms() {
+  local body="$1"
+  case "$(uname -s)" in
+    MINGW*|MSYS*|CYGWIN*)
+      local tmp rc
+      tmp="$(mktemp)"; printf "%s" "$body" > "$tmp"
+      powershell.exe -NoProfile -ExecutionPolicy Bypass \
+        -File "$(cygpath -w "$LIB_DIR/send-sms.ps1")" \
+        -BodyFile "$(cygpath -w "$tmp")"
+      rc=$?
+      rm -f "$tmp"
+      return $rc
+      ;;
+    *)
+      printf "%s" "$body" | mail -s "AI Study Briefing" "$SMS_TO"
+      ;;
+  esac
+}
 
 # Escape single quotes for inline SQL string literals.
 sql_escape() { printf "%s" "$1" | sed "s/'/''/g"; }

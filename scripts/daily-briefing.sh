@@ -23,8 +23,11 @@ BRIEFING="$(claude -p "$(cat "$DIR/briefing-prompt.txt")
 
 $(cat "$CTX")" 2>>"$LOG")"
 if [ -n "$BRIEFING" ]; then
-  echo "$BRIEFING" | mail -s "AI Study Briefing" "$SMS_TO"
-  log_line "Briefing texted to $SMS_TO"
+  if send_sms "$BRIEFING"; then
+    log_line "Briefing texted to $SMS_TO"
+  else
+    log_line "WARN: SMS send failed (check config/smtp.local.json)"
+  fi
 else
   log_line "WARN: empty briefing, no SMS sent"
 fi

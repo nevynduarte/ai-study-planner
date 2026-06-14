@@ -5,3 +5,5 @@ dist/
 .DS_Store
 *.log
 logs/*.log
+config/smtp.local.json
+.wrangler/

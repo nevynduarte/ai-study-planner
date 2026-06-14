@@ -32,19 +32,34 @@ wrangler d1 execute ai-study-planner --remote --file=schema.sql
 The `DB` binding is declared in `wrangler.toml`, so it's applied automatically on deploy —
 no dashboard binding step needed.
 
-## First time on P620
+## First time on the P620
+
+### Windows (Git Bash + Task Scheduler)
+
+The P620 runs Windows. Scheduling is done with Task Scheduler, and the 6am text is
+sent via SMTP (Linux `mail` doesn't exist on Windows).
 
 ```bash
-cd ~/projects
-git clone https://github.com/nevynduarte/ai-study-planner.git
-cd ai-study-planner
-bash scripts/setup.sh
+# 1. configure SMTP for the briefing text (gitignored, never committed)
+cp config/smtp.example.json config/smtp.local.json
+#    then edit config/smtp.local.json with your SMTP host/user/app-password
+
+# 2. register the scheduled tasks
+powershell -ExecutionPolicy Bypass -File scripts/setup-windows.ps1
 ```
 
-Setup installs `mailutils` + `wrangler`, makes the scripts executable, installs the cron
-jobs, syncs `status.json` to D1, and sends a test text.
+The tasks run via `conhost --headless` with the working directory set to the project
+(required so Node/wrangler get a console and a writable cache under Task Scheduler).
+They run only while you're logged on (a locked session counts).
 
-## Cron schedule (installed by setup.sh)
+### Linux (cron)
+
+```bash
+cd ~/projects && git clone https://github.com/nevynduarte/ai-study-planner.git
+cd ai-study-planner && bash scripts/setup.sh
+```
+
+## Schedule
 
 | When (ET) | Script | Writes |
 |-----------|--------|--------|
