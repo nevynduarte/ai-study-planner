@@ -14,8 +14,28 @@
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), { status, headers: { "Content-Type": "application/json" } });
 
+// Single-user HTTP Basic Auth gate. Set the password with:
+//   wrangler secret put APP_PASSWORD
+// Any username works; only the password is checked. If APP_PASSWORD is not
+// configured the gate is disabled (fail-open) so a deploy can't lock you out.
+function authorized(request, env) {
+  if (!env.APP_PASSWORD) return true;
+  const header = request.headers.get("Authorization") || "";
+  if (!header.startsWith("Basic ")) return false;
+  let decoded = "";
+  try { decoded = atob(header.slice(6)); } catch { return false; }
+  return decoded.slice(decoded.indexOf(":") + 1) === env.APP_PASSWORD;
+}
+
 export default {
   async fetch(request, env) {
+    if (!authorized(request, env)) {
+      return new Response("Authentication required.", {
+        status: 401,
+        headers: { "WWW-Authenticate": 'Basic realm="ai-study-planner"' },
+      });
+    }
+
     const { pathname } = new URL(request.url);
 
     if (pathname === "/api/data" && request.method === "GET")  return getData(env);
