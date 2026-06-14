@@ -16,4 +16,4 @@ NODE_VERSION = "20"
 [[d1_databases]]
 binding = "DB"
 database_name = "ai-study-planner"
-database_id = "REPLACE_ME"
+database_id = "939b4fed-f61f-4094-a3df-35af8fb751ca"
