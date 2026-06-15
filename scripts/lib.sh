@@ -91,15 +91,20 @@ d1_put_content() {
 }
 
 # build_context <outfile>
-# Dumps current status.json + recent study log so prompts are grounded.
+# Dumps the curriculum (4 tracks + live positions + skill coverage) and the
+# recent study log so every prompt is grounded. Curriculum is the single source
+# of truth at public/curriculum.json; coverage comes from D1 skill_coverage.
 build_context() {
-  local out="$1"
+  local out="$1" cov
+  cov="$(d1_json "SELECT track,skill,status FROM skill_coverage;" 2>/dev/null || echo '[]')"
   {
-    echo "=== CURRENT STATUS (config/status.json) ==="
-    cat "$PROJECT/config/status.json" 2>/dev/null || echo "{}"
+    echo "=== STUDENT, ROLES & CURRICULUM (public/curriculum.json) ==="
+    COVERAGE_JSON="$cov" node "$LIB_DIR/render-context.cjs" \
+      "$PROJECT/public/curriculum.json" "$PROJECT/config/status.json" 2>/dev/null \
+      || echo "(curriculum context unavailable)"
     echo
-    echo "=== RECENT STUDY LOG (most recent 20) ==="
-    d1_json "SELECT date,hours,topic,notes FROM study_log ORDER BY id DESC LIMIT 20;" 2>/dev/null \
-      | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const j=JSON.parse(s),r=(j[0]&&j[0].results)||[];if(!r.length){console.log("(none yet)");return;}for(const x of r)console.log(`${x.date}: ${x.hours}h — ${x.topic}${x.notes?" | "+x.notes:""}`);}catch(e){console.log("(log unavailable)");}})'
+    echo "=== RECENT STUDY LOG (most recent 25; track in brackets) ==="
+    d1_json "SELECT date,hours,topic,track,notes FROM study_log ORDER BY id DESC LIMIT 25;" 2>/dev/null \
+      | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const j=JSON.parse(s),r=(j[0]&&j[0].results)||[];if(!r.length){console.log("(none yet)");return;}for(const x of r)console.log(`${x.date}: ${x.hours}h [${x.track||"unassigned"}] — ${x.topic}${x.notes?" | "+x.notes:""}`);}catch(e){console.log("(log unavailable)");}})'
   } > "$out"
 }

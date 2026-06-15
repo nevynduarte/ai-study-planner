@@ -1,0 +1,168 @@
+{
+  "_comment": "SINGLE SOURCE OF TRUTH for the study planner. Read by the P620 scripts (scripts/lib.sh → render-context.js at public/curriculum.json) AND by the web app (fetched at /curriculum.json). Track structure + skills live here; live progress (per-track month, skill coverage status) lives in config/status.json and the D1 skill_coverage table. Edit months/skills here, edit current positions in config/status.json.",
+  "student": {
+    "name": "Nevyn Duarte",
+    "background": "BS Mathematics (UT Austin), MS Data Science CU Boulder (GPA 3.84). Co-Founder/CTO Bridges AI. Ex-quantitative equity researcher (M Science / Jefferies). Strong Python, RAG systems, LLM workflows, agentic systems.",
+    "commitment": "10 hours/day, 12-month elite curriculum across 4 parallel tracks",
+    "income_target": "$300K–$600K+"
+  },
+  "roles": [
+    { "id": "deshaw-ai",  "name": "D.E. Shaw — Applied AI Engineer",        "primary_tracks": ["ai-eng", "ml-eng"],   "note": "Production AI systems + ML engineering rigor." },
+    { "id": "deshaw-alt", "name": "D.E. Shaw — Alternative Data Analyst",    "primary_tracks": ["quant", "data-sci"],  "note": "Alt-data sourcing, signal research, statistical rigor." },
+    { "id": "woodline",   "name": "Woodline Partners — Sector Data Analyst", "primary_tracks": ["quant", "data-sci"],  "note": "Sector/fundamental modeling, data analysis, communication." }
+  ],
+  "tracks": {
+    "ai-eng": {
+      "name": "AI Engineering",
+      "weight": 0.40,
+      "daily_hours": 4,
+      "color": { "bg": "#E1F5EE", "text": "#085041", "border": "#1D9E75" },
+      "summary": "From-scratch implementations: math → autograd → transformers → LLMs → RAG/agents → CUDA → alignment → distributed inference.",
+      "skills": [
+        "Linear algebra & optimization",
+        "Autograd from scratch",
+        "Classical ML from scratch",
+        "CNNs & ResNet",
+        "Transformer from scratch",
+        "LLM pre-training & fine-tuning",
+        "Production RAG",
+        "Agents & MCP",
+        "CUDA & FlashAttention",
+        "RLHF / DPO alignment",
+        "Distributed inference"
+      ],
+      "months": [
+        { "n": 1,  "title": "Math Foundations & Python Mastery",        "roi": 79, "focus": "Linear algebra, probability, optimization, information theory. NumPy from scratch. Autograd engine. Cap CNN history to 10 hrs." },
+        { "n": 2,  "title": "Classical ML — Theory to Production",       "roi": 84, "focus": "Every classical algorithm from scratch. MLflow tracking. Ship something deployed by week 8." },
+        { "n": 3,  "title": "Deep Learning — Neural Nets to CNNs",       "roi": 82, "focus": "Autograd extended, ResNet from scratch, production image API. Cap CNN architecture history at 10 hrs total." },
+        { "n": 4,  "title": "Sequence Models & the Transformer",        "roi": 87, "focus": "LSTM→attention→full Transformer from scratch. GPT with KV cache. BPE tokenizer. Reproduce paper BLEU within 2 points." },
+        { "n": 5,  "title": "LLMs — Pre-training to Fine-tuning",        "roi": 87, "focus": "Pre-training pipeline, LoRA/QLoRA from scratch, vLLM inference server. Chinchilla laws. 125M model trained end-to-end." },
+        { "n": 6,  "title": "AI Engineering — RAG, Agents, Production",  "roi": 92, "focus": "Production RAG platform, coding agent, MCP multi-agent system, RAGAS evaluation, full observability stack." },
+        { "n": 7,  "title": "Systems — GPUs, CUDA, Distributed AI",      "roi": 87, "focus": "CUDA kernels, FlashAttention tiling, FSDP distributed training, Kubernetes ML platform." },
+        { "n": 8,  "title": "Reinforcement Learning & Alignment",        "roi": 74, "focus": "PPO/DQN from scratch, RLHF pipeline (SFT→RM→PPO), DPO comparison, GRPO reasoning training." },
+        { "n": 9,  "title": "Data Engineering for AI & AI Products",     "roi": 80, "focus": "Kafka, Flink, Spark, dbt. Real-time feature platform feeding live models." },
+        { "n": 10, "title": "Frontier — Multimodal & Research",          "roi": 70, "focus": "ViT, CLIP, diffusion, Mamba. Multimodal RAG. Paper reproduction. Research preprint drafted." },
+        { "n": 11, "title": "Leadership, Product & AI Startup",          "roi": 82, "focus": "AI product with real users. Open-source PR merged. Blog posts. Conference talk proposal." },
+        { "n": 12, "title": "Elite Synthesis — Launch & Specialization", "roi": 88, "focus": "Distributed inference system 1000 QPS. Personal AI OS. Research preprint submitted." }
+      ]
+    },
+    "ml-eng": {
+      "name": "ML Engineering",
+      "weight": 0.25,
+      "daily_hours": 2.5,
+      "color": { "bg": "#E6F1FB", "text": "#0C447C", "border": "#185FA5" },
+      "summary": "The production ML lifecycle: clean code → pipelines → serving → CI/CD → monitoring → orchestration → platform. What turns a model into a system.",
+      "skills": [
+        "Python testing & packaging",
+        "Docker & containers",
+        "Data pipelines & validation",
+        "Experiment tracking",
+        "Model serving (FastAPI/TorchServe)",
+        "CI/CD for ML",
+        "Monitoring & drift detection",
+        "Orchestration (Airflow/Dagster)",
+        "Inference optimization & quantization",
+        "ML platform & SLOs"
+      ],
+      "months": [
+        { "n": 1,  "title": "Engineering Foundations",          "roi": 80, "focus": "Pytest, type hints, packaging, pre-commit, clean repo structure. Treat every project as production code." },
+        { "n": 2,  "title": "Containers & Reproducibility",     "roi": 80, "focus": "Docker, multi-stage builds, devcontainers, dependency pinning, reproducible environments." },
+        { "n": 3,  "title": "Data Pipelines & Validation",      "roi": 82, "focus": "ETL, Great Expectations / Pandera data contracts, feature store basics, schema validation." },
+        { "n": 4,  "title": "Experiment Tracking & Registry",   "roi": 81, "focus": "MLflow / W&B tracking, model registry, reproducible runs, artifact versioning." },
+        { "n": 5,  "title": "Model Serving",                    "roi": 86, "focus": "FastAPI inference service, batch vs online, ONNX/TorchServe, load testing, latency budgets." },
+        { "n": 6,  "title": "CI/CD for ML",                     "roi": 85, "focus": "GitHub Actions pipelines, automated tests for models, canary/blue-green deploys, rollback." },
+        { "n": 7,  "title": "Monitoring & Drift",               "roi": 84, "focus": "Prometheus/Grafana, data & concept drift detection, alerting, SLO dashboards." },
+        { "n": 8,  "title": "Orchestration & Retraining",       "roi": 80, "focus": "Airflow/Dagster/Prefect DAGs, scheduled retraining, backfills, idempotent jobs." },
+        { "n": 9,  "title": "Scalable & Cheap Inference",       "roi": 85, "focus": "vLLM/TGI, autoscaling, GPU scheduling, quantization, caching, cost-per-request." },
+        { "n": 10, "title": "Internal ML Platform",            "roi": 79, "focus": "Self-serve tooling, templates, golden paths, abstractions other engineers reuse." },
+        { "n": 11, "title": "Reliability & On-call",            "roi": 80, "focus": "SLOs/SLIs, incident response, runbooks, chaos testing an ML service." },
+        { "n": 12, "title": "ML Systems Capstone",             "roi": 86, "focus": "End-to-end production ML system with monitoring, CI/CD, autoscaling, documented SLOs." }
+      ]
+    },
+    "data-sci": {
+      "name": "Data Science",
+      "weight": 0.20,
+      "daily_hours": 2,
+      "color": { "bg": "#EEEDFE", "text": "#3C3489", "border": "#7F77DD" },
+      "summary": "Statistical rigor and inference: hypothesis testing → experiments → causal inference → modeling → Bayesian → communication. The analyst muscle for the D.E. Shaw / Woodline data roles.",
+      "skills": [
+        "Statistical inference",
+        "Experiment design & A/B testing",
+        "Causal inference",
+        "Regression & GLMs",
+        "Time series forecasting",
+        "Feature engineering",
+        "Bayesian modeling",
+        "Data viz & storytelling",
+        "Stakeholder communication"
+      ],
+      "months": [
+        { "n": 1,  "title": "Statistical Inference",            "roi": 82, "focus": "Distributions, estimation, CLT, hypothesis testing, confidence intervals, bootstrap — from first principles." },
+        { "n": 2,  "title": "Experiment Design & A/B Testing",  "roi": 84, "focus": "Power analysis, sample sizing, multiple testing, sequential tests, common A/B pitfalls." },
+        { "n": 3,  "title": "Causal Inference",                 "roi": 85, "focus": "DAGs, confounding, diff-in-diff, instrumental variables, propensity scores, regression discontinuity." },
+        { "n": 4,  "title": "Regression & GLMs",                "roi": 81, "focus": "Linear/logistic/Poisson regression, diagnostics, regularization, interpretation, assumptions." },
+        { "n": 5,  "title": "Time Series Forecasting",          "roi": 83, "focus": "ARIMA, state-space, exponential smoothing, backtesting forecasts, evaluation (MASE)." },
+        { "n": 6,  "title": "Feature Engineering & Leakage",    "roi": 80, "focus": "Encoding, scaling, target leakage avoidance, feature selection, robust cross-validation." },
+        { "n": 7,  "title": "Predictive Modeling & Evaluation", "roi": 82, "focus": "Tree ensembles, calibration, metric selection, threshold tuning, error analysis." },
+        { "n": 8,  "title": "Bayesian Methods",                 "roi": 78, "focus": "PyMC, priors, hierarchical models, MCMC diagnostics, posterior predictive checks." },
+        { "n": 9,  "title": "Data Viz & Storytelling",          "roi": 79, "focus": "Effective charts, dashboards, narrative structure, avoiding misleading viz." },
+        { "n": 10, "title": "Text & Embedding Analytics",       "roi": 78, "focus": "Embeddings for analytics, topic modeling, sentiment, applying NLP to tabular+text problems." },
+        { "n": 11, "title": "Decision Science & Communication", "roi": 81, "focus": "Stakeholder decks, decision frameworks, translating analysis into business action." },
+        { "n": 12, "title": "End-to-End DS Capstone",           "roi": 84, "focus": "Full analysis from question → data → model → recommendation, with quantified business impact." }
+      ]
+    },
+    "quant": {
+      "name": "Quant / Alt-Data",
+      "weight": 0.15,
+      "daily_hours": 1.5,
+      "color": { "bg": "#FAEEDA", "text": "#633806", "border": "#BA7517" },
+      "summary": "The differentiator for D.E. Shaw Alt-Data and Woodline: alt-data sourcing → factor research → backtesting → portfolio/risk → research platform. Builds directly on the quant-research background.",
+      "skills": [
+        "Market microstructure",
+        "Alt-data sourcing & scraping",
+        "Factor research & signal IC",
+        "Backtesting framework",
+        "Portfolio construction",
+        "Sector/fundamental modeling",
+        "Statistical arbitrage",
+        "Risk management (VaR)",
+        "Transaction cost & execution",
+        "Quant research platform"
+      ],
+      "months": [
+        { "n": 1,  "title": "Markets & Returns Foundations",     "roi": 80, "focus": "Returns, market microstructure, data sources, factor zoo overview, look-ahead/survivorship awareness." },
+        { "n": 2,  "title": "Alt-Data Sourcing",                 "roi": 86, "focus": "Web/satellite/transaction data, scraping pipelines, entity resolution, data cleaning at scale." },
+        { "n": 3,  "title": "Factor Research",                   "roi": 87, "focus": "Signal construction, information coefficient (IC), decay, neutralization, cross-sectional ranking." },
+        { "n": 4,  "title": "Backtesting Framework",             "roi": 88, "focus": "Build a backtester from scratch. Handle look-ahead, survivorship, point-in-time data, realistic fills." },
+        { "n": 5,  "title": "Portfolio Construction",            "roi": 84, "focus": "Mean-variance, risk models, constraints, optimization, factor exposure targeting." },
+        { "n": 6,  "title": "Sector & Fundamental Modeling",     "roi": 85, "focus": "Model company/sector KPIs, fundamental factors, earnings dynamics — the Woodline core skill." },
+        { "n": 7,  "title": "Cross-Sectional & TS Signals",      "roi": 83, "focus": "Combine multiple signals, time-series vs cross-sectional, signal blending, regime awareness." },
+        { "n": 8,  "title": "Statistical Arbitrage",             "roi": 82, "focus": "Pairs trading, cointegration, mean reversion, hedging, capacity considerations." },
+        { "n": 9,  "title": "Risk Management",                   "roi": 83, "focus": "VaR, drawdown control, position sizing, factor risk decomposition, stress testing." },
+        { "n": 10, "title": "Transaction Costs & Execution",     "roi": 80, "focus": "Slippage, market impact models, turnover control, net-of-cost signal evaluation." },
+        { "n": 11, "title": "Quant Research Platform",           "roi": 84, "focus": "Reproducible research pipeline: data → signal → backtest → report, versioned and automated." },
+        { "n": 12, "title": "Alt-Data Signal Capstone",          "roi": 87, "focus": "End-to-end: source an alt-data signal, research it, backtest net-of-cost, write the research note." }
+      ]
+    }
+  },
+  "roi_priority": [
+    "Production AI systems", "Distributed systems", "LLM internals", "AI product dev",
+    "Fine-tuning/alignment", "MLOps & CI/CD", "Evaluation & observability",
+    "Data engineering", "Vector DBs & retrieval", "CUDA & GPU", "Multi-agent systems"
+  ],
+  "day_of_week": {
+    "Monday": "Set weekly goals per track, review last week's deliverables",
+    "Tuesday": "Implementation focus — code runs today",
+    "Wednesday": "Read one complete paper end-to-end",
+    "Thursday": "Push something to GitHub",
+    "Friday": "Write 500+ words technical content, review the week",
+    "Saturday": "Long project block, open-source contribution",
+    "Sunday": "Review notes, plan next week, update GitHub"
+  },
+  "coverage_legend": {
+    "not-started": "Not yet touched",
+    "learning": "Actively studying / partial understanding",
+    "built": "Implemented or applied end-to-end at least once",
+    "interview-ready": "Can explain and reproduce under interview pressure"
+  }
+}

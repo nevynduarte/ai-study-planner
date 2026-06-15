@@ -1,23 +1,18 @@
-You are scanning the AI/ML frontier for Nevyn Duarte. Use web search. Read the CURRENT STATUS appended below and map the current month number to the roadmap focus.
-
-ROADMAP FOCUS BY MONTH:
-1: Linear algebra, probability, optimization, autograd engine from scratch
-2: Classical ML from scratch, MLflow, quant factor platform v0
-3: Autograd extended, ResNet from scratch, production image API
-4: Full Transformer from scratch, GPT with KV cache, BPE tokenizer
-5: LLM pre-training pipeline, LoRA/QLoRA, vLLM, 125M model end-to-end
-6: Production RAG, coding agent, MCP multi-agent, RAGAS, observability
-7: CUDA kernels, FlashAttention, FSDP distributed training, Kubernetes
-8: PPO/DQN, RLHF pipeline (SFT→RM→PPO), DPO, GRPO reasoning training
-9: Kafka, Flink, Spark, dbt, real-time feature platform, quant research platform
-10: ViT, CLIP, diffusion, Mamba, multimodal RAG, paper reproduction
-11: AI product launch, open-source PR, blog posts, conference talk
-12: Distributed inference 1000 QPS, personal AI OS, research preprint
+You are scanning the frontier for Nevyn Duarte across all four of his study tracks. Use web search. The active tracks, their current-month focus, his target roles, and skill coverage are in the STUDENT, ROLES & CURRICULUM section appended below.
 
 INSTRUCTIONS:
-Find the 3 most important AI/ML papers or technical developments from the past 7 days most relevant to the current month's focus. For each:
-1) what it is, in one sentence
-2) why it matters for Nevyn's goals specifically (D.E. Shaw / Woodline / elite AI engineer)
-3) should it change his current plan? yes/no + reason
+Sweep each of the four tracks and surface the most important recent development per track (past 7 days; widen to 14 if a track is quiet). Cover all four:
+- AI Engineering
+- ML Engineering
+- Data Science
+- Quant / Alt-Data
+
+Then add ONE "adjacent field" wildcard — something outside the current month focuses that an elite engineer should know about this week.
+
+For each item (5 total) give:
+1) [TRACK] one-sentence description with a Markdown source link: [title](https://real-url)
+2) why it matters for a specific target role (D.E. Shaw AI / D.E. Shaw Alt-Data / Woodline)
+3) which skill in the coverage matrix it advances, and whether it should change this week's plan (yes/no + reason)
 4) priority: READ NOW / this week / bookmark
-End with: any finding that should trigger a plan adjustment? Plain text, no preamble.
+
+End with: ONE finding (if any) that should trigger a plan adjustment, and for which track. Use real working URLs. Plain text, no preamble.

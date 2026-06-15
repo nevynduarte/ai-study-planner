@@ -1,13 +1,18 @@
-You are an elite AI engineering mentor giving Nevyn Duarte a brutally honest plan-health advisory. Analyze the CURRENT STATUS and RECENT STUDY LOG appended below.
+You are an elite mentor giving Nevyn Duarte a brutally honest plan-health advisory across all four tracks. Analyze the STUDENT, ROLES & CURRICULUM (which includes per-skill coverage status and a coverage tally) and the RECENT STUDY LOG appended below.
 
-BACKGROUND: BS Mathematics (UT Austin), MS Data Science CU Boulder. CTO Bridges AI, ex-quant researcher. Interviewing at D.E. Shaw and Woodline Partners. Goal: elite AI engineer, $300K–$600K+, 10 hrs/day for 12 months.
+The four parallel tracks and their target daily weights: AI Engineering ~40%, ML Engineering ~25%, Data Science ~20%, Quant/Alt-Data ~15%. Roles: D.E. Shaw (Applied AI Engineer + Alt Data Analyst), Woodline (Sector Data Analyst).
 
-ROI PRIORITY ORDER: Production AI systems → Distributed systems → LLM internals → AI product dev → Fine-tuning/alignment → MLOps → Evaluation → Data engineering → Vector DBs → CUDA → Multi-agent. Tier 3/4 topics should be under 20% of weekly hours.
+Answer, referencing specific log entries — do not hedge:
+1) Per-track: on pace for this month's goals? (yes/partially/no + evidence from the log)
+2) Track balance: do the logged hours match the target weights? Which track is being starved?
+3) Coverage: which skills are stalling (still not-started/learning despite time logged)? Biggest uncovered gap blocking the target roles.
+4) ONE specific adjustment to make this week.
+5) Confidence score 0–100: is this trajectory leading to elite outcomes? One line of justification.
 
-Answer:
-1) On track for this month's goals? (yes/partially/no + evidence from the log)
-2) Topic imbalances? (too much Tier 3/4?)
-3) Biggest ROI opportunity currently missed.
-4) One specific adjustment to make this week.
-5) Confidence score 0–100: is this trajectory leading to elite outcomes?
-Reference specific log entries. Do not hedge. Plain text, no preamble.
+Then, AFTER all prose, append a machine-readable coverage update so the skill matrix can advance. Look at the study log and decide which skills changed status. Output it EXACTLY in this form (a JSON array between the markers, status one of not-started/learning/built/interview-ready), and include ONLY skills whose status actually changed based on the log — empty array if none:
+
+<<<COVERAGE
+[{"track":"ai-eng","skill":"Autograd from scratch","status":"learning"}]
+COVERAGE>>>
+
+Use the exact track ids (ai-eng, ml-eng, data-sci, quant) and exact skill names from the curriculum. Plain text for the prose, no preamble.

@@ -51,13 +51,14 @@ export default {
 async function getData(env) {
   try {
     const db = env.DB;
-    const [plan, frontier, advisory, log, statusRows, questions] = await Promise.all([
+    const [plan, frontier, advisory, log, statusRows, questions, coverage] = await Promise.all([
       db.prepare("SELECT date, content, generated_at FROM daily_plan ORDER BY generated_at DESC LIMIT 1").first(),
       db.prepare("SELECT date, content, generated_at FROM frontier ORDER BY generated_at DESC LIMIT 1").first(),
       db.prepare("SELECT date, content, generated_at FROM advisory ORDER BY generated_at DESC LIMIT 1").first(),
-      db.prepare("SELECT date, hours, topic, notes, created_at FROM study_log ORDER BY id DESC LIMIT 100").all(),
+      db.prepare("SELECT date, hours, topic, track, notes, created_at FROM study_log ORDER BY id DESC LIMIT 100").all(),
       db.prepare("SELECT key, value, updated_at FROM status").all(),
       db.prepare("SELECT id, date, question, answer, created_at, answered_at FROM tutor_qa ORDER BY id DESC LIMIT 50").all(),
+      db.prepare("SELECT track, skill, status, updated_at FROM skill_coverage").all(),
     ]);
     const status = {};
     for (const r of statusRows.results || []) status[r.key] = r.value;
@@ -68,6 +69,7 @@ async function getData(env) {
       log: log.results || [],
       status,
       questions: questions.results || [],
+      coverage: coverage.results || [],
     });
   } catch (e) {
     return json({ error: e.message }, 500);
@@ -76,15 +78,17 @@ async function getData(env) {
 
 async function postLog(request, env) {
   try {
-    const { hours, topic, notes } = await request.json();
+    const { hours, topic, track, notes } = await request.json();
     if (!topic || !hours || Number(hours) <= 0) {
       return json({ error: "topic and positive hours required" }, 400);
     }
+    const VALID_TRACKS = ["ai-eng", "ml-eng", "data-sci", "quant"];
+    const trackVal = VALID_TRACKS.includes(track) ? track : null;
     const date = new Date().toISOString().slice(0, 10);
     const now = new Date().toISOString();
     const res = await env.DB
-      .prepare("INSERT INTO study_log (date, hours, topic, notes, created_at) VALUES (?, ?, ?, ?, ?)")
-      .bind(date, Number(hours), String(topic), notes ? String(notes) : "", now)
+      .prepare("INSERT INTO study_log (date, hours, topic, track, notes, created_at) VALUES (?, ?, ?, ?, ?, ?)")
+      .bind(date, Number(hours), String(topic), trackVal, notes ? String(notes) : "", now)
       .run();
     return json({ ok: true, id: res.meta?.last_row_id });
   } catch (e) {

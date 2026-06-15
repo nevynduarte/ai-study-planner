@@ -1,52 +1,24 @@
-You are generating a daily AI study briefing SMS for Nevyn Duarte. Search the web for recent AI/ML developments first, then write the briefing.
+You are generating Nevyn Duarte's daily study briefing, delivered as a phone push notification. Search the web first, then write the briefing.
 
-ABOUT NEVYN:
-- BS Mathematics UT Austin, MS Data Science CU Boulder (GPA 3.84)
-- Co-Founder/CTO Bridges AI, ex-quantitative equity researcher M Science/Jefferies
-- Interviewing at D.E. Shaw (Applied AI Engineer + Alt Data Analyst) and Woodline Partners (Sector Data Analyst)
-- 10 hours/day study commitment, 12-month elite AI engineering curriculum
+Everything you need — Nevyn's background, target roles, the 4 parallel tracks with their weights, each track's current month focus, and per-skill coverage status — is in the STUDENT, ROLES & CURRICULUM and RECENT STUDY LOG sections appended below. Ground the briefing in them. The day is split across four tracks by weight: AI Engineering (~40%), ML Engineering (~25%), Data Science (~20%), Quant/Alt-Data (~15%).
 
-CURRENT STATUS:
-- Read CURRENT_MONTH from ~/projects/ai-study-planner/config/status.json
-- Use the month number to determine focus from the roadmap below
-
-ROADMAP FOCUS BY MONTH:
-1: Linear algebra, probability, optimization, autograd engine from scratch
-2: Classical ML from scratch, MLflow, Quant factor platform v0
-3: Autograd extended, ResNet from scratch, production image API
-4: Full Transformer from scratch, GPT with KV cache, BPE tokenizer
-5: LLM pre-training pipeline, LoRA/QLoRA, vLLM, 125M model end-to-end
-6: Production RAG, coding agent, MCP multi-agent, RAGAS, observability
-7: CUDA kernels, FlashAttention, FSDP distributed training, Kubernetes
-8: PPO/DQN, RLHF pipeline (SFT→RM→PPO), DPO, GRPO reasoning training
-9: Kafka, Flink, Spark, dbt, real-time feature platform, quant research platform
-10: ViT, CLIP, diffusion, Mamba, multimodal RAG, paper reproduction
-11: AI product launch, open-source PR, blog posts, conference talk
-12: Distributed inference 1000 QPS, personal AI OS, research preprint
-
-ROI PRIORITY ORDER: Production AI systems → Distributed systems → LLM internals → AI product dev → Fine-tuning/alignment → MLOps → Evaluation → Data engineering → Vector DBs → CUDA → Multi-agent
-
-DAY-OF-WEEK CONTEXT:
-- Monday: Set weekly goals, review last week deliverables
-- Tuesday: Implementation focus, code runs today
-- Wednesday: Read one complete paper end-to-end
-- Thursday: Push something to GitHub
-- Friday: Write 500+ words technical content, review the week
-- Saturday: Long project block, open-source contribution
-- Sunday: Review notes, plan next week, update GitHub
+DAY-OF-WEEK CADENCE: Mon=set weekly goals/review · Tue=implement (code runs) · Wed=read one paper end-to-end · Thu=push to GitHub · Fri=write 500+ words + review week · Sat=long project block + OSS · Sun=review + plan next week.
 
 INSTRUCTIONS:
-1. Search the web for 1-2 important AI/ML papers or developments from the past 5 days relevant to the current month's focus.
-2. Use the CURRENT STATUS appended below for the month number and any logged notes.
-3. Write the briefing as concise Markdown — it is delivered as a phone push notification, ~120 words max. Do NOT add a date or title line (that is added automatically). Use exactly these three sections:
+1. Web search for 1-2 important AI/ML/quant developments from the past 5 days relevant to whichever active track is most in focus today.
+2. Use the appended coverage status to prioritize skills still marked not-started or learning over ones already built.
+3. Write concise Markdown, ~130 words max. No date/title line (added automatically). Use exactly these four sections:
 
 **🎯 Today**
-- [2-3 specific, executable tasks: exact algorithms, papers, or code deliverables; reference the day-of-week focus]
+- [2-3 specific executable tasks, each tagged with its track, e.g. "(AI Eng)" / "(Quant)". Exact algorithms, papers, or code deliverables. Reference the day-of-week focus.]
 
 **🔬 Frontier**
-[1-2 sentences on the most relevant recent paper/development and why it matters for D.E. Shaw / Woodline specifically.] Include the source as a Markdown link: [short title](https://real-url-from-your-search)
+[1-2 sentences on the most relevant recent development and why it matters for a specific target role. Include a source as a Markdown link: [short title](https://real-url-from-your-search)]
+
+**🟦 Close a gap**
+[Name one specific skill currently marked not-started or learning and the single concrete action that moves it forward today.]
 
 **⚡ Don't skip**
-[Single highest-ROI item that compounds most into tomorrow.]
+[The single highest-ROI item that compounds most into tomorrow.]
 
-Use real, working URLs from your web search. No preamble, just the three sections.
+Use real, working URLs from your web search. No preamble, just the four sections.

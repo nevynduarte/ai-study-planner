@@ -1,16 +1,25 @@
 # AI Study Planner — nevynduarte
 
-Elite AI engineering study planner. Claude-powered tutoring, frontier paper search, daily 6am SMS briefings.
+Elite engineering study planner across **4 parallel, daily-weighted tracks** — AI Engineering (40%), ML Engineering (25%), Data Science (20%), Quant/Alt-Data (15%) — targeting D.E. Shaw (Applied AI Engineer + Alt Data Analyst) and Woodline (Sector Data Analyst). Claude-powered tutoring, per-track frontier search, daily 6am push briefings, and a **skill-coverage matrix** that tracks ground covered vs. remaining.
 
 **Total annual cost: $0** — all Claude intelligence runs locally on P620 (Claude Max, no API key). Results are written to Cloudflare D1; the web app just reads them.
+
+## Curriculum model
+
+`public/curriculum.json` is the **single source of truth**: student profile, target roles → tracks mapping, the 4 tracks (each with weight, 12 months, and a skills list), ROI priorities, and day-of-week cadence. Both the P620 scripts and the web app read it (the scripts at `public/curriculum.json`, the browser at `/curriculum.json`), so there is exactly one place to edit the plan.
+
+Live state lives separately so the curriculum file stays static:
+- `config/status.json` — per-track current month, hours, notes.
+- D1 `skill_coverage` — each skill's status (`not-started` → `learning` → `built` → `interview-ready`), advanced nightly by the advisory from your study log.
 
 ## Architecture
 
 ```
 P620 (Claude Max, local)  → all intelligence: briefing, plan, frontier, advisory, tutor answers
         │                    runs claude -p (no Anthropic API key needed)
-        ├── writes ────────→ Cloudflare D1 (daily_plan, frontier, advisory, status, tutor_qa)
-        └── 6am email ─────→ T-Mobile email-to-SMS (9176500432@tmomail.net)
+        │                    grounded by public/curriculum.json + status + skill_coverage
+        ├── writes ────────→ Cloudflare D1 (daily_plan, frontier, advisory, status, tutor_qa, skill_coverage, study_log.track)
+        └── 6am push ──────→ ntfy push notification (SMS fallback)
 
 Cloudflare Worker         → serves the React app (static [assets]) + the D1 API
         /api/data (read), /api/log + /api/ask (the only writes from the browser)
@@ -63,25 +72,33 @@ cd ai-study-planner && bash scripts/setup.sh
 
 | When (ET) | Script | Writes |
 |-----------|--------|--------|
-| 6am daily | `daily-briefing.sh` | SMS briefing + `daily_plan` + `frontier` |
+| 6am daily | `daily-briefing.sh` | push briefing + track-weighted `daily_plan` + per-track `frontier` |
 | every hour | `answer-questions.sh` | tutor answers in `tutor_qa` |
-| 11pm daily | `advisory.sh` | `advisory` |
+| 11pm daily | `advisory.sh` | `advisory` + `skill_coverage` updates |
+
+All three are grounded by `build_context()` (in `lib.sh`), which injects the curriculum, per-track positions, skill coverage, and the recent study log into every prompt.
 
 ## Daily workflow
 
 - **6am**: text arrives with today's focus, frontier paper, and don't-skip item; the full
   10-hour plan and frontier digest land in the web app automatically
-- **During the day**: open the web app — the plan is already there. Log sessions on the Today tab.
+- **During the day**: open the web app — the plan is already there. Log sessions on the Today tab, tagging each with its track so the weekly balance and coverage stay accurate.
+- **Coverage tab**: see the skill heatmap per track — your map of ground covered vs. remaining.
 - **Tutor tab**: type a question; it's answered on the next hourly cron run
-- **Advisory tab**: read the nightly plan-health check
+- **Advisory tab**: read the nightly plan-health check (also advances the coverage matrix)
 
 ## Advancing months
 
+Each track advances independently. Bump the track(s) you've completed in `config/status.json`:
+
 ```bash
-nano config/status.json          # set current_month + month_title
-bash scripts/sync-to-d1.sh       # push it to D1 (or just rerun setup.sh)
-git add config/status.json && git commit -m "Month N" && git push
+nano config/status.json          # set tracks.<id>.current_month per track
+bash scripts/sync-to-d1.sh       # push status → D1 + seed any new skills into skill_coverage
+git add config/status.json && git commit -m "Advance tracks" && git push
 ```
+
+`sync-to-d1.sh` is idempotent: it seeds any curriculum skills not yet in `skill_coverage` as
+`not-started` without overwriting progress already recorded.
 
 ## Web app deploy (Cloudflare Worker + static assets)
 
@@ -105,22 +122,25 @@ Validate locally before pushing: `npm run build && npx wrangler deploy --dry-run
 
 ```
 ai-study-planner/
+├── public/
+│   └── curriculum.json          # SINGLE SOURCE OF TRUTH — roles, 4 tracks, skills (served at /curriculum.json)
 ├── src/
 │   ├── main.jsx                 # React entry
-│   └── App.jsx                  # 6-tab planner — reads D1, logs sessions, asks tutor
+│   └── App.jsx                  # 7-tab planner — per-track progress, coverage heatmap, log, tutor
 ├── worker/
 │   └── index.js                 # Worker: serves the app + /api/data, /api/log, /api/ask
 ├── scripts/
-│   ├── lib.sh                   # shared config + D1 helpers
+│   ├── lib.sh                   # shared config + D1 helpers + build_context()
+│   ├── render-context.cjs       # renders curriculum + status + coverage into prompt context
 │   ├── setup.sh                 # one-time P620 setup (deps, cron, D1 sync)
-│   ├── daily-briefing.sh        # 6am — SMS + plan + frontier → D1
+│   ├── daily-briefing.sh        # 6am — push + plan + frontier → D1
 │   ├── answer-questions.sh      # hourly — answer tutor questions → D1
-│   ├── advisory.sh              # 11pm — plan-health advisory → D1
-│   ├── sync-to-d1.sh            # push config/status.json → D1 status table
-│   └── *-prompt.txt             # prompts for briefing/plan/frontier/advisory/tutor
-├── config/status.json           # current month, hours, notes
+│   ├── advisory.sh              # 11pm — plan-health advisory + coverage updates → D1
+│   ├── sync-to-d1.sh            # push status.json → D1 + seed skill_coverage
+│   └── *-prompt.txt             # track-aware prompts for briefing/plan/frontier/advisory/tutor
+├── config/status.json           # per-track current month, hours, notes
 ├── logs/                        # auto-created, gitignored
-├── schema.sql                   # D1 schema
+├── schema.sql                   # D1 schema (incl. study_log.track + skill_coverage)
 ├── index.html / vite.config.js / package.json / wrangler.toml
 ```
 
