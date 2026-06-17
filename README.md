@@ -61,12 +61,28 @@ The tasks run via `conhost --headless` with the working directory set to the pro
 (required so Node/wrangler get a console and a writable cache under Task Scheduler).
 They run only while you're logged on (a locked session counts).
 
-### Linux (cron)
+### Linux (cron) — recommended for an always-on box
+
+Use this for any always-on Linux machine (a spare/work laptop now, a Google Cloud
+or Oracle Always-Free VM later) so your main computer doesn't have to stay on.
 
 ```bash
 cd ~/projects && git clone https://github.com/nevynduarte/ai-study-planner.git
-cd ai-study-planner && bash scripts/setup.sh
+cd ai-study-planner
+npm install -g @anthropic-ai/claude-code wrangler   # if not already present
+claude login                                         # Claude Max (device-code flow; no API key)
+export CLOUDFLARE_API_TOKEN=...                       # D1:Edit token; add to ~/.profile so cron sees it
+cp config/notify.example.json config/notify.local.json && nano config/notify.local.json  # set ntfy_topic
+bash scripts/setup-linux.sh                           # installs an ET-correct cron + sends a test push
 ```
+
+`setup-linux.sh` pins the schedule to Eastern via `CRON_TZ` (DST-safe) and writes a
+`PATH` line so cron can find node/claude/wrangler. To make this box the *only* runner,
+disable the P620's tasks (PowerShell on the P620):
+`Disable-ScheduledTask -TaskName AIStudyPlanner-Briefing,AIStudyPlanner-Tutor,AIStudyPlanner-Advisory`.
+
+The older `scripts/setup.sh` targets the original email-to-SMS path and a fixed-offset
+cron; prefer `setup-linux.sh`.
 
 ## Schedule
 
