@@ -1,4 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+// hex (#rgb or #rrggbb) → rgba() string at the given alpha. Used to tint
+// pills from their accent color instead of using bright pastel fills.
+const hexA = (hex, a) => {
+  const h = (hex || "").replace("#", "");
+  if (!/^[0-9a-fA-F]{3}$|^[0-9a-fA-F]{6}$/.test(h)) return `rgba(0,0,0,${a})`;
+  const f = h.length === 3 ? h.split("").map(c => c + c).join("") : h;
+  const n = parseInt(f, 16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+};
 
 // ─── Data layer — reads/writes the Cloudflare Worker (D1) + static curriculum ──
 async function getJSON(path) {
@@ -19,7 +31,6 @@ const todayFmt = () => new Date().toLocaleDateString("en-US", { weekday:"long", 
 const fmtDate  = (iso) => iso ? new Date(iso + "T12:00:00").toLocaleDateString("en-US", { month:"short", day:"numeric" }) : "";
 const fmtTs    = (ts)  => ts ? new Date(ts).toLocaleString("en-US", { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" }) : "";
 const roiColor = (s) => s >= 85 ? "#185FA5" : s >= 75 ? "#3B6D11" : s >= 65 ? "#BA7517" : "#A32D2D";
-const roiBg    = (s) => s >= 85 ? "#E6F1FB" : s >= 75 ? "#EAF3DE" : s >= 65 ? "#FAEEDA" : "#FCEBEB";
 
 // Skill-coverage status → color + short label.
 const COV = {
@@ -120,16 +131,48 @@ export default function App() {
     tab:    (a) => ({ fontSize:13, fontWeight:a?500:400, padding:"6px 12px", background:"none", border:"none", cursor:"pointer", color:a?txt:txtT, borderBottom:a?`2px solid ${txt}`:"2px solid transparent", marginBottom:-1, whiteSpace:"nowrap" }),
     btn:    (p, dis) => ({ fontSize:13, padding:"7px 14px", borderRadius:8, cursor:dis?"not-allowed":"pointer", border:`0.5px solid ${brdS}`, opacity:dis?0.5:1, background:p?txt:"transparent", color:p?bg:txt, fontWeight:400 }),
     inp:    { fontSize:13, padding:"7px 10px", borderRadius:8, border:`0.5px solid ${brdS}`, background:bg, color:txt, width:"100%", boxSizing:"border-box" },
-    pre:    { fontSize:13, lineHeight:1.75, color:txt, whiteSpace:"pre-wrap", margin:0, fontFamily:"inherit" },
     lbl:    { fontSize:11, color:txtT, marginBottom:4, display:"block" },
     statBg: { background:bgS, borderRadius:8, padding:"10px 14px" },
-    roiBadge:(s) => ({ fontSize:11, padding:"2px 8px", borderRadius:10, background:roiBg(s), color:roiColor(s), fontWeight:500 }),
+    roiBadge:(s) => pill(roiColor(s)),
     stamp:  { fontSize:11, color:txtT },
   };
-  const trackBadge = (id) => {
-    const c = tracks[id]?.color || { bg:bgS, text:txtS, border:brdS };
-    return { fontSize:11, padding:"2px 8px", borderRadius:10, background:c.bg, color:c.text, fontWeight:500, whiteSpace:"nowrap" };
+  // A muted accent pill: a low-opacity tint of the accent color rather than a
+  // saturated pastel fill, so it reads softly in both light and dark mode.
+  const pill = (accent, extra) => ({
+    fontSize:11, padding:"2px 8px", borderRadius:10, fontWeight:500, whiteSpace:"nowrap",
+    background:hexA(accent, dark ? 0.20 : 0.11),
+    color:accent,
+    border:`0.5px solid ${hexA(accent, dark ? 0.34 : 0.24)}`,
+    ...extra,
+  });
+  const trackBadge = (id) => pill(tracks[id]?.color?.border || brdS);
+
+  // Markdown renderer for P620-generated content (briefings, frontier,
+  // advisory, tutor answers). Styled to match the app's typography instead
+  // of dumping raw markdown source into a <pre>.
+  const linkC = dark ? "#7FB2FF" : "#185FA5";
+  const mdComponents = {
+    h1: (p) => <div style={{ fontSize:16, fontWeight:600, margin:"14px 0 6px" }} {...p} />,
+    h2: (p) => <div style={{ fontSize:14, fontWeight:600, margin:"14px 0 5px" }} {...p} />,
+    h3: (p) => <div style={{ fontSize:13, fontWeight:600, color:txtS, margin:"12px 0 4px" }} {...p} />,
+    p:  (p) => <p style={{ margin:"0 0 8px", lineHeight:1.7 }} {...p} />,
+    ul: (p) => <ul style={{ margin:"0 0 8px", paddingLeft:18, lineHeight:1.7 }} {...p} />,
+    ol: (p) => <ol style={{ margin:"0 0 8px", paddingLeft:18, lineHeight:1.7 }} {...p} />,
+    li: (p) => <li style={{ margin:"2px 0" }} {...p} />,
+    strong: (p) => <strong style={{ fontWeight:600 }} {...p} />,
+    a:  (p) => <a style={{ color:linkC, textDecoration:"underline", textUnderlineOffset:2, wordBreak:"break-word" }} target="_blank" rel="noreferrer" {...p} />,
+    hr: () => <hr style={{ border:"none", borderTop:`0.5px solid ${brd}`, margin:"12px 0" }} />,
+    code: (p) => <code style={{ fontFamily:"ui-monospace,SFMono-Regular,Menlo,monospace", fontSize:12, background:bgS, padding:"1px 5px", borderRadius:4 }} {...p} />,
+    blockquote: (p) => <blockquote style={{ margin:"0 0 8px", paddingLeft:12, borderLeft:`2px solid ${brd}`, color:txtS }} {...p} />,
+    table: (p) => <div style={{ overflowX:"auto", marginBottom:8 }}><table style={{ borderCollapse:"collapse", fontSize:12.5 }} {...p} /></div>,
+    th: (p) => <th style={{ textAlign:"left", padding:"4px 8px", borderBottom:`1px solid ${brdS}`, fontWeight:600 }} {...p} />,
+    td: (p) => <td style={{ padding:"4px 8px", borderBottom:`0.5px solid ${brd}` }} {...p} />,
   };
+  const Md = ({ children }) => (
+    <div style={{ fontSize:13, color:txt }}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>{children}</ReactMarkdown>
+    </div>
+  );
 
   const TABS = ["today","tutor","frontier","advisory","coverage","log","roadmap"];
 
@@ -143,7 +186,7 @@ export default function App() {
         </div>
         <div style={S.stamp}>{item?.generated_at ? `Updated ${fmtTs(item.generated_at)} · P620` : "Awaiting P620"}</div>
       </div>
-      {item?.content ? <pre style={S.pre}>{item.content}</pre> : <div style={{ fontSize:13, color:txtT }}>{empty}</div>}
+      {item?.content ? <Md>{item.content}</Md> : <div style={{ fontSize:13, color:txtT }}>{empty}</div>}
     </div>
   );
 
@@ -264,7 +307,7 @@ export default function App() {
                 <span style={{ ...S.stamp, whiteSpace:"nowrap" }}>{fmtDate(item.date)}</span>
               </div>
               {item.answer
-                ? <pre style={{ ...S.pre, borderTop:`0.5px solid ${brd}`, paddingTop:10 }}>{item.answer}</pre>
+                ? <div style={{ borderTop:`0.5px solid ${brd}`, paddingTop:10 }}><Md>{item.answer}</Md></div>
                 : <div style={{ fontSize:12, color:"#BA7517" }}>⏳ Pending — P620 will answer on its next hourly run.</div>}
               {item.answer && item.answered_at && <div style={{ ...S.stamp, marginTop:8 }}>Answered {fmtTs(item.answered_at)} · P620</div>}
             </div>
@@ -344,7 +387,7 @@ export default function App() {
                   {skills.map(sk => {
                     const c = COV[covOf(covMap, id, sk)];
                     return (
-                      <span key={sk} style={{ fontSize:12, padding:"4px 9px", borderRadius:8, background:c.bg, color:c.text, border:`0.5px solid ${c.border}` }}>
+                      <span key={sk} style={{ fontSize:12, padding:"4px 9px", borderRadius:8, background:hexA(c.dot, dark?0.18:0.11), color:dark?c.dot:c.text, border:`0.5px solid ${hexA(c.dot, dark?0.32:0.24)}` }}>
                         {sk}
                       </span>
                     );
@@ -395,7 +438,7 @@ export default function App() {
                     <div style={{ flex:1 }}>
                       <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4, flexWrap:"wrap" }}>
                         <span style={{ fontSize:11, color:txtT, minWidth:54 }}>Month {mo.n}</span>
-                        {active && <span style={{ fontSize:11, background:c.bg, color:c.text, padding:"1px 7px", borderRadius:10, fontWeight:500 }}>active</span>}
+                        {active && <span style={pill(c.border, { padding:"1px 7px" })}>active</span>}
                       </div>
                       <div style={{ fontSize:14, fontWeight:500, marginBottom:4 }}>{mo.title}</div>
                       <div style={{ fontSize:12, color:txtS, lineHeight:1.55 }}>{mo.focus}</div>
