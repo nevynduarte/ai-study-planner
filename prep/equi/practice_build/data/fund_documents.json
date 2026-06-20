@@ -1,0 +1,44 @@
+[
+  {
+    "doc_id": "doc_001",
+    "fund_name": "Meridian Growth Partners III",
+    "doc_type": "Quarterly Letter",
+    "doc_date": "2026-04-15",
+    "content": "Meridian Growth Partners III delivered a net return of 4.2% for Q1 2026, bringing trailing twelve-month net performance to 14.8%. The fund's allocation to enterprise software remained the largest single-sector exposure at 31% of NAV. We added one new platform investment during the quarter, a vertical SaaS business serving the logistics sector, deployed at a 9.5x forward revenue multiple. Realized proceeds during the quarter totaled $42M from the partial exit of a prior portfolio company. We expect deployment pace to remain steady through the remainder of 2026, with approximately $180M of dry powder remaining in the fund."
+  },
+  {
+    "doc_id": "doc_002",
+    "fund_name": "Meridian Growth Partners III",
+    "doc_type": "Quarterly Letter",
+    "doc_date": "2026-01-20",
+    "content": "For Q4 2025, Meridian Growth Partners III posted a net return of 2.1%, with full-year 2025 net performance of 11.3%. The fund completed two new platform investments in the quarter, both in healthcare technology. One legacy portfolio company experienced a markdown of approximately 15% following a slower-than-expected customer renewal cycle, which management attributes to elongated enterprise sales cycles industry-wide rather than company-specific execution issues."
+  },
+  {
+    "doc_id": "doc_003",
+    "fund_name": "Brightwater Credit Opportunities Fund II",
+    "doc_type": "Due Diligence Memo",
+    "doc_date": "2026-02-10",
+    "content": "Brightwater Credit Opportunities Fund II targets a net IRR of 10-12% through direct lending to lower-middle-market companies, primarily senior secured first-lien positions. The investment team, led by a former Antares Capital managing director, has an average of 14 years of direct lending experience. Historical loss rates across the prior fund (Brightwater Credit Opportunities Fund I) have been below 1% cumulative, materially better than the lower-middle-market direct lending benchmark of approximately 2.5%. Fund II is targeting a final close of $650M, with $410M committed as of this memo's date. Management fee is 1.5% on committed capital during the investment period, stepping down to invested capital thereafter; carried interest is 15% with a 6% preferred return and full catch-up."
+  },
+  {
+    "doc_id": "doc_004",
+    "fund_name": "Brightwater Credit Opportunities Fund II",
+    "doc_type": "Quarterly Letter",
+    "doc_date": "2026-04-22",
+    "content": "Brightwater Credit Opportunities Fund II generated a net return of 2.8% for Q1 2026, consistent with the fund's targeted yield profile. The portfolio remains fully invested across 34 borrowers with an average position size of 2.1% of fund NAV, supporting diversification objectives. There were no defaults or material credit events during the quarter. Weighted average portfolio yield stood at 11.4% gross, with the team maintaining disciplined underwriting standards amid increased competition for quality lower-middle-market lending opportunities."
+  },
+  {
+    "doc_id": "doc_005",
+    "fund_name": "Northgate Real Assets Fund I",
+    "doc_type": "Quarterly Letter",
+    "doc_date": "2026-04-10",
+    "content": "Northgate Real Assets Fund I returned 1.9% net for Q1 2026, driven primarily by stabilized industrial and logistics holdings in secondary markets across the Sun Belt. Occupancy across the portfolio averaged 94.2%, up from 92.8% in the prior quarter. The fund completed one acquisition during the quarter, a 340,000 square foot distribution facility outside Phoenix, AZ, acquired at a 6.8% going-in cap rate. Leverage across the portfolio remains conservative at 48% loan-to-value."
+  },
+  {
+    "doc_id": "doc_006",
+    "fund_name": "Northgate Real Assets Fund I",
+    "doc_type": "Due Diligence Memo",
+    "doc_date": "2025-11-05",
+    "content": "Northgate Real Assets Fund I targets a net IRR of 9-11% and a 1.6-1.8x net multiple over a projected 7-year hold period, focused on industrial, logistics, and selectively multifamily assets in secondary Sun Belt markets. The general partner team has deployed over $1.2B across three prior vintage funds with a weighted average realized net IRR of 13.1%. Fund I has a target size of $400M, with a $25M GP commitment. Investors should note the strategy carries meaningful exposure to regional industrial vacancy trends and e-commerce-driven demand, which has moderated somewhat from 2021-2022 peak absorption rates."
+  }
+]

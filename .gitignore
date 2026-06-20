@@ -8,3 +8,7 @@ logs/*.log
 config/smtp.local.json
 config/notify.local.json
 .wrangler/
+
+# one-off interview-prep source archive (extracted into prep/)
+files(*).zip
+.prep_tmp/

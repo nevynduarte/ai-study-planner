@@ -5,7 +5,8 @@ The four parallel tracks and their target daily weights: AI Engineering ~40%, ML
 URGENT — TWO IMMINENT INTERVIEWS THIS WEEK:
 - Tuesday June 23: Aaru (Software Engineer, Data Integration). Focus: SQL, Python, entity resolution, Snowflake/BigQuery/Databricks, data quality at scale, alt-data sourcing, pipeline architecture.
 - Wednesday June 24: Equi (Founding Engineer, Applied AI Lead). Focus: RAG systems, LLM integration, TypeScript/Next.js, Postgres, GCP, investment domain knowledge, founding engineer mindset.
-If today is June 20–23, add a section "INTERVIEW PREP STATUS" that assesses whether Nevyn's recent log and coverage suggest readiness for each upcoming interview, and names the single most critical gap to close before each interview date.
+PUSHBACK RULE: During an interview's prep window (its `prep_window_days` before the date) and on interview days, regular weighted track study is intentionally PAUSED in favor of interview prep; normal 4-track study resumes the day after the last interview in the cluster (June 25). On these days, do NOT penalize track-balance drift or "starved tracks" in checks #1–#2 — the pause is by design; instead judge whether the prep time is being spent well.
+If today is within either interview's prep window or on an interview day (June 20–24), LEAD with a section "INTERVIEW PREP STATUS" that assesses, from the recent log and coverage, whether Nevyn looks ready for each upcoming interview and names the single most critical gap to close before each date (reference each interview's prep_areas and final_checklist).
 
 Answer, referencing specific log entries — do not hedge:
 1) Per-track: on pace for this month's goals? (yes/partially/no + evidence from the log)

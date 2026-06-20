@@ -53,9 +53,18 @@ export default function App() {
   const [logTr, setLogTr] = useState(""); const [logN, setLogN] = useState(""); const [logMsg, setLogMsg] = useState("");
   // Tutor question form
   const [q, setQ] = useState(""); const [asking, setAsking] = useState(false); const [askMsg, setAskMsg] = useState("");
-  // Interview prep — accordion state
+  // Interview prep — accordion + on-demand full-guide fetch
   const [expandedAreas, setExpandedAreas] = useState(new Set());
   const toggleArea = (key) => setExpandedAreas(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
+  const [guideOpen, setGuideOpen] = useState({});  // id -> bool
+  const [guideMd,   setGuideMd]   = useState({});  // id -> markdown string
+  const openGuide = async (iv) => {
+    setGuideOpen(p => ({ ...p, [iv.id]: !p[iv.id] }));
+    if (guideMd[iv.id] === undefined && iv.guide_md) {
+      try { const r = await fetch(iv.guide_md); const t = await r.text(); setGuideMd(p => ({ ...p, [iv.id]: t })); }
+      catch { setGuideMd(p => ({ ...p, [iv.id]: "_Could not load the full guide._" })); }
+    }
+  };
 
   const load = useCallback(async () => {
     try {
@@ -97,6 +106,42 @@ export default function App() {
   const weekHrs = weekLog.reduce((s, e) => s + Number(e.hours), 0);
   const weekHrsByTrack = (id) => weekLog.filter(e => e.track === id).reduce((s, e) => s + Number(e.hours), 0);
   const startDays = status.started_date ? Math.max(1, Math.round((now - new Date(status.started_date + "T12:00:00")) / 864e5) + 1) : null;
+
+  // ─── Interview scheduling: prep windows + study pushback ──────────
+  // When an interview is within its prep window, the day is "prep" or
+  // "interview" — regular track study is deferred and resumes the day after
+  // the last interview in the contiguous cluster.
+  const DAY_MS = 864e5;
+  const startOfDay = (d) => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+  const daysBetween = (a,b) => Math.round((startOfDay(b) - startOfDay(a)) / DAY_MS);
+  const today0 = startOfDay(now);
+  const interviews = (cur?.interviews || [])
+    .map(iv => ({ ...iv, _date: new Date(iv.date + "T09:00:00") }))
+    .sort((a,b) => a._date - b._date);
+
+  const classifyDay = (d) => {
+    const day0 = startOfDay(typeof d === "string" ? new Date(d + "T12:00:00") : d);
+    for (const iv of interviews) if (daysBetween(day0, iv._date) === 0) return { type:"interview", iv };
+    for (const iv of interviews) {
+      const lead = daysBetween(day0, iv._date);            // >0 → day0 is before the interview
+      if (lead > 0 && lead <= (iv.prep_window_days || 3)) return { type:"prep", iv };
+    }
+    return { type:"study" };
+  };
+  // Day after the last interview in the cluster the given interview belongs to.
+  const resumeDateFor = (iv) => {
+    if (!iv) return null;
+    let last = iv;
+    for (const c of interviews)
+      if (c._date > last._date && daysBetween(last._date, c._date) <= (last.prep_window_days || 3)) last = c;
+    const r = new Date(last._date); r.setDate(r.getDate() + 1); r.setHours(0,0,0,0); return r;
+  };
+  const upcomingIvs = interviews.filter(iv => daysBetween(today0, iv._date) >= 0);
+  const nextIv      = upcomingIvs[0] || null;
+  const todayClass  = classifyDay(today0);
+  const focusMode   = todayClass.type === "interview" || todayClass.type === "prep";
+  const focusIv     = todayClass.iv || nextIv;
+  const resumeDate  = focusMode ? resumeDateFor(focusIv) : null;
 
   async function logSession() {
     if (!logT || !logH || parseFloat(logH) <= 0) { setLogMsg("Enter topic and hours."); return; }
@@ -201,7 +246,7 @@ export default function App() {
     </div>
   );
 
-  const TABS = ["interviews","today","tutor","frontier","advisory","coverage","log","roadmap"];
+  const TABS = ["interviews","today","calendar","tutor","frontier","advisory","coverage","log","roadmap"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
@@ -286,6 +331,22 @@ export default function App() {
                 <div style={{ padding:"0 1.125rem 1.125rem" }}>
                   <div style={{ fontSize:12, color:txtS, lineHeight:1.65, marginBottom:14, paddingBottom:14, borderBottom:`0.5px solid ${brd}` }}>{iv.about}</div>
 
+                  {/* Expected rounds */}
+                  {iv.rounds?.length > 0 && (
+                    <div style={{ marginBottom:14 }}>
+                      <div style={{ ...S.lbl, marginBottom:6 }}>Expected rounds</div>
+                      {iv.rounds.map(r => (
+                        <div key={r.n} style={{ display:"flex", gap:10, padding:"6px 0", borderBottom:`0.5px solid ${brd}` }}>
+                          <span style={{ ...chip({ width:22, height:22, padding:0, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }) }}>{r.n}</span>
+                          <div style={{ minWidth:0 }}>
+                            <div style={{ fontSize:12.5, fontWeight:600 }}>{r.title}</div>
+                            <div style={{ fontSize:11.5, color:txtS, lineHeight:1.5, marginTop:1 }}>{r.format}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Tech stack */}
                   <div style={{ marginBottom:14 }}>
                     <div style={{ ...S.lbl, marginBottom:6 }}>Stack to know</div>
@@ -346,7 +407,7 @@ export default function App() {
                   </div>
 
                   {/* Likely questions */}
-                  <div>
+                  <div style={{ marginBottom:14 }}>
                     <div style={{ ...S.lbl, marginBottom:6 }}>Likely questions — prep answers out loud</div>
                     <div style={{ background:bgS, borderRadius:10, padding:"9px 12px" }}>
                       {(iv.likely_questions||[]).map((lq,i) => (
@@ -356,6 +417,91 @@ export default function App() {
                       ))}
                     </div>
                   </div>
+
+                  {/* Behavioral story bank */}
+                  {iv.behavioral_bank?.length > 0 && (
+                    <div style={{ marginBottom:14 }}>
+                      <div style={{ ...S.lbl, marginBottom:6 }}>Story bank — prompt → which story to tell</div>
+                      {iv.behavioral_bank.map((b,i) => (
+                        <div key={i} style={{ padding:"6px 0", borderBottom:i<iv.behavioral_bank.length-1?`0.5px solid ${brd}`:"none" }}>
+                          <div style={{ fontSize:12, fontWeight:600 }}>{b.prompt}</div>
+                          <div style={{ fontSize:11.5, color:txtS, lineHeight:1.55, marginTop:2, paddingLeft:10, borderLeft:`2px solid ${ac}` }}>{b.story}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Questions to ask them */}
+                  {iv.questions_to_ask?.length > 0 && (
+                    <div style={{ marginBottom:14 }}>
+                      <div style={{ ...S.lbl, marginBottom:6 }}>Questions to ask them</div>
+                      {iv.questions_to_ask.map((qa,i) => (
+                        <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.55, display:"flex", gap:8, borderBottom:i<iv.questions_to_ask.length-1?`0.5px solid ${brd}`:"none" }}>
+                          <span style={pill(ac, { flexShrink:0, alignSelf:"flex-start" })}>{qa.round}</span><span>{qa.q}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Domain terms (Equi) */}
+                  {iv.domain_terms?.length > 0 && (
+                    <div style={{ marginBottom:14 }}>
+                      <div style={{ ...S.lbl, marginBottom:6 }}>Domain terms — know these cold</div>
+                      <div style={{ background:hexA(ac, dark?0.08:0.05), border:`0.5px solid ${hexA(ac, dark?0.2:0.14)}`, borderRadius:10, padding:"9px 12px" }}>
+                        {iv.domain_terms.map((dt,i) => (
+                          <div key={i} style={{ fontSize:12, color:txtS, padding:"4px 0", lineHeight:1.55, borderBottom:i<iv.domain_terms.length-1?`0.5px solid ${brd}`:"none" }}>
+                            <strong style={{ color:txt }}>{dt.term}</strong> — {dt.def}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Practice materials */}
+                  {iv.practice?.length > 0 && (
+                    <div style={{ marginBottom:14 }}>
+                      <div style={{ ...S.lbl, marginBottom:6 }}>Practice — build cold, timed</div>
+                      {iv.practice.map((p,i) => (
+                        <div key={i} style={{ border:`0.5px solid ${brd}`, borderRadius:10, padding:"9px 12px", marginBottom:6 }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", marginBottom:3 }}>
+                            <span style={{ fontSize:12.5, fontWeight:600 }}>{p.title}</span>
+                            <span style={pill(ac, { padding:"1px 7px" })}>{p.type}</span>
+                          </div>
+                          <div style={{ fontSize:11.5, color:txtS, lineHeight:1.55 }}>{p.desc}</div>
+                          {p.path && <div style={{ fontSize:11, color:txtT, marginTop:4, fontFamily:"ui-monospace,SFMono-Regular,Menlo,monospace" }}>{p.path}</div>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Final checklist */}
+                  {iv.final_checklist?.length > 0 && (
+                    <div style={{ marginBottom:14 }}>
+                      <div style={{ ...S.lbl, marginBottom:6 }}>Final checklist</div>
+                      {iv.final_checklist.map((c,i) => (
+                        <div key={i} style={{ fontSize:12, color:txtS, padding:"3px 0", lineHeight:1.5 }}>
+                          <span style={{ marginRight:8, color:ac }}>☐</span>{c}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Full guide — fetched on demand */}
+                  {iv.guide_md && (
+                    <div>
+                      <button onClick={() => openGuide(iv)} style={{ ...S.btn(false), width:"100%", textAlign:"left", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                        <span>📖 Full prep guide</span>
+                        <span style={{ color:txtT, transform:guideOpen[iv.id]?"rotate(180deg)":"none", transition:"transform .15s" }}>▾</span>
+                      </button>
+                      {guideOpen[iv.id] && (
+                        <div style={{ marginTop:10, paddingTop:10, borderTop:`0.5px solid ${brd}` }}>
+                          {guideMd[iv.id] === undefined
+                            ? <div style={{ fontSize:12, color:txtT }}>Loading…</div>
+                            : <Md>{guideMd[iv.id]}</Md>}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
               </div>
@@ -367,6 +513,44 @@ export default function App() {
       {/* ── TODAY ── */}
       {tab==="today" && (
         <div>
+          {/* Interview-focus mode — regular study deferred until interviews clear */}
+          {focusMode && focusIv && (() => {
+            const isDay = todayClass.type === "interview";
+            const fc = isDay ? "#A32D2D" : "#BA7517";
+            const lead = daysBetween(today0, focusIv._date);
+            const resumeStr = resumeDate && resumeDate.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+            return (
+              <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${fc}`, marginBottom:"0.875rem" }}>
+                <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(fc, dark?0.2:0.11)}, transparent 72%)` }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12, flexWrap:"wrap" }}>
+                    <div style={{ minWidth:0 }}>
+                      <div style={{ fontSize:14.5, fontWeight:700, display:"flex", alignItems:"center", gap:8 }}>
+                        <span>🎯</span>{isDay ? `Interview day — ${focusIv.company}` : "Interview focus mode"}
+                      </div>
+                      <div style={{ fontSize:12.5, color:txtS, marginTop:5, lineHeight:1.6 }}>
+                        Regular study is paused. {isDay
+                          ? `Today is your ${focusIv.company} interview (${focusIv.role}).`
+                          : <>{focusIv.company} is in <strong style={{ color:fc }}>{lead} day{lead===1?"":"s"}</strong> ({focusIv.day}, {fmtDate(focusIv.date)}) — give the day to prep.</>}
+                        {resumeStr && ` Normal track study resumes ${resumeStr}.`}
+                      </div>
+                    </div>
+                    <button style={S.btn(true)} onClick={() => setTab("interviews")}>Open prep →</button>
+                  </div>
+                  {focusIv.final_checklist?.length > 0 && (
+                    <div style={{ marginTop:13 }}>
+                      <div style={{ ...S.lbl, marginBottom:6 }}>Final prep checklist — {focusIv.company}</div>
+                      {focusIv.final_checklist.map((c,i) => (
+                        <div key={i} style={{ fontSize:12, color:txtS, padding:"3px 0", lineHeight:1.5 }}>
+                          <span style={{ marginRight:8, color:fc }}>☐</span>{c}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:"0.875rem" }}>
             {[["Total hours",totalHrs,"#1D9E75"],["This week",`${weekHrs}`,"#185FA5","/ 70h"],["Day",startDays||"—","#7F77DD"],["Sessions",log.length,"#BA7517"]].map(([l,v,ac,suf]) => (
               <div key={l} style={{ borderRadius:12, padding:"11px 13px", background:`linear-gradient(155deg, ${hexA(ac, dark?0.22:0.13)}, ${hexA(ac, dark?0.08:0.05)})`, border:`0.5px solid ${hexA(ac, dark?0.34:0.22)}` }}>
@@ -391,18 +575,23 @@ export default function App() {
           </div>
 
           {/* Per-track focus + weekly balance */}
-          <div style={{ fontSize:11, color:txtT, margin:"0 0 8px 2px" }}>Active tracks — weights, current month, this week's balance</div>
+          <div style={{ fontSize:11, color:txtT, margin:"0 0 8px 2px" }}>
+            {focusMode
+              ? `Tracks paused for interview prep${resumeDate ? ` — resume ${resumeDate.toLocaleDateString("en-US",{ weekday:"short", month:"short", day:"numeric" })}` : ""}`
+              : "Active tracks — weights, current month, this week's balance"}
+          </div>
           {trackIds.map(id => {
             const t = tracks[id]; const md = monthData(id);
             const target = (t.weight || 0) * 70; const got = weekHrsByTrack(id);
             const pct = target ? Math.min(100, got/target*100) : 0;
             const ac = t.color?.border || brdS;
             return (
-              <div key={id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
+              <div key={id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, opacity:focusMode?0.6:1 }}>
                 <div style={{ display:"flex", gap:14, padding:"0.875rem 1rem", background:`linear-gradient(120deg, ${hexA(ac, dark?0.16:0.09)}, transparent 75%)` }}>
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, flexWrap:"wrap" }}>
                       <span style={trackBadge(id)}>{t.name}</span>
+                      {focusMode && <span style={pill("#888888", { padding:"1px 7px" })}>⏸ paused</span>}
                       <span style={{ fontSize:11, color:txtT }}>{Math.round((t.weight||0)*100)}% · ~{t.daily_hours}h/day</span>
                       <span style={{ ...S.roiBadge(md.roi||75), marginLeft:"auto" }}>ROI {md.roi||"—"}</span>
                     </div>
@@ -443,6 +632,64 @@ export default function App() {
               {logMsg && <span style={{ fontSize:12, color:"#3B6D11" }}>{logMsg}</span>}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ── CALENDAR (next 30 days) ── */}
+      {tab==="calendar" && (
+        <div>
+          <div style={S.card}>
+            <div style={{ fontSize:13, fontWeight:600, marginBottom:4 }}>Next 30 days</div>
+            <div style={{ fontSize:12, color:txtT, lineHeight:1.55 }}>Study &amp; work plan at a glance — interview prep blocks defer regular track study until the interviews clear, then it resumes.</div>
+            <div style={{ display:"flex", gap:16, flexWrap:"wrap", marginTop:11 }}>
+              <span style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:txtS }}><span style={{ width:11, height:11, borderRadius:3, background:"#A32D2D", display:"inline-block" }} />Interview</span>
+              <span style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:txtS }}><span style={{ width:11, height:11, borderRadius:3, background:"#BA7517", display:"inline-block" }} />Prep</span>
+              <span style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:txtS }}>
+                <span style={{ display:"flex", gap:2 }}>{trackIds.map(id => <span key={id} style={{ width:6, height:6, borderRadius:2, background:tracks[id]?.color?.border||brdS, display:"inline-block" }} />)}</span>
+                Study ({trackIds.length || 4} tracks)
+              </span>
+            </div>
+          </div>
+
+          {(() => {
+            const ivAccent = (iv) => ({ aaru:"#1D9E75", equi:"#7F77DD" })[iv?.id] || "#185FA5";
+            const gridStart = new Date(today0); gridStart.setDate(gridStart.getDate() - gridStart.getDay());
+            const end = new Date(today0); end.setDate(end.getDate() + 29);
+            const cells = Math.ceil((daysBetween(gridStart, end) + 1) / 7) * 7;
+            const dows = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+            return (
+              <div style={S.card}>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:5 }}>
+                  {dows.map(d => <div key={d} style={{ fontSize:10, color:txtT, textAlign:"center", paddingBottom:3, fontWeight:500 }}>{d}</div>)}
+                  {Array.from({ length:cells }).map((_, i) => {
+                    const d = new Date(gridStart); d.setDate(d.getDate() + i); d.setHours(0,0,0,0);
+                    const off = daysBetween(today0, d);
+                    const inRange = off >= 0 && off <= 29;
+                    const isToday = off === 0;
+                    const dnum = d.getDate();
+                    if (!inRange) return <div key={i} style={{ minHeight:60, borderRadius:8, border:`0.5px solid ${brd}`, opacity:0.3, padding:"5px 7px", fontSize:11, color:txtT }}>{dnum}</div>;
+                    const cls = classifyDay(d);
+                    let cellBg = bg, cellBrd = brd, body = null, numColor = txtS;
+                    if (cls.type === "interview") {
+                      const a = ivAccent(cls.iv); cellBg = a; cellBrd = a; numColor = "#fff";
+                      body = <div style={{ marginTop:3 }}><div style={{ fontSize:11, fontWeight:700, color:"#fff" }}>🎯 {cls.iv.company}</div><div style={{ fontSize:9.5, color:"rgba(255,255,255,0.85)" }}>interview</div></div>;
+                    } else if (cls.type === "prep") {
+                      const a = ivAccent(cls.iv); cellBg = hexA(a, dark?0.2:0.12); cellBrd = hexA(a, dark?0.34:0.24);
+                      body = <div style={{ marginTop:3 }}><div style={{ fontSize:10.5, fontWeight:700, color:dark?a:"#8a5a10" }}>Prep</div><div style={{ fontSize:9.5, color:txtT }}>{cls.iv.company}</div></div>;
+                    } else {
+                      body = <div style={{ marginTop:6, display:"flex", gap:3, flexWrap:"wrap" }}>{trackIds.map(id => <span key={id} style={{ width:7, height:7, borderRadius:2, background:tracks[id]?.color?.border||brdS }} />)}</div>;
+                    }
+                    return (
+                      <div key={i} style={{ minHeight:60, borderRadius:8, border:`${isToday?1.5:0.5}px solid ${isToday?txt:cellBrd}`, background:cellBg, padding:"5px 7px", overflow:"hidden" }}>
+                        <div style={{ fontSize:11, fontWeight:isToday?700:500, color:numColor }}>{dnum}{isToday ? " · today" : ""}</div>
+                        {body}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
 

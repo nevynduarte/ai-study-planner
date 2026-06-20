@@ -23,7 +23,14 @@
       "location": "NYC (in-person, 5 days/week)",
       "salary": "$250K–$450K + equity",
       "about": "Predictive intelligence platform — AI agents simulate entire human populations at scale for geopolitical strategy, product innovation, and marketing. Data Integration is the foundation that powers all simulations.",
-      "stack": ["Python", "SQL", "Snowflake / BigQuery / Databricks", "APIs", "Flat files / Cloud Storage", "dbt / Airflow"],
+      "stack": [
+        "Python",
+        "SQL",
+        "Snowflake / BigQuery / Databricks",
+        "APIs",
+        "Flat files / Cloud Storage",
+        "dbt / Airflow"
+      ],
       "your_strengths": [
         "M Science / Jefferies: processed large-scale alt-data for quant equity signals — entity resolution across fragmented vendor identifiers was core to the job",
         "Bridges AI CTO: built production data pipelines end-to-end with quality monitoring, docs, and ownership",
@@ -107,6 +114,98 @@
         "How do you think about privacy and compliance when integrating third-party data?",
         "How have you handled schema changes without breaking downstream consumers?",
         "What's your mental model for debugging a pipeline that's silently producing wrong data?"
+      ],
+      "prep_window_days": 3,
+      "guide_md": "/prep/aaru-guide.md",
+      "rounds": [
+        {
+          "n": 1,
+          "title": "Recruiter / Hiring Screen",
+          "format": "Lead with M Science alt-data (satellite, job postings, POS) -> Bridges AI Valorem pipeline. Have 60s answers cold."
+        },
+        {
+          "n": 2,
+          "title": "Technical Take-Home or Live Data Exercise",
+          "format": "Multi-source CSV/JSON with overlapping, inconsistent entities: clean, join, dedupe, flag quality. Reuse the 9-section skeleton."
+        },
+        {
+          "n": 3,
+          "title": "System Design / Architecture",
+          "format": "Design a pipeline to ingest a new 3rd-party source and integrate it with existing population data at >100TB. Medallion, idempotency, lineage."
+        },
+        {
+          "n": 4,
+          "title": "Behavioral",
+          "format": "Filters for urgency, intellectual honesty, ownership, frontier curiosity. STAR but compressed to ~90s."
+        }
+      ],
+      "questions_to_ask": [
+        {
+          "round": "Screen",
+          "q": "How does the data integration team's work plug into the simulation/agent layer day to day - once-and-done pipelines per partner, or a standardized ingestion framework over time?"
+        },
+        {
+          "round": "Technical",
+          "q": "When you onboard a brand-new third-party data source, what does your validation process look like before it's trusted enough to feed a simulation?"
+        },
+        {
+          "round": "Final",
+          "q": "With the Series A and partners like Accenture and EY depending on simulation accuracy, how has the bar for data quality/governance changed as you've scaled?"
+        },
+        {
+          "round": "Anytime",
+          "q": "What's the messiest data source you've had to integrate so far, and what made it hard?"
+        }
+      ],
+      "behavioral_bank": [
+        {
+          "prompt": "Integrate messy, untrustworthy data under time pressure.",
+          "story": "Woodline take-home (mixed date formats) or M Science Industrials alt-data - pick the one you can speak to with the most technical depth live."
+        },
+        {
+          "prompt": "Own something end-to-end with minimal oversight.",
+          "story": "Bridges AI Valorem build - 13-service architecture, you as CTO, no one to defer to."
+        },
+        {
+          "prompt": "A decision made with incomplete information.",
+          "story": "A Valorem architecture call or the home-lab LiteLLM routing decision - frame as calculated, reversible, fast."
+        },
+        {
+          "prompt": "Handling disagreement about technical approach.",
+          "story": "A real Bridges AI co-founder disagreement or a CU Boulder group project - concrete, resolution-focused."
+        },
+        {
+          "prompt": "Why data integration, why Aaru, why now?",
+          "story": "M Science (alt data as a research lens) -> Bridges AI (you build the pipelines) -> genuine interest in agent-based population simulation as the next frontier."
+        }
+      ],
+      "final_checklist": [
+        "Re-read the Part 3 take-home framework the morning of any take-home",
+        "Practice the entity-resolution notebook end-to-end, timed",
+        "Rehearse the 5 behavioral stories out loud, 90s each",
+        "Have 3 questions ready, tailored to who you're meeting",
+        "Review Aaru's EY and Accenture case studies for fresh, specific language",
+        "Know your M Science and Valorem data-quality stories cold"
+      ],
+      "practice": [
+        {
+          "title": "Entity-resolution take-home",
+          "type": "notebook",
+          "desc": "Timed 9-section skeleton: inspect -> quality log -> entity resolution -> schema harmonization -> join -> validation -> summary, over panel + survey data.",
+          "path": "prep/aaru/practice_takehome.ipynb"
+        },
+        {
+          "title": "Reference solution",
+          "type": "notebook",
+          "desc": "Open only after attempting it cold under a timer.",
+          "path": "prep/aaru/practice_takehome_SOLUTION.ipynb"
+        },
+        {
+          "title": "Synthetic data + generator",
+          "type": "data",
+          "desc": "panel_data.csv + survey_data.csv (same population, two sources) and generate_data.py.",
+          "path": "prep/aaru/"
+        }
       ]
     },
     {
@@ -118,7 +217,13 @@
       "location": "NYC (hybrid)",
       "salary": "Senior founding engineer comp + equity",
       "about": "Investment management firm — institutional-quality alternative investments (fund of funds). Builds white-label fund of funds products for multi-family offices and advisory firms. AUM scaling rapidly. You'd be the first/lead engineer building AI systems for manager selection, portfolio construction, and investment workflow automation.",
-      "stack": ["TypeScript", "Next.js", "Python", "Postgres", "GCP (Cloud Run, BigQuery, Cloud Storage)"],
+      "stack": [
+        "TypeScript",
+        "Next.js",
+        "Python",
+        "Postgres",
+        "GCP (Cloud Run, BigQuery, Cloud Storage)"
+      ],
       "your_strengths": [
         "RAG systems and LLM workflows (strong): directly maps to their AI engineering needs — parsing fund docs, building investment intelligence",
         "Agentic systems: investment workflow automation (due diligence, monitoring, reporting) is exactly what they need",
@@ -208,6 +313,115 @@
         "Walk me through something you built in TypeScript / Next.js.",
         "How would you automate the due diligence workflow for manager selection — what would the AI pipeline look like?",
         "What's the hardest technical problem you've solved?"
+      ],
+      "prep_window_days": 3,
+      "guide_md": "/prep/equi-guide.md",
+      "rounds": [
+        {
+          "n": 1,
+          "title": "Recruiter / Hiring Screen",
+          "format": "Founding-engineer continuity (Bridges AI CTO). Why investing genuinely interests you. 90s solo full-stack walkthrough (Houston Mobile Mixology)."
+        },
+        {
+          "n": 2,
+          "title": "Live Coding / Pairing",
+          "format": "Build a small Next.js + FastAPI feature live, narrating tradeoffs - or a take-home. Server vs Client Components, Zod at boundaries, Pydantic, async."
+        },
+        {
+          "n": 3,
+          "title": "System Design - RAG over investment data",
+          "format": "NL Q&A over fund letters / DD memos with accurate, cited, traceable answers. Highest-leverage thing to prep deeply."
+        },
+        {
+          "n": 4,
+          "title": "System Design - Full-stack / multi-tenant white-label",
+          "format": "Design the white-label fund-of-funds product: multi-tenancy (RLS vs tenant_id), RBAC, partner APIs, GCP (Cloud Run / Cloud SQL / Cloud Storage)."
+        },
+        {
+          "n": 5,
+          "title": "Behavioral & Founder Round",
+          "format": "Product-Minded / High Autonomy / Bias Toward Action. Do they want to build with you for years; do you genuinely love investing."
+        }
+      ],
+      "questions_to_ask": [
+        {
+          "round": "Screen",
+          "q": "How is the engineering function structured today - am I the first technical hire, or joining a very small existing team?"
+        },
+        {
+          "round": "Technical",
+          "q": "What does the current investment data pipeline look like today - mostly manual analyst work the AI tooling would augment first, or existing infrastructure I'd be extending?"
+        },
+        {
+          "round": "System design",
+          "q": "For the white-label product - how much customization do individual MFO/RIA partners need versus a single shared platform experience?"
+        },
+        {
+          "round": "Founder",
+          "q": "With the new LOI and more expected, how do you think about the engineering org's shape over the next 12-18 months - when does 'small and flat' start needing structure?"
+        }
+      ],
+      "behavioral_bank": [
+        {
+          "prompt": "Shipped something with incomplete information. (Bias Toward Action)",
+          "story": "A fast architecture decision at Bridges AI or your home-lab LiteLLM routing - calculated, reversible, iterated quickly."
+        },
+        {
+          "prompt": "Challenged a product or technical assumption. (Product-Minded)",
+          "story": "A Bridges AI client instance (Valorem or Houston Mobile Mixology) where you pushed back on scope/approach with data."
+        },
+        {
+          "prompt": "Owned something end-to-end with no one to defer to. (High Autonomy)",
+          "story": "Bridges AI CTO broadly, or the Houston Mobile Mixology two-part build for a real client, solo."
+        },
+        {
+          "prompt": "Why investing? Why now?",
+          "story": "M Science quant equity research -> Jefferies -> alt data moving from research curiosity to decision input; now build the engineering infrastructure at a platform level."
+        },
+        {
+          "prompt": "Where do you see your career in 2-3 years?",
+          "story": "Match their arc: hands-on building now, growing into leading a small flat team as the platform scales, while staying technical."
+        }
+      ],
+      "final_checklist": [
+        "Rebuild the RAG architecture explanation out loud, twice, without notes",
+        "Walk through the practice full-stack build end to end",
+        "Rehearse the 5 behavioral stories mapped to Product-Minded / Autonomy / Bias Toward Action",
+        "Know fund-of-funds, MFO, LOI, manager selection cold",
+        "Have a genuine, specific answer for why investing - not 'fintech is interesting'",
+        "Prepare 3-4 tailored questions per round"
+      ],
+      "domain_terms": [
+        {
+          "term": "Fund-of-funds",
+          "def": "A fund that invests in other funds (managers) rather than directly in securities - Equi's core white-label product."
+        },
+        {
+          "term": "Multi-family office (MFO)",
+          "def": "A firm managing wealth for several HNW families, often needing alt-investment access they can't source alone - Equi's client base."
+        },
+        {
+          "term": "LOI (Letter of Intent)",
+          "def": "Non-binding agreement signaling a deal is moving forward - Equi's growth narrative is LOI-driven right now."
+        },
+        {
+          "term": "Manager selection / due diligence",
+          "def": "Evaluating which fund managers to allocate capital to - the human expertise the AI tooling augments."
+        }
+      ],
+      "practice": [
+        {
+          "title": "Fund-research RAG app (practice build)",
+          "type": "fullstack",
+          "desc": "FastAPI + Next.js + citation-grounded RAG over synthetic fund docs. Rebuild from memory while narrating, then compare to the reference.",
+          "path": "prep/equi/practice_build/"
+        },
+        {
+          "title": "5 timed extension exercises",
+          "type": "exercises",
+          "desc": "Hybrid retrieval, numeric-verification guardrail, /summary endpoint, multi-tenancy, eval set - 30-45 min each, no reference solution.",
+          "path": "prep/equi/practice_build/README.md"
+        }
       ]
     }
   ],
