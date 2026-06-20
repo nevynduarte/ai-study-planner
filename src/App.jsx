@@ -127,8 +127,8 @@ export default function App() {
   const brdS = dark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.18)";
 
   const S = {
-    card:   { background:bg, border:`0.5px solid ${brd}`, borderRadius:12, padding:"1rem 1.125rem", marginBottom:"0.75rem" },
-    tab:    (a) => ({ fontSize:13, fontWeight:a?500:400, padding:"6px 12px", background:"none", border:"none", cursor:"pointer", color:a?txt:txtT, borderBottom:a?`2px solid ${txt}`:"2px solid transparent", marginBottom:-1, whiteSpace:"nowrap" }),
+    card:   { background:bg, border:`0.5px solid ${brd}`, borderRadius:14, padding:"1rem 1.125rem", marginBottom:"0.75rem", boxShadow:dark?"none":"0 1px 2px rgba(16,24,40,0.04)" },
+    tab:    (a) => ({ fontSize:13, fontWeight:a?600:450, padding:"6px 13px", borderRadius:20, background:a?txt:"transparent", border:"none", cursor:"pointer", color:a?bg:txtT, whiteSpace:"nowrap", transition:"all .15s" }),
     btn:    (p, dis) => ({ fontSize:13, padding:"7px 14px", borderRadius:8, cursor:dis?"not-allowed":"pointer", border:`0.5px solid ${brdS}`, opacity:dis?0.5:1, background:p?txt:"transparent", color:p?bg:txt, fontWeight:400 }),
     inp:    { fontSize:13, padding:"7px 10px", borderRadius:8, border:`0.5px solid ${brdS}`, background:bg, color:txt, width:"100%", boxSizing:"border-box" },
     lbl:    { fontSize:11, color:txtT, marginBottom:4, display:"block" },
@@ -145,7 +145,31 @@ export default function App() {
     border:`0.5px solid ${hexA(accent, dark ? 0.34 : 0.24)}`,
     ...extra,
   });
-  const trackBadge = (id) => pill(tracks[id]?.color?.border || brdS);
+  // Vibrant filled track chip — solid track color, white label. Used wherever
+  // a track needs to read at a glance.
+  const trackBadge = (id) => ({
+    fontSize:11, fontWeight:600, letterSpacing:0.2, padding:"3px 10px", borderRadius:20,
+    color:"#fff", background:tracks[id]?.color?.border || brdS, whiteSpace:"nowrap", display:"inline-block",
+  });
+
+  // Time-aware greeting for the header.
+  const hr = new Date().getHours();
+  const greeting = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
+  const greetIcon = hr < 12 ? "☀️" : hr < 18 ? "🌤️" : "🌙";
+
+  // SVG progress ring — used for per-track weekly balance and overall pace.
+  const Ring = ({ pct, color, size = 46, stroke = 5, label }) => {
+    const r = (size - stroke) / 2, c = 2 * Math.PI * r;
+    const p = Math.max(0, Math.min(100, pct || 0));
+    return (
+      <svg width={size} height={size} style={{ display:"block" }}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={hexA(color, dark?0.22:0.14)} strokeWidth={stroke} />
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"
+          strokeDasharray={c} strokeDashoffset={c*(1-p/100)} transform={`rotate(-90 ${size/2} ${size/2})`} style={{ transition:"stroke-dashoffset .5s ease" }} />
+        <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central" fontSize={size>40?12:10} fontWeight={700} fill={color}>{label ?? Math.round(p)}</text>
+      </svg>
+    );
+  };
 
   // Markdown renderer for P620-generated content (briefings, frontier,
   // advisory, tutor answers). Styled to match the app's typography instead
@@ -177,16 +201,21 @@ export default function App() {
   const TABS = ["today","tutor","frontier","advisory","coverage","log","roadmap"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
-  const ContentCard = ({ title, sub, item, empty }) => (
-    <div style={S.card}>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:10 }}>
-        <div>
-          <div style={{ fontSize:13, fontWeight:500 }}>{title}</div>
-          <div style={S.stamp}>{sub}</div>
+  // `accent` tints the title dot + a soft gradient header strip.
+  const ContentCard = ({ title, sub, item, empty, accent = "#185FA5" }) => (
+    <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${accent}` }}>
+      <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(accent, dark?0.15:0.08)}, transparent 70%)` }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:item?.content?10:6 }}>
+          <div>
+            <div style={{ fontSize:13.5, fontWeight:600, display:"flex", alignItems:"center", gap:7 }}>
+              <span style={{ width:8, height:8, borderRadius:3, background:accent, display:"inline-block" }} />{title}
+            </div>
+            <div style={{ ...S.stamp, marginLeft:15 }}>{sub}</div>
+          </div>
+          <div style={S.stamp}>{item?.generated_at ? `Updated ${fmtTs(item.generated_at)} · P620` : "Awaiting P620"}</div>
         </div>
-        <div style={S.stamp}>{item?.generated_at ? `Updated ${fmtTs(item.generated_at)} · P620` : "Awaiting P620"}</div>
+        {item?.content ? <Md>{item.content}</Md> : <div style={{ fontSize:13, color:txtT, marginLeft:15 }}>{empty}</div>}
       </div>
-      {item?.content ? <Md>{item.content}</Md> : <div style={{ fontSize:13, color:txtT }}>{empty}</div>}
     </div>
   );
 
@@ -196,12 +225,15 @@ export default function App() {
       {/* Header */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"1.25rem" }}>
         <div>
-          <div style={{ fontSize:19, fontWeight:500 }}>Elite Engineering Planner</div>
-          <div style={{ fontSize:12, color:txtT, marginTop:3 }}>
+          <div style={{ fontSize:22, fontWeight:600, letterSpacing:-0.3, display:"flex", alignItems:"center", gap:8 }}>
+            <span>{greetIcon}</span>
+            <span>{greeting}, Nevyn</span>
+          </div>
+          <div style={{ fontSize:12.5, color:txtT, marginTop:4 }}>
             {todayFmt()} · {trackIds.length || 4} parallel tracks{startDays ? ` · Day ${startDays}` : ""}
           </div>
         </div>
-        <button style={{ ...S.btn(false, loading), fontSize:12 }} onClick={load} disabled={loading}>{loading?"…":"Refresh"}</button>
+        <button style={{ ...S.btn(false, loading), fontSize:12 }} onClick={load} disabled={loading}>{loading?"…":"↻ Refresh"}</button>
       </div>
 
       {err && (
@@ -211,7 +243,7 @@ export default function App() {
       )}
 
       {/* Tabs */}
-      <div style={{ display:"flex", gap:2, borderBottom:`0.5px solid ${brd}`, marginBottom:"1.25rem", overflowX:"auto" }}>
+      <div style={{ display:"flex", gap:4, marginBottom:"1.25rem", overflowX:"auto", paddingBottom:2 }}>
         {TABS.map(t => <button key={t} style={S.tab(tab===t)} onClick={() => setTab(t)}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
 
@@ -219,20 +251,26 @@ export default function App() {
       {tab==="today" && (
         <div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:"0.875rem" }}>
-            {[["Total hours",totalHrs],["This week",`${weekHrs}/70`],["Day",startDays||"—"],["Sessions",log.length]].map(([l,v]) => (
-              <div key={l} style={S.statBg}><div style={S.lbl}>{l}</div><div style={{ fontSize:22, fontWeight:500 }}>{v}</div></div>
+            {[["Total hours",totalHrs,"#1D9E75"],["This week",`${weekHrs}`,"#185FA5","/ 70h"],["Day",startDays||"—","#7F77DD"],["Sessions",log.length,"#BA7517"]].map(([l,v,ac,suf]) => (
+              <div key={l} style={{ borderRadius:12, padding:"11px 13px", background:`linear-gradient(155deg, ${hexA(ac, dark?0.22:0.13)}, ${hexA(ac, dark?0.08:0.05)})`, border:`0.5px solid ${hexA(ac, dark?0.34:0.22)}` }}>
+                <div style={{ fontSize:11, color:txtS, marginBottom:3 }}>{l}</div>
+                <div style={{ fontSize:23, fontWeight:700, color:ac, lineHeight:1, letterSpacing:-0.5 }}>{v}<span style={{ fontSize:11, fontWeight:500, color:txtT, marginLeft:3 }}>{suf}</span></div>
+              </div>
             ))}
           </div>
 
-          <div style={{ ...S.card, marginBottom:"0.875rem" }}>
-            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-              <span style={{ fontSize:13, fontWeight:500 }}>Weekly progress</span>
-              <span style={{ fontSize:12, color:txtT }}>{Math.round(weekHrs/70*100)}% of 70h target</span>
+          <div style={{ ...S.card, marginBottom:"0.875rem", display:"flex", alignItems:"center", gap:16 }}>
+            <Ring pct={weekHrs/70*100} color={weekHrs>=70?"#1D9E75":weekHrs>=49?"#185FA5":weekHrs>=28?"#BA7517":"#A32D2D"} size={58} stroke={6} />
+            <div style={{ flex:1 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
+                <span style={{ fontSize:13, fontWeight:600 }}>Weekly progress</span>
+                <span style={{ fontSize:12, color:txtT }}>{weekHrs}h of 70h</span>
+              </div>
+              <div style={{ height:8, borderRadius:5, background:bgS, overflow:"hidden" }}>
+                <div style={{ height:"100%", width:`${Math.min(100,weekHrs/70*100)}%`, borderRadius:5, background:"linear-gradient(90deg, #1D9E75, #185FA5, #7F77DD, #BA7517)" }} />
+              </div>
+              <div style={{ fontSize:12, color:txtT, marginTop:6 }}>{Math.max(0,70-weekHrs).toFixed(1)}h remaining this week</div>
             </div>
-            <div style={{ height:5, borderRadius:3, background:bgS, overflow:"hidden" }}>
-              <div style={{ height:"100%", width:`${Math.min(100,weekHrs/70*100)}%`, background:weekHrs>=70?"#3B6D11":weekHrs>=49?"#185FA5":weekHrs>=28?"#BA7517":"#A32D2D", borderRadius:3 }} />
-            </div>
-            <div style={{ fontSize:12, color:txtT, marginTop:6 }}>{Math.max(0,70-weekHrs).toFixed(1)}h remaining this week</div>
           </div>
 
           {/* Per-track focus + weekly balance */}
@@ -241,21 +279,25 @@ export default function App() {
             const t = tracks[id]; const md = monthData(id);
             const target = (t.weight || 0) * 70; const got = weekHrsByTrack(id);
             const pct = target ? Math.min(100, got/target*100) : 0;
+            const ac = t.color?.border || brdS;
             return (
-              <div key={id} style={{ ...S.card, borderLeft:`3px solid ${t.color?.border||brdS}` }}>
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:6, gap:8 }}>
-                  <div>
-                    <span style={trackBadge(id)}>{t.name}</span>
-                    <span style={{ fontSize:11, color:txtT, marginLeft:8 }}>{Math.round((t.weight||0)*100)}% · ~{t.daily_hours}h/day</span>
+              <div key={id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
+                <div style={{ display:"flex", gap:14, padding:"0.875rem 1rem", background:`linear-gradient(120deg, ${hexA(ac, dark?0.16:0.09)}, transparent 75%)` }}>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, flexWrap:"wrap" }}>
+                      <span style={trackBadge(id)}>{t.name}</span>
+                      <span style={{ fontSize:11, color:txtT }}>{Math.round((t.weight||0)*100)}% · ~{t.daily_hours}h/day</span>
+                      <span style={{ ...S.roiBadge(md.roi||75), marginLeft:"auto" }}>ROI {md.roi||"—"}</span>
+                    </div>
+                    <div style={{ fontSize:13.5, fontWeight:600, marginBottom:2 }}>Month {monthOf(id)} — {md.title}</div>
+                    <div style={{ fontSize:12, color:txtS, lineHeight:1.55 }}>{md.focus}</div>
+                    <div style={{ fontSize:11, color:txtT, marginTop:8 }}>{got.toFixed(1)}h this week · target ~{target.toFixed(1)}h</div>
                   </div>
-                  <span style={S.roiBadge(md.roi||75)}>ROI {md.roi||"—"}</span>
+                  <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
+                    <Ring pct={pct} color={ac} size={50} stroke={5} />
+                    <div style={{ fontSize:9.5, color:txtT, marginTop:4 }}>of target</div>
+                  </div>
                 </div>
-                <div style={{ fontSize:13, fontWeight:500, marginBottom:2 }}>Month {monthOf(id)} — {md.title}</div>
-                <div style={{ fontSize:12, color:txtS, lineHeight:1.55, marginBottom:8 }}>{md.focus}</div>
-                <div style={{ height:4, borderRadius:3, background:bgS, overflow:"hidden" }}>
-                  <div style={{ height:"100%", width:`${pct}%`, background:t.color?.border||"#185FA5", borderRadius:3 }} />
-                </div>
-                <div style={{ fontSize:11, color:txtT, marginTop:5 }}>{got.toFixed(1)}h this week · target ~{target.toFixed(1)}h</div>
               </div>
             );
           })}
@@ -264,6 +306,7 @@ export default function App() {
             title="Today's plan"
             sub="Weighted across all 4 tracks · generated 6am ET"
             item={plan}
+            accent="#1D9E75"
             empty="P620 writes a time-blocked, track-weighted 10-hour plan here every morning at 6am ET."
           />
 
@@ -289,9 +332,11 @@ export default function App() {
       {/* ── TUTOR ── */}
       {tab==="tutor" && (
         <div>
-          <div style={S.card}>
-            <div style={{ fontSize:13, fontWeight:500, marginBottom:4 }}>Ask your tutor</div>
-            <div style={{ ...S.stamp, marginBottom:10 }}>Knows all 4 tracks, your coverage, log, and target roles. P620 answers on its next hourly run.</div>
+          <div style={{ ...S.card, borderLeft:`3px solid #185FA5`, background:`linear-gradient(125deg, ${hexA("#185FA5", dark?0.13:0.07)}, ${bg} 65%)` }}>
+            <div style={{ fontSize:13.5, fontWeight:600, marginBottom:4, display:"flex", alignItems:"center", gap:7 }}>
+              <span style={{ width:8, height:8, borderRadius:3, background:"#185FA5", display:"inline-block" }} />Ask your tutor
+            </div>
+            <div style={{ ...S.stamp, marginBottom:10, marginLeft:15 }}>Knows all 4 tracks, your coverage, log, and target roles. P620 answers on its next hourly run.</div>
             <textarea value={q} onChange={e=>setQ(e.target.value)} placeholder="Type a question across any track…" style={{ ...S.inp, resize:"vertical", minHeight:80, lineHeight:1.6 }} disabled={asking} />
             <div style={{ display:"flex", gap:8, alignItems:"center", marginTop:8 }}>
               <button style={S.btn(true, asking || !q.trim())} onClick={askQuestion} disabled={asking || !q.trim()}>{asking?"Saving…":"Ask →"}</button>
@@ -301,9 +346,9 @@ export default function App() {
 
           {questions.length === 0 && <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No questions yet. Ask your first above.</div>}
           {questions.map(item => (
-            <div key={item.id} style={S.card}>
+            <div key={item.id} style={{ ...S.card, borderLeft:`3px solid ${item.answer ? "#1D9E75" : "#BA7517"}` }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:10, marginBottom:8 }}>
-                <div style={{ fontSize:13, fontWeight:500 }}>{item.question}</div>
+                <div style={{ fontSize:13, fontWeight:600 }}>{item.question}</div>
                 <span style={{ ...S.stamp, whiteSpace:"nowrap" }}>{fmtDate(item.date)}</span>
               </div>
               {item.answer
@@ -322,6 +367,7 @@ export default function App() {
             title="Frontier digest"
             sub="Web search — one finding per track + a wildcard"
             item={frontier}
+            accent="#7F77DD"
             empty="P620 sweeps each track's frontier every morning and writes the digest here."
           />
           <div style={S.card}>
@@ -342,6 +388,7 @@ export default function App() {
             title="Plan health advisory"
             sub="Per-track pace, weight balance, and coverage gaps vs. target roles"
             item={advisory}
+            accent="#BA7517"
             empty="P620 runs a brutally honest multi-track plan-health check nightly (11pm ET) and writes it here. It also advances your coverage matrix."
           />
           <div style={S.card}>
@@ -361,37 +408,47 @@ export default function App() {
       {tab==="coverage" && (
         <div>
           <div style={S.card}>
-            <div style={{ fontSize:13, fontWeight:500, marginBottom:8 }}>Coverage legend</div>
-            <div style={{ display:"flex", gap:14, flexWrap:"wrap" }}>
+            <div style={{ fontSize:13, fontWeight:600, marginBottom:10 }}>Coverage legend</div>
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
               {Object.entries(COV).map(([k,v]) => (
-                <span key={k} style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:txtS }}>
-                  <span style={{ width:11, height:11, borderRadius:3, background:v.dot, display:"inline-block" }} />{k}
+                <span key={k} style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, padding:"4px 10px", borderRadius:20, color:dark?v.dot:v.text, background:hexA(v.dot, dark?0.18:0.11), border:`0.5px solid ${hexA(v.dot, dark?0.32:0.24)}` }}>
+                  <span style={{ fontSize:11 }}>{v.label}</span>{k}
                 </span>
               ))}
             </div>
-            <div style={{ fontSize:12, color:txtT, marginTop:10 }}>The nightly advisory advances these from your study log. This is your map of ground covered vs. remaining.</div>
+            <div style={{ fontSize:12, color:txtT, marginTop:12 }}>The nightly advisory advances these from your study log. This is your map of ground covered vs. remaining.</div>
           </div>
 
           {trackIds.map(id => {
-            const t = tracks[id];
+            const t = tracks[id]; const ac = t.color?.border || brdS;
             const skills = t.skills || [];
             const tally = skills.reduce((a, sk) => { a[covOf(covMap, id, sk)]++; return a; }, { "not-started":0,"learning":0,"built":0,"interview-ready":0 });
             const done = tally.built + tally["interview-ready"];
+            const segs = [["interview-ready",tally["interview-ready"]],["built",tally.built],["learning",tally.learning],["not-started",tally["not-started"]]];
             return (
-              <div key={id} style={{ ...S.card, borderLeft:`3px solid ${t.color?.border||brdS}` }}>
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-                  <span style={trackBadge(id)}>{t.name}</span>
-                  <span style={{ fontSize:11, color:txtT }}>{done}/{skills.length} built+ · {tally.learning} learning</span>
-                </div>
-                <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-                  {skills.map(sk => {
-                    const c = COV[covOf(covMap, id, sk)];
-                    return (
-                      <span key={sk} style={{ fontSize:12, padding:"4px 9px", borderRadius:8, background:hexA(c.dot, dark?0.18:0.11), color:dark?c.dot:c.text, border:`0.5px solid ${hexA(c.dot, dark?0.32:0.24)}` }}>
-                        {sk}
-                      </span>
-                    );
-                  })}
+              <div key={id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
+                <div style={{ padding:"0.875rem 1rem", background:`linear-gradient(120deg, ${hexA(ac, dark?0.16:0.09)}, transparent 75%)` }}>
+                  <div style={{ display:"flex", gap:14, alignItems:"center", marginBottom:12 }}>
+                    <Ring pct={skills.length?done/skills.length*100:0} color={ac} size={48} stroke={5} />
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <span style={trackBadge(id)}>{t.name}</span>
+                      <div style={{ fontSize:11, color:txtT, marginTop:6 }}>{done}/{skills.length} built or interview-ready · {tally.learning} learning</div>
+                      {/* Segmented coverage bar */}
+                      <div style={{ display:"flex", height:6, borderRadius:4, overflow:"hidden", marginTop:7, background:bgS }}>
+                        {segs.map(([k,n]) => n>0 && <div key={k} style={{ width:`${n/skills.length*100}%`, background:COV[k].dot }} />)}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                    {skills.map(sk => {
+                      const c = COV[covOf(covMap, id, sk)];
+                      return (
+                        <span key={sk} style={{ fontSize:12, padding:"4px 9px", borderRadius:8, background:hexA(c.dot, dark?0.2:0.12), color:dark?c.dot:c.text, border:`0.5px solid ${hexA(c.dot, dark?0.34:0.26)}` }}>
+                          {sk}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             );
@@ -404,10 +461,13 @@ export default function App() {
         <div style={S.card}>
           <div style={{ fontSize:13, fontWeight:500, marginBottom:12 }}>Study log — {log.length} sessions · {totalHrs}h total</div>
           {log.length===0 && <div style={{ fontSize:13, color:txtT }}>No sessions yet. Log your first on the Today tab.</div>}
-          {log.map((e,i,arr) => (
-            <div key={i} style={{ display:"flex", gap:10, padding:"8px 0", borderBottom:i<arr.length-1?`0.5px solid ${brd}`:"none" }}>
-              <div style={{ fontSize:11, color:txtT, minWidth:64, paddingTop:1 }}>{fmtDate(e.date)}</div>
-              <div style={{ fontSize:20, fontWeight:500, minWidth:38 }}>{e.hours}<span style={{ fontSize:11, fontWeight:400, color:txtS }}>h</span></div>
+          {log.map((e,i,arr) => {
+            const ac = (e.track && tracks[e.track]?.color?.border) || null;
+            return (
+            <div key={i} style={{ display:"flex", gap:11, padding:"9px 0", borderBottom:i<arr.length-1?`0.5px solid ${brd}`:"none" }}>
+              <div style={{ width:3, borderRadius:3, background:ac || brd, flexShrink:0 }} />
+              <div style={{ fontSize:11, color:txtT, minWidth:60, paddingTop:3 }}>{fmtDate(e.date)}</div>
+              <div style={{ fontSize:20, fontWeight:700, minWidth:38, color:ac || txt, letterSpacing:-0.5 }}>{e.hours}<span style={{ fontSize:11, fontWeight:500, color:txtT }}>h</span></div>
               <div style={{ flex:1 }}>
                 <div style={{ fontSize:13, display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
                   {e.track && tracks[e.track] && <span style={trackBadge(e.track)}>{tracks[e.track].name}</span>}
@@ -416,7 +476,8 @@ export default function App() {
                 {e.notes && <div style={{ fontSize:12, color:txtS, marginTop:2 }}>{e.notes}</div>}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -430,17 +491,21 @@ export default function App() {
               <span style={{ fontSize:12, color:txtT }}>{Math.round((t.weight||0)*100)}% of day · {t.summary}</span>
             </div>
             {(t.months||[]).map(mo => {
+              const ac = t.color?.border || brdS;
               const active = mo.n === monthOf(id);
-              const c = t.color || { bg:bgS, text:txtS, border:brdS };
+              const done = mo.n < monthOf(id);
               return (
-                <div key={mo.n} style={{ ...S.card, marginBottom:"0.5rem", borderColor:active?c.border:brd, borderWidth:active?1.5:0.5 }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+                <div key={mo.n} style={{ ...S.card, marginBottom:"0.5rem", padding:0, overflow:"hidden",
+                    borderLeft:`3px solid ${active?ac:done?hexA(ac,0.5):brd}`, opacity:done?0.62:1 }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", padding:"0.875rem 1rem",
+                      background:active?`linear-gradient(120deg, ${hexA(ac, dark?0.18:0.1)}, transparent 78%)`:"transparent" }}>
                     <div style={{ flex:1 }}>
                       <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4, flexWrap:"wrap" }}>
                         <span style={{ fontSize:11, color:txtT, minWidth:54 }}>Month {mo.n}</span>
-                        {active && <span style={pill(c.border, { padding:"1px 7px" })}>active</span>}
+                        {active && <span style={trackBadge(id)}>active</span>}
+                        {done && <span style={{ fontSize:11, color:ac, fontWeight:600 }}>✓ done</span>}
                       </div>
-                      <div style={{ fontSize:14, fontWeight:500, marginBottom:4 }}>{mo.title}</div>
+                      <div style={{ fontSize:14, fontWeight:600, marginBottom:4 }}>{mo.title}</div>
                       <div style={{ fontSize:12, color:txtS, lineHeight:1.55 }}>{mo.focus}</div>
                     </div>
                     <span style={{ ...S.roiBadge(mo.roi), marginLeft:12, whiteSpace:"nowrap" }}>ROI {mo.roi}</span>
