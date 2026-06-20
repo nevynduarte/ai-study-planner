@@ -9,7 +9,207 @@
   "roles": [
     { "id": "deshaw-ai",  "name": "D.E. Shaw — Applied AI Engineer",        "primary_tracks": ["ai-eng", "ml-eng"],   "note": "Production AI systems + ML engineering rigor." },
     { "id": "deshaw-alt", "name": "D.E. Shaw — Alternative Data Analyst",    "primary_tracks": ["quant", "data-sci"],  "note": "Alt-data sourcing, signal research, statistical rigor." },
-    { "id": "woodline",   "name": "Woodline Partners — Sector Data Analyst", "primary_tracks": ["quant", "data-sci"],  "note": "Sector/fundamental modeling, data analysis, communication." }
+    { "id": "woodline",   "name": "Woodline Partners — Sector Data Analyst", "primary_tracks": ["quant", "data-sci"],  "note": "Sector/fundamental modeling, data analysis, communication." },
+    { "id": "aaru",       "name": "Aaru — Software Engineer, Data Integration", "primary_tracks": ["ml-eng", "data-sci", "quant"], "note": "Data pipelines, entity resolution, large-scale ingestion, alt-data. Interview Tue Jun 23." },
+    { "id": "equi",       "name": "Equi — Founding Engineer, Applied AI Lead",  "primary_tracks": ["ai-eng", "ml-eng"],           "note": "Full-stack AI (RAG, LLM workflows), TypeScript/Next.js, investment domain. Interview Wed Jun 24." }
+  ],
+  "interviews": [
+    {
+      "id": "aaru",
+      "company": "Aaru",
+      "role": "Software Engineer, Data Integration",
+      "date": "2026-06-23",
+      "day": "Tuesday",
+      "location": "NYC (in-person, 5 days/week)",
+      "salary": "$250K–$450K + equity",
+      "about": "Predictive intelligence platform — AI agents simulate entire human populations at scale for geopolitical strategy, product innovation, and marketing. Data Integration is the foundation that powers all simulations.",
+      "stack": ["Python", "SQL", "Snowflake / BigQuery / Databricks", "APIs", "Flat files / Cloud Storage", "dbt / Airflow"],
+      "your_strengths": [
+        "M Science / Jefferies: processed large-scale alt-data for quant equity signals — entity resolution across fragmented vendor identifiers was core to the job",
+        "Bridges AI CTO: built production data pipelines end-to-end with quality monitoring, docs, and ownership",
+        "MS Data Science (GPA 3.84): statistical rigor — sampling biases, imputation, anomaly detection, validation logic",
+        "Strong Python: transformation code, custom parsers, schema harmonization scripts all in your wheelhouse"
+      ],
+      "prep_areas": [
+        {
+          "area": "Entity Resolution & Deduplication",
+          "items": [
+            "Blocking strategies: sorted neighborhood, LSH (MinHash / SimHash), canopy clustering — why blocking is necessary before pairwise comparison",
+            "Similarity metrics: Jaro-Winkler, token-sort ratio, phonetic (Soundex/Metaphone), embedding cosine similarity",
+            "ML-based ER: Splink (probabilistic, Fellegi-Sunter) vs. Dedupe (active-learning); know when to use each",
+            "Scalable ER at 100M+ record scale: push blocking to Snowflake/Spark, pull candidate pairs for scoring",
+            "Handling fragmented / noisy identifiers: composite keys, fuzzy join, cross-walk tables"
+          ]
+        },
+        {
+          "area": "Pipeline Design at Scale (>100 TB)",
+          "items": [
+            "Medallion architecture: Bronze (raw) → Silver (cleaned/deduped) → Gold (aggregated/linked) — articulate trade-offs",
+            "Incremental vs. full-refresh: CDC (change data capture), watermarks, append-only vs. SCD Type 2 for history",
+            "Schema evolution: backward-compatible changes, additive-only column additions, Avro / Iceberg schema registry patterns",
+            "Idempotent + restartable design: write-audit-publish, dead-letter queues, exactly-once semantics",
+            "Partitioning strategy: date partitions for time-series, hash partitions for entity-keyed data"
+          ]
+        },
+        {
+          "area": "SQL Mastery",
+          "items": [
+            "Window functions: LAG/LEAD, RANK/DENSE_RANK, NTILE, running totals with ROWS BETWEEN",
+            "CTEs and recursive CTEs for hierarchical / graph data (org charts, entity hierarchies)",
+            "Lateral joins and UNNEST for nested / array columns (Snowflake VARIANT, BigQuery ARRAY)",
+            "Query optimization: partition pruning, clustering keys in Snowflake, materialized views, EXPLAIN plan reading",
+            "Slowly Changing Dimensions: Type 1 (overwrite), Type 2 (versioned rows), Type 4 (history table)"
+          ]
+        },
+        {
+          "area": "Data Quality & Validation",
+          "items": [
+            "Core DQ dimensions: completeness, uniqueness, timeliness, consistency, referential integrity",
+            "Tooling: Great Expectations / Soda / Pandera — how to write a data contract and gate a pipeline",
+            "Statistical profiling: null rates, value distribution shifts, cardinality drift, Z-score anomaly detection",
+            "Alerting: p95 row-count thresholds, freshness SLAs, PagerDuty / Slack webhook integration",
+            "Documentation: data dictionaries, lineage graphs (dbt docs, OpenLineage), column-level descriptions"
+          ]
+        },
+        {
+          "area": "Platform & Tooling",
+          "items": [
+            "Snowflake: micro-partitions, clustering keys, zero-copy cloning, Streams + Tasks for CDC, COPY INTO",
+            "BigQuery: partitioned/clustered tables, federated queries, INFORMATION_SCHEMA for metadata, slot reservations",
+            "Databricks: Delta Lake (ACID, time-travel), Unity Catalog, Auto Loader for streaming ingestion",
+            "Orchestration: Airflow (DAGs, sensors, XComs) vs. Dagster (assets, software-defined partitions) — know the difference",
+            "dbt: models (staging/intermediate/marts), tests (not_null, unique, relationships), snapshots for SCD2, macros"
+          ]
+        },
+        {
+          "area": "Alt-Data & Privacy",
+          "items": [
+            "Alt-data types: transaction data, clickstream, geospatial / point-of-interest, satellite imagery, NLP (earnings calls, news)",
+            "Sourcing and linkage: CUSIP/ISIN/ticker cross-walks, address normalization, phone/email hashing for identity resolution",
+            "Data licensing: DUAs, redistribution restrictions, derived-data rules — when you can/can't re-share signals",
+            "PII handling: tokenization, SHA-256 hashing, k-anonymity, pseudonymization vs. anonymization",
+            "Bias awareness: survivorship bias in vendor panels, look-ahead bias in point-in-time data, bot-traffic contamination in clickstream"
+          ]
+        }
+      ],
+      "story_beats": [
+        "M Science / Jefferies: 'At M Science, I ingested and cross-linked multiple alt-data vendor feeds to construct quant signals. Entity resolution across fragmented company identifiers — tickers, CIK, CUSIP — was a core daily challenge at scale.'",
+        "Bridges AI: 'As CTO I owned the full data stack — ingestion, cleaning, validation, and docs. I built the pipeline with data quality gates so downstream AI features had reliable inputs.'",
+        "MS Data Science: 'My stats background shapes how I think about data issues — I treat every new dataset with skepticism: what are the sampling biases, what's the missingness pattern, what would break if this feed went stale?'"
+      ],
+      "likely_questions": [
+        "Walk me through a pipeline you built that handled messy, large-scale data.",
+        "How do you approach entity resolution across two datasets with noisy identifiers?",
+        "What does a good data quality framework look like to you?",
+        "How do you decide between full-refresh and incremental ingestion?",
+        "Tell me about a time a data issue caused a downstream problem — how did you catch and fix it?",
+        "What alt-data sources have you worked with and how did you validate them?",
+        "How do you think about privacy and compliance when integrating third-party data?",
+        "How have you handled schema changes without breaking downstream consumers?",
+        "What's your mental model for debugging a pipeline that's silently producing wrong data?"
+      ]
+    },
+    {
+      "id": "equi",
+      "company": "Equi",
+      "role": "Founding Engineer, Applied AI Lead",
+      "date": "2026-06-24",
+      "day": "Wednesday",
+      "location": "NYC (hybrid)",
+      "salary": "Senior founding engineer comp + equity",
+      "about": "Investment management firm — institutional-quality alternative investments (fund of funds). Builds white-label fund of funds products for multi-family offices and advisory firms. AUM scaling rapidly. You'd be the first/lead engineer building AI systems for manager selection, portfolio construction, and investment workflow automation.",
+      "stack": ["TypeScript", "Next.js", "Python", "Postgres", "GCP (Cloud Run, BigQuery, Cloud Storage)"],
+      "your_strengths": [
+        "RAG systems and LLM workflows (strong): directly maps to their AI engineering needs — parsing fund docs, building investment intelligence",
+        "Agentic systems: investment workflow automation (due diligence, monitoring, reporting) is exactly what they need",
+        "Co-Founder/CTO Bridges AI: founding engineer mindset — full ownership from ideation through post-launch; you've been this person before",
+        "M Science / Jefferies quant researcher: genuine, deep investment domain credibility — not a stretch, it's your background",
+        "MS Data Science: rigorous thinking about data quality, modeling, and statistical inference that an investment firm values"
+      ],
+      "prep_areas": [
+        {
+          "area": "RAG Systems Deep Dive",
+          "items": [
+            "Chunking strategies: fixed-size (simple), semantic/sentence (coherent context), hierarchical (summary + detail), proposition-level (for dense factual docs)",
+            "Retrieval: dense (embedding cosine sim), sparse (BM25/TF-IDF), hybrid (RRF fusion) — know when hybrid beats dense-only",
+            "Reranking: cross-encoder models (ms-marco-MiniLM), LLM-as-judge reranking, Cohere Rerank / Jina Reranker",
+            "Metadata filtering + query routing: filter by fund type, date range, manager before retrieval to narrow search space",
+            "Evaluation: RAGAS metrics (faithfulness, context recall, answer relevance, context precision) — run an eval before shipping",
+            "Equi-specific: RAG over PPMs, pitchbooks, SEC filings, performance reports, meeting notes — multi-format, multi-source"
+          ]
+        },
+        {
+          "area": "LLM Integration & Agentic Workflows",
+          "items": [
+            "Structured output extraction: tool use / function calling for reliable JSON, pydantic output schemas",
+            "Parsing multi-format docs: PDF (PyMuPDF/pdfplumber), Excel (openpyxl), email → structured investment data",
+            "Multi-step investment analysis pipelines: search → retrieve → analyze → summarize → recommend",
+            "Prompt engineering for financial tasks: few-shot with domain examples, chain-of-thought for quantitative reasoning",
+            "Streaming responses in Next.js: Vercel AI SDK, ReadableStream, incremental UI updates for long analyses",
+            "Tool use patterns: web search, calculator, document retrieval, code execution for quantitative calculations"
+          ]
+        },
+        {
+          "area": "Full-Stack (TypeScript / Next.js / Python / Postgres)",
+          "items": [
+            "Next.js App Router: server components (async, no client JS), server actions, route handlers, streaming UI with Suspense",
+            "TypeScript: strict mode, discriminated unions, Zod for runtime validation, tRPC for type-safe API",
+            "Auth: NextAuth.js / Clerk — JWT sessions, role-based access for client-facing vs. internal tools",
+            "Postgres: schema design for investment data (funds, managers, NAVs, returns), pgvector for embeddings, indexing strategy",
+            "Python backend: FastAPI or Flask for AI inference endpoints, Pydantic models, async with asyncio",
+            "Design a client-facing portfolio dashboard: how would you structure the schema and API?"
+          ]
+        },
+        {
+          "area": "Data Pipelines for Investment Data",
+          "items": [
+            "Alternative investment data: NAV, performance (monthly/quarterly), attribution, factor exposure, drawdown series",
+            "Fund of funds data flow: manager → sub-fund → aggregate portfolio; handling different reporting formats/cadences",
+            "Data normalization: mapping heterogeneous manager reports to a canonical schema",
+            "GCP pipeline: Cloud Storage (raw docs) → Cloud Run (parsing/ETL jobs) → BigQuery (analytics) → Postgres (ops data)",
+            "dbt on BigQuery for transformation layer; Postgres as the operational database for the web app"
+          ]
+        },
+        {
+          "area": "Investment Domain Knowledge",
+          "items": [
+            "Fund of funds structure: LP/GP, management fee (1-2%), carry (10-20%), hurdle rate, waterfall",
+            "Alternative investment types: hedge funds (L/S equity, macro, credit), PE (buyout, growth, venture), real assets, co-investments",
+            "Manager selection criteria: Sharpe ratio, max drawdown, Sortino, Calmar, factor exposure analysis, style drift detection",
+            "White-label fund products: separate accounts, sub-advised vehicles, how reporting changes at scale",
+            "AUM growth implications: more reporting, more due diligence workflows, more client portals → where AI helps most"
+          ]
+        },
+        {
+          "area": "Product Thinking & Founding Engineer Mindset",
+          "items": [
+            "30/60/90-day plan: Day 1-30 — understand the business deeply, map existing data flows, ship one small high-value AI tool. Day 31-60 — RAG over fund docs live. Day 61-90 — automate one due diligence workflow.",
+            "Prioritization framework: effort × impact matrix; what's reversible (build it fast) vs. irreversible (be careful)",
+            "Technical decision-making under ambiguity: spike → validate assumption → decide; avoid analysis paralysis",
+            "Team building vision: hire generalists early, keep the team small; every engineer ships to prod",
+            "Why keep the team small and flat: speed, ownership, direct feedback loop — matches their stated vision"
+          ]
+        }
+      ],
+      "story_beats": [
+        "Why investing (must be authentic): 'I spent years as a quant equity researcher at M Science / Jefferies, working directly with alt-data to build signals. Investing isn't adjacent to my interests — it's the domain I came from. I left to build AI products, and Equi is where those two worlds converge.'",
+        "Bridges AI CTO: 'I've been the founding engineer before — I set the technical direction, built the infra, shipped features, and hired the first engineers. I know what it means to own everything and build without a safety net.'",
+        "RAG + AI systems: 'At Bridges AI I built RAG pipelines and LLM-powered workflows in production. I can take a fund document corpus and have a working retrieval system running within a day — I've done it before.'",
+        "Full-stack: 'I work across the stack. I don't hand off the frontend to someone else — I design, build, and ship the full product from database schema to UI.'"
+      ],
+      "likely_questions": [
+        "Why investing? What draws you to this domain specifically — be specific.",
+        "Walk me through an AI system you built end-to-end in production.",
+        "How would you approach building a RAG system over our fund documents from scratch?",
+        "What would you build in your first 30 days here?",
+        "How do you think about product decisions as an engineer? Give me an example.",
+        "Tell me about a time you had to make a significant technical decision with limited information.",
+        "How do you think about hiring and team-building as we scale?",
+        "Walk me through something you built in TypeScript / Next.js.",
+        "How would you automate the due diligence workflow for manager selection — what would the AI pipeline look like?",
+        "What's the hardest technical problem you've solved?"
+      ]
+    }
   ],
   "tracks": {
     "ai-eng": {

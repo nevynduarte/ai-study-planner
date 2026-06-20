@@ -42,7 +42,7 @@ const COV = {
 const covOf = (m, track, skill) => m[`${track}:::${skill}`] || "not-started";
 
 export default function App() {
-  const [tab,     setTab]     = useState("today");
+  const [tab,     setTab]     = useState("interviews");
   const [data,    setData]    = useState(null);
   const [cur,     setCur]     = useState(null);   // curriculum.json
   const [loading, setLoading] = useState(true);
@@ -53,6 +53,9 @@ export default function App() {
   const [logTr, setLogTr] = useState(""); const [logN, setLogN] = useState(""); const [logMsg, setLogMsg] = useState("");
   // Tutor question form
   const [q, setQ] = useState(""); const [asking, setAsking] = useState(false); const [askMsg, setAskMsg] = useState("");
+  // Interview prep — accordion state
+  const [expandedAreas, setExpandedAreas] = useState(new Set());
+  const toggleArea = (key) => setExpandedAreas(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
 
   const load = useCallback(async () => {
     try {
@@ -174,7 +177,7 @@ export default function App() {
     </div>
   );
 
-  const TABS = ["today","tutor","frontier","advisory","coverage","log","roadmap"];
+  const TABS = ["interviews","today","tutor","frontier","advisory","coverage","log","roadmap"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   const ContentCard = ({ title, sub, item, empty }) => (
@@ -214,6 +217,115 @@ export default function App() {
       <div style={{ display:"flex", gap:2, borderBottom:`0.5px solid ${brd}`, marginBottom:"1.25rem", overflowX:"auto" }}>
         {TABS.map(t => <button key={t} style={S.tab(tab===t)} onClick={() => setTab(t)}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
+
+      {/* ── INTERVIEWS ── */}
+      {tab==="interviews" && (
+        <div>
+          {!(cur?.interviews?.length) && (
+            <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No interviews loaded from curriculum.json yet.</div>
+          )}
+          {(cur?.interviews || []).map(iv => {
+            const ivDate = new Date(iv.date + "T09:00:00");
+            const daysLeft = Math.ceil((ivDate - new Date()) / 864e5);
+            const urgency = daysLeft <= 1 ? "#A32D2D" : daysLeft <= 2 ? "#BA7517" : "#185FA5";
+            const ivColor = iv.id === "aaru" ? { border:"#1D9E75", bg:"#E1F5EE", text:"#085041" } : { border:"#185FA5", bg:"#E6F1FB", text:"#0C447C" };
+            return (
+              <div key={iv.id} style={{ ...S.card, borderLeft:`3px solid ${ivColor.border}`, marginBottom:"1.5rem" }}>
+
+                {/* header */}
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:10 }}>
+                  <div>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}>
+                      <span style={{ fontSize:17, fontWeight:600 }}>{iv.company}</span>
+                      <span style={pill(ivColor.border)}>{iv.day}</span>
+                    </div>
+                    <div style={{ fontSize:13, color:txtS }}>{iv.role}</div>
+                    <div style={{ fontSize:12, color:txtT, marginTop:2 }}>{iv.location} · {iv.salary}</div>
+                  </div>
+                  <div style={{ textAlign:"right", flexShrink:0, marginLeft:12 }}>
+                    <div style={{ fontSize:26, fontWeight:700, color:urgency, lineHeight:1 }}>{daysLeft > 0 ? daysLeft : 0}<span style={{ fontSize:13, fontWeight:400 }}>d</span></div>
+                    <div style={{ fontSize:11, color:txtT, marginTop:2 }}>{iv.date}</div>
+                  </div>
+                </div>
+
+                <div style={{ fontSize:12, color:txtS, lineHeight:1.65, marginBottom:12, paddingBottom:12, borderBottom:`0.5px solid ${brd}` }}>{iv.about}</div>
+
+                {/* Tech stack */}
+                <div style={{ marginBottom:12 }}>
+                  <div style={{ ...S.lbl, marginBottom:5 }}>Stack to know</div>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                    {(iv.stack||[]).map(s => <span key={s} style={pill(ivColor.border, { fontSize:12 })}>{s}</span>)}
+                  </div>
+                </div>
+
+                {/* Your strengths */}
+                <div style={{ marginBottom:12 }}>
+                  <div style={{ ...S.lbl, marginBottom:5 }}>Your fit — lead with these</div>
+                  <div style={{ background:hexA(ivColor.border, dark?0.08:0.05), borderRadius:8, padding:"8px 10px" }}>
+                    {(iv.your_strengths||[]).map((s,i) => (
+                      <div key={i} style={{ fontSize:12, color:txtS, padding:"3px 0", lineHeight:1.55, borderBottom:i<iv.your_strengths.length-1?`0.5px solid ${brd}`:"none" }}>
+                        ✓ {s}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Story beats */}
+                <div style={{ marginBottom:12 }}>
+                  <div style={{ ...S.lbl, marginBottom:5 }}>Story beats — weave these in</div>
+                  {(iv.story_beats||[]).map((s,i) => (
+                    <div key={i} style={{ fontSize:12, color:txtS, padding:"4px 0 4px 8px", borderLeft:`2px solid ${hexA(ivColor.border, 0.4)}`, marginBottom:4, lineHeight:1.6 }}>
+                      {s}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Prep areas — accordion */}
+                <div style={{ marginBottom:12 }}>
+                  <div style={{ ...S.lbl, marginBottom:5 }}>Prep areas — click to expand</div>
+                  {(iv.prep_areas||[]).map(pa => {
+                    const key = `${iv.id}:${pa.area}`;
+                    const open = expandedAreas.has(key);
+                    return (
+                      <div key={pa.area} style={{ border:`0.5px solid ${open ? ivColor.border : brd}`, borderRadius:8, marginBottom:5, overflow:"hidden" }}>
+                        <button
+                          onClick={() => toggleArea(key)}
+                          style={{ width:"100%", textAlign:"left", padding:"8px 12px", background:open?hexA(ivColor.border,dark?0.12:0.06):"none", border:"none", cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", color:txt }}
+                        >
+                          <span style={{ fontSize:13, fontWeight:500 }}>{pa.area}</span>
+                          <span style={{ fontSize:10, color:txtT, marginLeft:8 }}>{open ? "▲" : "▼"}</span>
+                        </button>
+                        {open && (
+                          <div style={{ padding:"2px 12px 10px", borderTop:`0.5px solid ${brd}` }}>
+                            {(pa.items||[]).map((item,i) => (
+                              <div key={i} style={{ fontSize:12, color:txtS, padding:"4px 0", lineHeight:1.6, borderBottom:i<pa.items.length-1?`0.5px solid ${brd}`:"none" }}>
+                                • {item}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Likely questions */}
+                <div>
+                  <div style={{ ...S.lbl, marginBottom:5 }}>Likely questions — prep answers out loud</div>
+                  <div style={{ background:bgS, borderRadius:8, padding:"8px 10px" }}>
+                    {(iv.likely_questions||[]).map((lq,i) => (
+                      <div key={i} style={{ fontSize:12, color:txtS, padding:"4px 0", lineHeight:1.55, borderBottom:i<iv.likely_questions.length-1?`0.5px solid ${brd}`:"none" }}>
+                        <span style={{ fontWeight:500, color:ivColor.border, marginRight:5 }}>{i+1}.</span>{lq}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* ── TODAY ── */}
       {tab==="today" && (
