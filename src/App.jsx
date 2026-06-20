@@ -42,7 +42,7 @@ const COV = {
 const covOf = (m, track, skill) => m[`${track}:::${skill}`] || "not-started";
 
 export default function App() {
-  const [tab,     setTab]     = useState("today");
+  const [tab,     setTab]     = useState("interviews");
   const [data,    setData]    = useState(null);
   const [cur,     setCur]     = useState(null);   // curriculum.json
   const [loading, setLoading] = useState(true);
@@ -53,6 +53,9 @@ export default function App() {
   const [logTr, setLogTr] = useState(""); const [logN, setLogN] = useState(""); const [logMsg, setLogMsg] = useState("");
   // Tutor question form
   const [q, setQ] = useState(""); const [asking, setAsking] = useState(false); const [askMsg, setAskMsg] = useState("");
+  // Interview prep — accordion state
+  const [expandedAreas, setExpandedAreas] = useState(new Set());
+  const toggleArea = (key) => setExpandedAreas(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
 
   const load = useCallback(async () => {
     try {
@@ -198,7 +201,7 @@ export default function App() {
     </div>
   );
 
-  const TABS = ["today","tutor","frontier","advisory","coverage","log","roadmap"];
+  const TABS = ["interviews","today","tutor","frontier","advisory","coverage","log","roadmap"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
@@ -246,6 +249,120 @@ export default function App() {
       <div style={{ display:"flex", gap:4, marginBottom:"1.25rem", overflowX:"auto", paddingBottom:2 }}>
         {TABS.map(t => <button key={t} style={S.tab(tab===t)} onClick={() => setTab(t)}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
+
+      {/* ── INTERVIEWS ── */}
+      {tab==="interviews" && (
+        <div>
+          {!(cur?.interviews?.length) && (
+            <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No interviews loaded from curriculum.json yet.</div>
+          )}
+          {(cur?.interviews || []).map((iv, idx) => {
+            const ac = ({ aaru:"#1D9E75", equi:"#7F77DD" })[iv.id] || ["#185FA5","#BA7517","#1D9E75","#7F77DD"][idx%4];
+            const ivDate = new Date(iv.date + "T09:00:00");
+            const daysLeft = Math.ceil((ivDate - new Date()) / 864e5);
+            const urgency = daysLeft <= 1 ? "#A32D2D" : daysLeft <= 2 ? "#BA7517" : ac;
+            const chip = (extra) => ({ fontSize:12, fontWeight:600, padding:"3px 10px", borderRadius:20, color:"#fff", background:ac, whiteSpace:"nowrap", display:"inline-block", ...extra });
+            return (
+              <div key={iv.id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, marginBottom:"1.25rem" }}>
+
+                {/* header */}
+                <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(ac, dark?0.18:0.1)}, transparent 72%)` }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12 }}>
+                    <div style={{ minWidth:0 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:9, marginBottom:4, flexWrap:"wrap" }}>
+                        <span style={{ fontSize:18, fontWeight:700, letterSpacing:-0.3 }}>{iv.company}</span>
+                        <span style={chip()}>{iv.day}</span>
+                      </div>
+                      <div style={{ fontSize:13, color:txtS, fontWeight:500 }}>{iv.role}</div>
+                      <div style={{ fontSize:12, color:txtT, marginTop:2 }}>{iv.location} · {iv.salary}</div>
+                    </div>
+                    <div style={{ textAlign:"center", flexShrink:0, padding:"6px 14px", borderRadius:12, background:hexA(urgency, dark?0.2:0.12), border:`0.5px solid ${hexA(urgency, dark?0.34:0.24)}` }}>
+                      <div style={{ fontSize:28, fontWeight:800, color:urgency, lineHeight:1, letterSpacing:-1 }}>{daysLeft > 0 ? daysLeft : 0}<span style={{ fontSize:13, fontWeight:600 }}>d</span></div>
+                      <div style={{ fontSize:10.5, color:txtT, marginTop:3 }}>{fmtDate(iv.date)}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ padding:"0 1.125rem 1.125rem" }}>
+                  <div style={{ fontSize:12, color:txtS, lineHeight:1.65, marginBottom:14, paddingBottom:14, borderBottom:`0.5px solid ${brd}` }}>{iv.about}</div>
+
+                  {/* Tech stack */}
+                  <div style={{ marginBottom:14 }}>
+                    <div style={{ ...S.lbl, marginBottom:6 }}>Stack to know</div>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                      {(iv.stack||[]).map(s => <span key={s} style={pill(ac, { fontSize:12 })}>{s}</span>)}
+                    </div>
+                  </div>
+
+                  {/* Your strengths */}
+                  <div style={{ marginBottom:14 }}>
+                    <div style={{ ...S.lbl, marginBottom:6 }}>Your fit — lead with these</div>
+                    <div style={{ background:hexA(ac, dark?0.1:0.06), border:`0.5px solid ${hexA(ac, dark?0.24:0.16)}`, borderRadius:10, padding:"9px 12px" }}>
+                      {(iv.your_strengths||[]).map((s,i) => (
+                        <div key={i} style={{ fontSize:12, color:txtS, padding:"4px 0", lineHeight:1.55, borderBottom:i<iv.your_strengths.length-1?`0.5px solid ${brd}`:"none" }}>
+                          <span style={{ color:ac, fontWeight:700, marginRight:6 }}>✓</span>{s}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Story beats */}
+                  <div style={{ marginBottom:14 }}>
+                    <div style={{ ...S.lbl, marginBottom:6 }}>Story beats — weave these in</div>
+                    {(iv.story_beats||[]).map((s,i) => (
+                      <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0 5px 10px", borderLeft:`2px solid ${ac}`, marginBottom:5, lineHeight:1.6 }}>
+                        {s}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Prep areas — accordion */}
+                  <div style={{ marginBottom:14 }}>
+                    <div style={{ ...S.lbl, marginBottom:6 }}>Prep areas — click to expand</div>
+                    {(iv.prep_areas||[]).map(pa => {
+                      const key = `${iv.id}:${pa.area}`;
+                      const open = expandedAreas.has(key);
+                      return (
+                        <div key={pa.area} style={{ border:`0.5px solid ${open ? ac : brd}`, borderRadius:10, marginBottom:6, overflow:"hidden", transition:"border-color .15s" }}>
+                          <button
+                            onClick={() => toggleArea(key)}
+                            style={{ width:"100%", textAlign:"left", padding:"9px 13px", background:open?hexA(ac,dark?0.14:0.07):"transparent", border:"none", cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", color:txt }}
+                          >
+                            <span style={{ fontSize:13, fontWeight:600 }}>{pa.area}</span>
+                            <span style={{ fontSize:11, color:open?ac:txtT, marginLeft:8, transform:open?"rotate(180deg)":"none", transition:"transform .15s" }}>▾</span>
+                          </button>
+                          {open && (
+                            <div style={{ padding:"4px 13px 11px", borderTop:`0.5px solid ${brd}` }}>
+                              {(pa.items||[]).map((item,i) => (
+                                <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.6, borderBottom:i<pa.items.length-1?`0.5px solid ${brd}`:"none" }}>
+                                  <span style={{ color:ac, marginRight:6 }}>•</span>{item}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Likely questions */}
+                  <div>
+                    <div style={{ ...S.lbl, marginBottom:6 }}>Likely questions — prep answers out loud</div>
+                    <div style={{ background:bgS, borderRadius:10, padding:"9px 12px" }}>
+                      {(iv.likely_questions||[]).map((lq,i) => (
+                        <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.55, borderBottom:i<iv.likely_questions.length-1?`0.5px solid ${brd}`:"none" }}>
+                          <span style={{ fontWeight:700, color:ac, marginRight:6 }}>{i+1}.</span>{lq}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* ── TODAY ── */}
       {tab==="today" && (

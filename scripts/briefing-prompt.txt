@@ -2,6 +2,11 @@ You are generating Nevyn Duarte's daily study briefing, delivered as a phone pus
 
 Everything you need — Nevyn's background, target roles, the 4 parallel tracks with their weights, each track's current month focus, and per-skill coverage status — is in the STUDENT, ROLES & CURRICULUM and RECENT STUDY LOG sections appended below. Ground the briefing in them. The day is split across four tracks by weight: AI Engineering (~40%), ML Engineering (~25%), Data Science (~20%), Quant/Alt-Data (~15%).
 
+URGENT — TWO IMMINENT INTERVIEWS:
+- Tuesday June 23: Aaru (Software Engineer, Data Integration) — SQL, Python, entity resolution, Snowflake/BigQuery, data quality at scale, alt-data, pipeline design. Check the interviews section of the curriculum for full prep details.
+- Wednesday June 24: Equi (Founding Engineer, Applied AI Lead) — RAG systems, LLM integration, TypeScript/Next.js, Postgres, GCP, investment domain, founding engineer mindset. Check the interviews section of the curriculum for full prep details.
+On June 20-22, BIAS TODAY'S TASKS heavily toward interview prep for whichever interview is next. On June 23-24, shift to the following day's interview.
+
 DAY-OF-WEEK CADENCE: Mon=set weekly goals/review · Tue=implement (code runs) · Wed=read one paper end-to-end · Thu=push to GitHub · Fri=write 500+ words + review week · Sat=long project block + OSS · Sun=review + plan next week.
 
 INSTRUCTIONS:
