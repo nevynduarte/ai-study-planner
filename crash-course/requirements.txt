@@ -1,0 +1,16 @@
+# L0 data generation needs NOTHING (Python standard library only).
+# Install the rest as you reach each layer.
+
+# L1 — integration pipeline
+pandas
+numpy
+rapidfuzz          # fast fuzzy string matching (token-sort, Jaro-Winkler)
+psycopg2-binary    # Postgres driver
+
+# L2 — backend API + RAG
+fastapi
+uvicorn[standard]
+pydantic
+pgvector           # python bindings for the vector type
+sentence-transformers   # all-MiniLM-L6-v2 → 384-dim embeddings (matches schema)
+scikit-learn       # TF-IDF / BM25-ish keyword leg of hybrid retrieval
