@@ -10,16 +10,16 @@
     { "id": "deshaw-ai",  "name": "D.E. Shaw — Applied AI Engineer",        "primary_tracks": ["ai-eng", "ml-eng"],   "note": "Production AI systems + ML engineering rigor." },
     { "id": "deshaw-alt", "name": "D.E. Shaw — Alternative Data Analyst",    "primary_tracks": ["quant", "data-sci"],  "note": "Alt-data sourcing, signal research, statistical rigor." },
     { "id": "woodline",   "name": "Woodline Partners — Sector Data Analyst", "primary_tracks": ["quant", "data-sci"],  "note": "Sector/fundamental modeling, data analysis, communication." },
-    { "id": "aaru",       "name": "Aaru — Software Engineer, Data Integration", "primary_tracks": ["ml-eng", "data-sci", "quant"], "note": "Data pipelines, entity resolution, large-scale ingestion, alt-data. Interview Tue Jun 23." },
-    { "id": "equi",       "name": "Equi — Founding Engineer, Applied AI Lead",  "primary_tracks": ["ai-eng", "ml-eng"],           "note": "Full-stack AI (RAG, LLM workflows), TypeScript/Next.js, investment domain. Interview Wed Jun 24." }
+    { "id": "aaru",       "name": "Aaru — Software Engineer, Data Integration", "primary_tracks": ["ml-eng", "data-sci", "quant"], "note": "Data pipelines, entity resolution, large-scale ingestion, alt-data. Interview Wed Jun 24." },
+    { "id": "equi",       "name": "Equi — Founding Engineer, Applied AI Lead",  "primary_tracks": ["ai-eng", "ml-eng"],           "note": "Full-stack AI (RAG, LLM workflows), TypeScript/Next.js, investment domain. Interview Tue Jun 23." }
   ],
   "interviews": [
     {
       "id": "aaru",
       "company": "Aaru",
       "role": "Software Engineer, Data Integration",
-      "date": "2026-06-23",
-      "day": "Tuesday",
+      "date": "2026-06-24",
+      "day": "Wednesday",
       "location": "NYC (in-person, 5 days/week)",
       "salary": "$250K–$450K + equity",
       "about": "Predictive intelligence platform — AI agents simulate entire human populations at scale for geopolitical strategy, product innovation, and marketing. Data Integration is the foundation that powers all simulations.",
@@ -212,8 +212,8 @@
       "id": "equi",
       "company": "Equi",
       "role": "Founding Engineer, Applied AI Lead",
-      "date": "2026-06-24",
-      "day": "Wednesday",
+      "date": "2026-06-23",
+      "day": "Tuesday",
       "location": "NYC (hybrid)",
       "salary": "Senior founding engineer comp + equity",
       "about": "Investment management firm — institutional-quality alternative investments (fund of funds). Builds white-label fund of funds products for multi-family offices and advisory firms. AUM scaling rapidly. You'd be the first/lead engineer building AI systems for manager selection, portfolio construction, and investment workflow automation.",
