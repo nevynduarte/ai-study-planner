@@ -264,6 +264,21 @@ export default function App() {
   const focusIv     = todayClass.iv || nextIv;
   const resumeDate  = focusMode ? resumeDateFor(focusIv) : null;
 
+  // ─── Crash course: a 2-week intensive sprint that overrides regular track
+  // study. Day N is derived from start_date; covers a 14-day window. ────────
+  const CRASH_AC    = "#0D9488";
+  const crashCourse = cur?.crash_course || null;
+  const crashDays   = crashCourse?.days || [];
+  const crashStart  = crashCourse?.start_date ? startOfDay(new Date(crashCourse.start_date + "T12:00:00")) : null;
+  const crashDayOf  = (d) => {
+    if (!crashStart || !crashDays.length) return null;
+    const n = daysBetween(crashStart, startOfDay(d)) + 1;
+    return n >= 1 && n <= crashDays.length ? (crashDays.find(x => x.n === n) || null) : null;
+  };
+  const crashToday   = crashDayOf(today0);
+  const crashActive  = crashToday != null;
+  const tracksPaused = focusMode || crashActive;
+
   async function logSession() {
     if (!logT || !logH || parseFloat(logH) <= 0) { setLogMsg("Enter topic and hours."); return; }
     try {
@@ -367,7 +382,8 @@ export default function App() {
     </div>
   );
 
-  const TABS = ["interviews","today","calendar","tutor","frontier","advisory","coverage","log","roadmap"];
+  const TAB_LABELS = { "crash-course": "Crash Course" };
+  const TABS = ["interviews","today","crash-course","calendar","tutor","frontier","advisory","coverage","log","roadmap"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
@@ -413,7 +429,7 @@ export default function App() {
 
       {/* Tabs */}
       <div style={{ display:"flex", gap:4, marginBottom:"1.25rem", overflowX:"auto", paddingBottom:2 }}>
-        {TABS.map(t => <button key={t} style={S.tab(tab===t)} onClick={() => setTab(t)}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {TABS.map(t => <button key={t} style={S.tab(tab===t)} onClick={() => setTab(t)}>{TAB_LABELS[t] || (t.charAt(0).toUpperCase()+t.slice(1))}</button>)}
       </div>
 
       {/* ── INTERVIEWS ── */}
@@ -671,6 +687,26 @@ export default function App() {
             );
           })()}
 
+          {/* Crash-course day — the active 2-week sprint */}
+          {crashActive && (
+            <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${CRASH_AC}`, marginBottom:"0.875rem" }}>
+              <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(CRASH_AC, dark?0.2:0.11)}, transparent 72%)` }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12, flexWrap:"wrap" }}>
+                  <div style={{ minWidth:0 }}>
+                    <div style={{ fontSize:14.5, fontWeight:700, display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                      <span>⚡</span>Crash course · Day {crashToday.n} of {crashDays.length}
+                      <span style={pill(CRASH_AC, { padding:"1px 8px" })}>Week {crashToday.week}</span>
+                    </div>
+                    <div style={{ fontSize:13.5, fontWeight:600, marginTop:6 }}>{crashToday.title}</div>
+                    <div style={{ fontSize:12.5, color:txtS, marginTop:4, lineHeight:1.6 }}><strong style={{ color:txt }}>Build:</strong> {crashToday.build}</div>
+                    <div style={{ fontSize:12, color:txtS, marginTop:3, lineHeight:1.6 }}><strong style={{ color:txt }}>Drill:</strong> {crashToday.drill} &nbsp;·&nbsp; <strong style={{ color:txt }}>Done when:</strong> {crashToday.done}</div>
+                  </div>
+                  <button style={S.btn(true)} onClick={() => setTab("crash-course")}>Open plan →</button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:"0.875rem" }}>
             {[["Total hours",totalHrs,"#1D9E75"],["This week",`${weekHrs}`,"#185FA5","/ 70h"],["Day",startDays||"—","#7F77DD"],["Sessions",log.length,"#BA7517"]].map(([l,v,ac,suf]) => (
               <div key={l} style={{ borderRadius:12, padding:"11px 13px", background:`linear-gradient(155deg, ${hexA(ac, dark?0.22:0.13)}, ${hexA(ac, dark?0.08:0.05)})`, border:`0.5px solid ${hexA(ac, dark?0.34:0.22)}` }}>
@@ -698,6 +734,8 @@ export default function App() {
           <div style={{ fontSize:11, color:txtT, margin:"0 0 8px 2px" }}>
             {focusMode
               ? `Tracks paused for interview prep${resumeDate ? ` — resume ${resumeDate.toLocaleDateString("en-US",{ weekday:"short", month:"short", day:"numeric" })}` : ""}`
+              : crashActive
+              ? "Tracks paused — running the 2-week crash course (months-long plan resumes after)"
               : "Active tracks — weights, current month, this week's balance"}
           </div>
           {trackIds.map(id => {
@@ -706,12 +744,12 @@ export default function App() {
             const pct = target ? Math.min(100, got/target*100) : 0;
             const ac = t.color?.border || brdS;
             return (
-              <div key={id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, opacity:focusMode?0.6:1 }}>
+              <div key={id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, opacity:tracksPaused?0.6:1 }}>
                 <div style={{ display:"flex", gap:14, padding:"0.875rem 1rem", background:`linear-gradient(120deg, ${hexA(ac, dark?0.16:0.09)}, transparent 75%)` }}>
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, flexWrap:"wrap" }}>
                       <span style={trackBadge(id)}>{t.name}</span>
-                      {focusMode && <span style={pill("#888888", { padding:"1px 7px" })}>⏸ paused</span>}
+                      {tracksPaused && <span style={pill("#888888", { padding:"1px 7px" })}>⏸ paused</span>}
                       <span style={{ fontSize:11, color:txtT }}>{Math.round((t.weight||0)*100)}% · ~{t.daily_hours}h/day</span>
                       <span style={{ ...S.roiBadge(md.roi||75), marginLeft:"auto" }}>ROI {md.roi||"—"}</span>
                     </div>
@@ -760,10 +798,11 @@ export default function App() {
         <div>
           <div style={S.card}>
             <div style={{ fontSize:13, fontWeight:600, marginBottom:4 }}>Next 30 days</div>
-            <div style={{ fontSize:12, color:txtT, lineHeight:1.55 }}>Study &amp; work plan at a glance — interview prep blocks defer regular track study until the interviews clear, then it resumes.</div>
+            <div style={{ fontSize:12, color:txtT, lineHeight:1.55 }}>Study &amp; work plan at a glance — the 2-week crash course and interview days take priority; regular track study resumes after.</div>
             <div style={{ display:"flex", gap:16, flexWrap:"wrap", marginTop:11 }}>
               <span style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:txtS }}><span style={{ width:11, height:11, borderRadius:3, background:"#A32D2D", display:"inline-block" }} />Interview</span>
               <span style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:txtS }}><span style={{ width:11, height:11, borderRadius:3, background:"#BA7517", display:"inline-block" }} />Prep</span>
+              <span style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:txtS }}><span style={{ width:11, height:11, borderRadius:3, background:"#0D9488", display:"inline-block" }} />Crash course</span>
               <span style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:txtS }}>
                 <span style={{ display:"flex", gap:2 }}>{trackIds.map(id => <span key={id} style={{ width:6, height:6, borderRadius:2, background:tracks[id]?.color?.border||brdS, display:"inline-block" }} />)}</span>
                 Study ({trackIds.length || 4} tracks)
@@ -796,6 +835,9 @@ export default function App() {
                     } else if (cls.type === "prep") {
                       const a = ivAccent(cls.iv); cellBg = hexA(a, dark?0.2:0.12); cellBrd = hexA(a, dark?0.34:0.24);
                       body = <div style={{ marginTop:3 }}><div style={{ fontSize:10.5, fontWeight:700, color:dark?a:"#8a5a10" }}>Prep</div><div style={{ fontSize:9.5, color:txtT }}>{cls.iv.company}</div></div>;
+                    } else if (crashDayOf(d)) {
+                      const cd = crashDayOf(d); cellBg = hexA(CRASH_AC, dark?0.18:0.1); cellBrd = hexA(CRASH_AC, dark?0.34:0.24);
+                      body = <div style={{ marginTop:3 }}><div style={{ fontSize:10.5, fontWeight:700, color:CRASH_AC }}>CC · Day {cd.n}</div><div style={{ fontSize:9, color:txtT, lineHeight:1.25, maxHeight:23, overflow:"hidden" }}>{cd.title}</div></div>;
                     } else {
                       body = <div style={{ marginTop:6, display:"flex", gap:3, flexWrap:"wrap" }}>{trackIds.map(id => <span key={id} style={{ width:7, height:7, borderRadius:2, background:tracks[id]?.color?.border||brdS }} />)}</div>;
                     }
@@ -810,6 +852,71 @@ export default function App() {
               </div>
             );
           })()}
+        </div>
+      )}
+
+      {/* ── CRASH COURSE (2-week intensive) ── */}
+      {tab==="crash-course" && (
+        <div>
+          {!crashCourse && <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No crash course configured in curriculum.json.</div>}
+          {crashCourse && (
+            <>
+              <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${CRASH_AC}` }}>
+                <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(CRASH_AC, dark?0.18:0.1)}, transparent 72%)` }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12, flexWrap:"wrap" }}>
+                    <div style={{ minWidth:0 }}>
+                      <div style={{ fontSize:16, fontWeight:700, letterSpacing:-0.2, display:"flex", alignItems:"center", gap:8 }}><span>⚡</span>{crashCourse.title}</div>
+                      <div style={{ fontSize:12.5, color:txtS, marginTop:5, lineHeight:1.6, maxWidth:580 }}>{crashCourse.summary}</div>
+                      {crashCourse.project && <div style={{ fontSize:11, color:txtT, marginTop:6, fontFamily:"ui-monospace,SFMono-Regular,Menlo,monospace" }}>{crashCourse.project}</div>}
+                    </div>
+                    {crashActive
+                      ? <span style={{ fontSize:12, fontWeight:700, padding:"4px 12px", borderRadius:20, color:"#fff", background:CRASH_AC, whiteSpace:"nowrap" }}>Day {crashToday.n} / {crashDays.length}</span>
+                      : <span style={pill(CRASH_AC)}>{crashStart && today0 < crashStart ? `Starts ${fmtDate(crashCourse.start_date)}` : "Complete"}</span>}
+                  </div>
+                  {crashCourse.pillars?.length > 0 && (
+                    <div style={{ marginTop:13 }}>
+                      <div style={{ ...S.lbl, marginBottom:6 }}>Covers</div>
+                      <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                        {crashCourse.pillars.map((p,i) => <span key={i} style={pill(CRASH_AC, { fontSize:12 })}>{p}</span>)}
+                      </div>
+                    </div>
+                  )}
+                  {crashCourse.not_doing?.length > 0 && (
+                    <div style={{ fontSize:11.5, color:txtT, marginTop:11, lineHeight:1.6 }}>
+                      <strong style={{ color:txtS }}>Not doing:</strong> {crashCourse.not_doing.join(" · ")}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {[1,2].map(wk => (
+                <div key={wk}>
+                  <div style={{ fontSize:11, color:txtT, margin:"14px 0 6px 2px", fontWeight:600, letterSpacing:0.3 }}>WEEK {wk}{wk===1?" — DATA + AI CORE":" — FULL-STACK + DESIGN + PROOF"}</div>
+                  {crashDays.filter(d => d.week === wk).map(d => {
+                    const isToday = crashToday?.n === d.n;
+                    const isPast  = crashActive ? d.n < crashToday.n : (crashStart && today0 >= crashStart);
+                    return (
+                      <div key={d.n} style={{ ...S.card, marginBottom:"0.5rem", padding:0, overflow:"hidden",
+                          borderLeft:`3px solid ${isToday?CRASH_AC:isPast?hexA(CRASH_AC,0.5):brd}`, opacity:isPast && !isToday?0.6:1 }}>
+                        <div style={{ display:"flex", gap:12, padding:"0.8rem 1rem", background:isToday?`linear-gradient(120deg, ${hexA(CRASH_AC, dark?0.18:0.1)}, transparent 78%)`:"transparent" }}>
+                          <div style={{ flexShrink:0, width:30, height:30, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:"#fff", background:isToday?CRASH_AC:hexA(CRASH_AC,0.45) }}>{d.n}</div>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                              <span style={{ fontSize:13.5, fontWeight:600 }}>{d.title}</span>
+                              {isToday && <span style={pill(CRASH_AC, { padding:"1px 7px" })}>today</span>}
+                              {isPast && !isToday && <span style={{ fontSize:11, color:CRASH_AC, fontWeight:600 }}>✓</span>}
+                            </div>
+                            <div style={{ fontSize:12, color:txtS, lineHeight:1.6, marginTop:3 }}><strong style={{ color:txt }}>Build:</strong> {d.build}</div>
+                            <div style={{ fontSize:11.5, color:txtS, lineHeight:1.6, marginTop:2 }}><strong style={{ color:txt }}>Drill:</strong> {d.drill} &nbsp;·&nbsp; <strong style={{ color:txt }}>Done:</strong> {d.done}</div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </>
+          )}
         </div>
       )}
 
