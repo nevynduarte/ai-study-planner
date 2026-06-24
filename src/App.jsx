@@ -468,7 +468,7 @@ export default function App() {
                       <div style={{ fontSize:13, color:txtS, fontWeight:500 }}>{iv.role}</div>
                       <div style={{ fontSize:12, color:txtT, marginTop:2 }}>{iv.location} · {iv.salary}</div>
                     </div>
-                    <div style={{ textAlign:"center", flexShrink:0, padding:"6px 14px", borderRadius:12, background:hexA(urgency, dark?0.2:0.12), border:`0.5px solid ${hexA(urgency, dark?0.34:0.24)}` }}>
+                    <div style={{ textAlign:"center", flexShrink:0, padding:"6px 14px", borderRadius:12, background:hexA(urgency, dark?0.2:0.12), border:`1px solid ${hexA(urgency, dark?0.34:0.24)}` }}>
                       <div style={{ fontSize:28, fontWeight:800, color:urgency, lineHeight:1, letterSpacing:-1 }}>{daysLeft > 0 ? daysLeft : 0}<span style={{ fontSize:13, fontWeight:600 }}>d</span></div>
                       <div style={{ fontSize:10.5, color:txtT, marginTop:3 }}>{fmtDate(iv.date)}</div>
                     </div>
@@ -476,14 +476,14 @@ export default function App() {
                 </div>
 
                 <div style={{ padding:"0 1.125rem 1.125rem" }}>
-                  <div style={{ fontSize:12, color:txtS, lineHeight:1.65, marginBottom:14, paddingBottom:14, borderBottom:`0.5px solid ${brd}` }}>{iv.about}</div>
+                  <div style={{ fontSize:12, color:txtS, lineHeight:1.65, marginBottom:14, paddingBottom:14, borderBottom:`1px solid ${brd}` }}>{iv.about}</div>
 
                   {/* Expected rounds */}
                   {iv.rounds?.length > 0 && (
                     <div style={{ marginBottom:14 }}>
                       <div style={{ ...S.lbl, marginBottom:6 }}>Expected rounds</div>
                       {iv.rounds.map(r => (
-                        <div key={r.n} style={{ display:"flex", gap:10, padding:"6px 0", borderBottom:`0.5px solid ${brd}` }}>
+                        <div key={r.n} style={{ display:"flex", gap:10, padding:"6px 0", borderBottom:`1px solid ${brd}` }}>
                           <span style={{ ...chip({ width:22, height:22, padding:0, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }) }}>{r.n}</span>
                           <div style={{ minWidth:0 }}>
                             <div style={{ fontSize:12.5, fontWeight:600 }}>{r.title}</div>
@@ -505,9 +505,9 @@ export default function App() {
                   {/* Your strengths */}
                   <div style={{ marginBottom:14 }}>
                     <div style={{ ...S.lbl, marginBottom:6 }}>Your fit — lead with these</div>
-                    <div style={{ background:hexA(ac, dark?0.1:0.06), border:`0.5px solid ${hexA(ac, dark?0.24:0.16)}`, borderRadius:10, padding:"9px 12px" }}>
+                    <div style={{ background:hexA(ac, dark?0.1:0.06), border:`1px solid ${hexA(ac, dark?0.24:0.16)}`, borderRadius:10, padding:"9px 12px" }}>
                       {(iv.your_strengths||[]).map((s,i) => (
-                        <div key={i} style={{ fontSize:12, color:txtS, padding:"4px 0", lineHeight:1.55, borderBottom:i<iv.your_strengths.length-1?`0.5px solid ${brd}`:"none" }}>
+                        <div key={i} style={{ fontSize:12, color:txtS, padding:"4px 0", lineHeight:1.55, borderBottom:i<iv.your_strengths.length-1?`1px solid ${brd}`:"none" }}>
                           <span style={{ color:ac, fontWeight:700, marginRight:6 }}>✓</span>{s}
                         </div>
                       ))}
@@ -531,7 +531,7 @@ export default function App() {
                       const key = `${iv.id}:${pa.area}`;
                       const open = expandedAreas.has(key);
                       return (
-                        <div key={pa.area} style={{ border:`0.5px solid ${open ? ac : brd}`, borderRadius:10, marginBottom:6, overflow:"hidden", transition:"border-color .15s" }}>
+                        <div key={pa.area} style={{ border:`1px solid ${open ? ac : brd}`, borderRadius:10, marginBottom:6, overflow:"hidden", transition:"border-color .15s" }}>
                           <button
                             onClick={() => toggleArea(key)}
                             style={{ width:"100%", textAlign:"left", padding:"9px 13px", background:open?hexA(ac,dark?0.14:0.07):"transparent", border:"none", cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", color:txt }}
@@ -540,9 +540,9 @@ export default function App() {
                             <span style={{ fontSize:11, color:open?ac:txtT, marginLeft:8, transform:open?"rotate(180deg)":"none", transition:"transform .15s" }}>▾</span>
                           </button>
                           {open && (
-                            <div style={{ padding:"4px 13px 11px", borderTop:`0.5px solid ${brd}` }}>
+                            <div style={{ padding:"4px 13px 11px", borderTop:`1px solid ${brd}` }}>
                               {(pa.items||[]).map((item,i) => (
-                                <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.6, borderBottom:i<pa.items.length-1?`0.5px solid ${brd}`:"none" }}>
+                                <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.6, borderBottom:i<pa.items.length-1?`1px solid ${brd}`:"none" }}>
                                   <span style={{ color:ac, marginRight:6 }}>•</span>{item}
                                 </div>
                               ))}
@@ -558,7 +558,7 @@ export default function App() {
                     <div style={{ ...S.lbl, marginBottom:6 }}>Likely questions — prep answers out loud</div>
                     <div style={{ background:bgS, borderRadius:10, padding:"9px 12px" }}>
                       {(iv.likely_questions||[]).map((lq,i) => (
-                        <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.55, borderBottom:i<iv.likely_questions.length-1?`0.5px solid ${brd}`:"none" }}>
+                        <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.55, borderBottom:i<iv.likely_questions.length-1?`1px solid ${brd}`:"none" }}>
                           <span style={{ fontWeight:700, color:ac, marginRight:6 }}>{i+1}.</span>{lq}
                         </div>
                       ))}
@@ -570,7 +570,7 @@ export default function App() {
                     <div style={{ marginBottom:14 }}>
                       <div style={{ ...S.lbl, marginBottom:6 }}>Story bank — prompt → which story to tell</div>
                       {iv.behavioral_bank.map((b,i) => (
-                        <div key={i} style={{ padding:"6px 0", borderBottom:i<iv.behavioral_bank.length-1?`0.5px solid ${brd}`:"none" }}>
+                        <div key={i} style={{ padding:"6px 0", borderBottom:i<iv.behavioral_bank.length-1?`1px solid ${brd}`:"none" }}>
                           <div style={{ fontSize:12, fontWeight:600 }}>{b.prompt}</div>
                           <div style={{ fontSize:11.5, color:txtS, lineHeight:1.55, marginTop:2, paddingLeft:10, borderLeft:`2px solid ${ac}` }}>{b.story}</div>
                         </div>
@@ -583,7 +583,7 @@ export default function App() {
                     <div style={{ marginBottom:14 }}>
                       <div style={{ ...S.lbl, marginBottom:6 }}>Questions to ask them</div>
                       {iv.questions_to_ask.map((qa,i) => (
-                        <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.55, display:"flex", gap:8, borderBottom:i<iv.questions_to_ask.length-1?`0.5px solid ${brd}`:"none" }}>
+                        <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.55, display:"flex", gap:8, borderBottom:i<iv.questions_to_ask.length-1?`1px solid ${brd}`:"none" }}>
                           <span style={pill(ac, { flexShrink:0, alignSelf:"flex-start" })}>{qa.round}</span><span>{qa.q}</span>
                         </div>
                       ))}
@@ -594,9 +594,9 @@ export default function App() {
                   {iv.domain_terms?.length > 0 && (
                     <div style={{ marginBottom:14 }}>
                       <div style={{ ...S.lbl, marginBottom:6 }}>Domain terms — know these cold</div>
-                      <div style={{ background:hexA(ac, dark?0.08:0.05), border:`0.5px solid ${hexA(ac, dark?0.2:0.14)}`, borderRadius:10, padding:"9px 12px" }}>
+                      <div style={{ background:hexA(ac, dark?0.08:0.05), border:`1px solid ${hexA(ac, dark?0.2:0.14)}`, borderRadius:10, padding:"9px 12px" }}>
                         {iv.domain_terms.map((dt,i) => (
-                          <div key={i} style={{ fontSize:12, color:txtS, padding:"4px 0", lineHeight:1.55, borderBottom:i<iv.domain_terms.length-1?`0.5px solid ${brd}`:"none" }}>
+                          <div key={i} style={{ fontSize:12, color:txtS, padding:"4px 0", lineHeight:1.55, borderBottom:i<iv.domain_terms.length-1?`1px solid ${brd}`:"none" }}>
                             <strong style={{ color:txt }}>{dt.term}</strong> — {dt.def}
                           </div>
                         ))}
@@ -609,7 +609,7 @@ export default function App() {
                     <div style={{ marginBottom:14 }}>
                       <div style={{ ...S.lbl, marginBottom:6 }}>Practice — build cold, timed</div>
                       {iv.practice.map((p,i) => (
-                        <div key={i} style={{ border:`0.5px solid ${brd}`, borderRadius:10, padding:"9px 12px", marginBottom:6 }}>
+                        <div key={i} style={{ border:`1px solid ${brd}`, borderRadius:10, padding:"9px 12px", marginBottom:6 }}>
                           <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", marginBottom:3 }}>
                             <span style={{ fontSize:12.5, fontWeight:600 }}>{p.title}</span>
                             <span style={pill(ac, { padding:"1px 7px" })}>{p.type}</span>
@@ -637,7 +637,7 @@ export default function App() {
                   {iv.guide_md && (
                     <button onClick={() => openGuide(iv)}
                       style={{ width:"100%", textAlign:"left", display:"flex", justifyContent:"space-between", alignItems:"center", gap:10, cursor:"pointer",
-                        padding:"11px 14px", borderRadius:10, border:`0.5px solid ${hexA(ac, dark?0.34:0.24)}`, background:hexA(ac, dark?0.12:0.07), color:txt }}>
+                        padding:"11px 14px", borderRadius:10, border:`1px solid ${hexA(ac, dark?0.34:0.24)}`, background:hexA(ac, dark?0.12:0.07), color:txt }}>
                       <span style={{ display:"flex", alignItems:"center", gap:9, minWidth:0 }}>
                         <span style={{ fontSize:16 }}>📖</span>
                         <span style={{ minWidth:0 }}>
@@ -719,9 +719,9 @@ export default function App() {
 
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:"0.875rem" }}>
             {[["Total hours",totalHrs,"#1D9E75"],["This week",`${weekHrs}`,"#185FA5","/ 70h"],["Day",startDays||"—","#7F77DD"],["Sessions",log.length,"#BA7517"]].map(([l,v,ac,suf]) => (
-              <div key={l} style={{ borderRadius:12, padding:"11px 13px", background:`linear-gradient(155deg, ${hexA(ac, dark?0.22:0.13)}, ${hexA(ac, dark?0.08:0.05)})`, border:`0.5px solid ${hexA(ac, dark?0.34:0.22)}` }}>
-                <div style={{ fontSize:11, color:txtS, marginBottom:3 }}>{l}</div>
-                <div style={{ fontSize:23, fontWeight:700, color:ac, lineHeight:1, letterSpacing:-0.5 }}>{v}<span style={{ fontSize:11, fontWeight:500, color:txtT, marginLeft:3 }}>{suf}</span></div>
+              <div key={l} style={{ borderRadius:14, padding:"12px 14px", background:`linear-gradient(155deg, ${hexA(ac, dark?0.24:0.14)}, ${hexA(ac, dark?0.08:0.05)})`, border:`1px solid ${hexA(ac, dark?0.34:0.2)}`, boxShadow:shadowCard }}>
+                <div style={{ fontSize:10, color:txtT, marginBottom:4, textTransform:"uppercase", letterSpacing:0.5, fontWeight:600 }}>{l}</div>
+                <div style={{ fontSize:24, fontWeight:800, color:ac, lineHeight:1, letterSpacing:-0.6 }}>{v}<span style={{ fontSize:11, fontWeight:600, color:txtT, marginLeft:3 }}>{suf}</span></div>
               </div>
             ))}
           </div>
@@ -836,7 +836,7 @@ export default function App() {
                     const inRange = off >= 0 && off <= 29;
                     const isToday = off === 0;
                     const dnum = d.getDate();
-                    if (!inRange) return <div key={i} style={{ minHeight:60, borderRadius:8, border:`0.5px solid ${brd}`, opacity:0.3, padding:"5px 7px", fontSize:11, color:txtT }}>{dnum}</div>;
+                    if (!inRange) return <div key={i} style={{ minHeight:60, borderRadius:8, border:`1px solid ${brd}`, opacity:0.3, padding:"5px 7px", fontSize:11, color:txtT }}>{dnum}</div>;
                     const cls = classifyDay(d);
                     let cellBg = surface, cellBrd = brd, body = null, numColor = txtS;
                     if (cls.type === "interview") {
@@ -953,7 +953,7 @@ export default function App() {
                 <span style={{ ...S.stamp, whiteSpace:"nowrap" }}>{fmtDate(item.date)}</span>
               </div>
               {item.answer
-                ? <div style={{ borderTop:`0.5px solid ${brd}`, paddingTop:10 }}><Md>{item.answer}</Md></div>
+                ? <div style={{ borderTop:`1px solid ${brd}`, paddingTop:10 }}><Md>{item.answer}</Md></div>
                 : <div style={{ fontSize:12, color:"#BA7517" }}>⏳ Pending — P620 will answer on its next hourly run.</div>}
               {item.answer && item.answered_at && <div style={{ ...S.stamp, marginTop:8 }}>Answered {fmtTs(item.answered_at)} · P620</div>}
             </div>
@@ -995,7 +995,7 @@ export default function App() {
           <div style={S.card}>
             <div style={{ fontSize:13, fontWeight:500, marginBottom:10 }}>Target roles → tracks</div>
             {(cur?.roles || []).map(r => (
-              <div key={r.id} style={{ display:"flex", justifyContent:"space-between", gap:10, padding:"6px 0", borderBottom:`0.5px solid ${brd}`, flexWrap:"wrap" }}>
+              <div key={r.id} style={{ display:"flex", justifyContent:"space-between", gap:10, padding:"6px 0", borderBottom:`1px solid ${brd}`, flexWrap:"wrap" }}>
                 <span style={{ fontSize:13 }}>{r.name}</span>
                 <span style={{ display:"flex", gap:4, flexWrap:"wrap" }}>{(r.primary_tracks||[]).map(t => <span key={t} style={trackBadge(t)}>{tracks[t]?.name||t}</span>)}</span>
               </div>
@@ -1012,7 +1012,7 @@ export default function App() {
             <div style={{ fontSize:13, fontWeight:600, marginBottom:10 }}>Coverage legend</div>
             <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
               {Object.entries(COV).map(([k,v]) => (
-                <span key={k} style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, padding:"4px 10px", borderRadius:20, color:dark?v.dot:v.text, background:hexA(v.dot, dark?0.18:0.11), border:`0.5px solid ${hexA(v.dot, dark?0.32:0.24)}` }}>
+                <span key={k} style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, padding:"4px 10px", borderRadius:20, color:dark?v.dot:v.text, background:hexA(v.dot, dark?0.18:0.11), border:`1px solid ${hexA(v.dot, dark?0.32:0.24)}` }}>
                   <span style={{ fontSize:11 }}>{v.label}</span>{k}
                 </span>
               ))}
@@ -1044,7 +1044,7 @@ export default function App() {
                     {skills.map(sk => {
                       const c = COV[covOf(covMap, id, sk)];
                       return (
-                        <span key={sk} style={{ fontSize:12, padding:"4px 9px", borderRadius:8, background:hexA(c.dot, dark?0.2:0.12), color:dark?c.dot:c.text, border:`0.5px solid ${hexA(c.dot, dark?0.34:0.26)}` }}>
+                        <span key={sk} style={{ fontSize:12, padding:"4px 9px", borderRadius:8, background:hexA(c.dot, dark?0.2:0.12), color:dark?c.dot:c.text, border:`1px solid ${hexA(c.dot, dark?0.34:0.26)}` }}>
                           {sk}
                         </span>
                       );
@@ -1060,12 +1060,12 @@ export default function App() {
       {/* ── LOG ── */}
       {tab==="log" && (
         <div style={S.card}>
-          <div style={{ fontSize:13, fontWeight:500, marginBottom:12 }}>Study log — {log.length} sessions · {totalHrs}h total</div>
+          <div style={{ fontSize:14, fontWeight:600, marginBottom:14 }}>Study log <span style={{ fontWeight:500, color:txtT }}>— {log.length} sessions · {totalHrs}h total</span></div>
           {log.length===0 && <div style={{ fontSize:13, color:txtT }}>No sessions yet. Log your first on the Today tab.</div>}
           {log.map((e,i,arr) => {
             const ac = (e.track && tracks[e.track]?.color?.border) || null;
             return (
-            <div key={i} style={{ display:"flex", gap:11, padding:"9px 0", borderBottom:i<arr.length-1?`0.5px solid ${brd}`:"none" }}>
+            <div key={i} style={{ display:"flex", gap:11, padding:"9px 0", borderBottom:i<arr.length-1?`1px solid ${brd}`:"none" }}>
               <div style={{ width:3, borderRadius:3, background:ac || brd, flexShrink:0 }} />
               <div style={{ fontSize:11, color:txtT, minWidth:60, paddingTop:3 }}>{fmtDate(e.date)}</div>
               <div style={{ fontSize:20, fontWeight:700, minWidth:38, color:ac || txt, letterSpacing:-0.5 }}>{e.hours}<span style={{ fontSize:11, fontWeight:500, color:txtT }}>h</span></div>
