@@ -29,7 +29,7 @@ pixel-perfect UI. No infra yak-shaving. Depth only where it's tested.
 | 3 | Entity resolution: block→fuzzy→union-find → `gold` | the Aaru skill | score vs `ground_truth` (P/R) |
 | 4 | Dedup + validation + lineage; quarantine bad rows | SQL: ROW_NUMBER, COALESCE | Northgate≠Northgate, bad rows flagged |
 | 5 | FastAPI over `gold`: `/funds`, `/managers` | API + Pydantic | live `/docs` |
-| 6 | RAG `/ask`: chunk + retrieve + citations | the AI-eng skill | answers cite sources |
+| 6 | RAG `/ask`: contextual-retrieval chunks + **structured output** (`instructor`) + citations | structured outputs (the #1 pattern) | typed answers cite sources |
 | 7 | Hybrid + rerank + numeric guardrail; week review | RAG hardening | guardrail catches a wrong number |
 
 ## Week 2 — Full-stack + design + proof
@@ -40,7 +40,7 @@ pixel-perfect UI. No infra yak-shaving. Depth only where it's tested.
 | 10 | Multi-tenancy: `tenant_id` row scoping | RBAC reasoning | 2 partners, disjoint funds |
 | 11 | System-design doc: Aaru "ingest 100TB panel" | pipeline design out loud | 1 page + diagram |
 | 12 | System-design doc: Equi RAG + white-label | RAG design out loud | 1 page + diagram |
-| 13 | Eval set + faithfulness check; lineage trace | "how do you know it's right" | eval prints numbers |
+| 13 | **3-layer evals** (offline CI / online / human) + faithfulness check; lineage | calibrate LLM-judge to humans | eval prints numbers; judge ≥80% agree |
 | 14 | Polish + record yourself narrating both | behavioral story bank | demoable repo + crisp story |
 
 ## Daily rhythm (decide once, ~3 hrs)

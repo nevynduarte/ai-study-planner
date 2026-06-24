@@ -26,14 +26,14 @@
       { "n": 3,  "week": 1, "title": "Entity Resolution", "build": "block → fuzzy → union-find → gold", "drill": "the Aaru core skill", "done": "score vs ground_truth (precision/recall)" },
       { "n": 4,  "week": 1, "title": "Dedup · Validation · Lineage", "build": "Dedup + validate; quarantine bad rows", "drill": "SQL: ROW_NUMBER, COALESCE", "done": "Northgate≠Northgate; bad rows flagged" },
       { "n": 5,  "week": 1, "title": "Backend API", "build": "FastAPI over gold: /funds, /managers", "drill": "API design + Pydantic", "done": "live /docs" },
-      { "n": 6,  "week": 1, "title": "RAG /ask", "build": "Chunk + retrieve + citations", "drill": "the AI-eng core skill", "done": "answers cite sources" },
+      { "n": 6,  "week": 1, "title": "RAG /ask", "build": "Contextual-retrieval chunks + structured-output /ask (instructor) + citations", "drill": "structured outputs (the #1 pattern)", "done": "typed answers cite sources" },
       { "n": 7,  "week": 1, "title": "RAG Hardening + Review", "build": "Hybrid + rerank + numeric guardrail", "drill": "week-1 review", "done": "guardrail catches a wrong number" },
       { "n": 8,  "week": 2, "title": "Next.js Fund Browser", "build": "Server Components + filter UI", "drill": "SSR vs client", "done": "browse funds in browser" },
       { "n": 9,  "week": 2, "title": "Q&A Panel (full slice)", "build": "Client component wired to /ask", "drill": "vertical slice", "done": "browser → API → gold works" },
       { "n": 10, "week": 2, "title": "Multi-Tenancy", "build": "tenant_id row-level scoping", "drill": "RBAC reasoning", "done": "2 partners see disjoint funds" },
       { "n": 11, "week": 2, "title": "System Design — Aaru", "build": "Doc: ingest a 100TB demographic panel", "drill": "pipeline design out loud", "done": "1 page + diagram" },
       { "n": 12, "week": 2, "title": "System Design — Equi", "build": "Doc: RAG + multi-tenant white-label", "drill": "RAG design out loud", "done": "1 page + diagram" },
-      { "n": 13, "week": 2, "title": "Eval + Lineage", "build": "Golden eval set + faithfulness check", "drill": "how do you know it's right", "done": "eval prints numbers" },
+      { "n": 13, "week": 2, "title": "Eval + Lineage", "build": "3-layer evals (offline CI / online / human) + faithfulness check", "drill": "calibrate LLM-judge to humans", "done": "eval prints numbers; judge >=80% agree" },
       { "n": 14, "week": 2, "title": "Polish + Narrate", "build": "Demo polish; record both architectures", "drill": "behavioral story bank", "done": "demoable repo + crisp story" }
     ]
   },
