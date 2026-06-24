@@ -300,39 +300,44 @@ export default function App() {
     finally { setAsking(false); }
   }
 
-  // Styles
-  const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const bg   = dark ? "#121212" : "#ffffff";
-  const bgS  = dark ? "#1e1e1e" : "#f5f5f5";
-  const txt  = dark ? "#e8e8e8" : "#111111";
-  const txtS = dark ? "#aaaaaa" : "#555555";
-  const txtT = dark ? "#666666" : "#888888";
-  const brd  = dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.1)";
-  const brdS = dark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.18)";
+  // ─── Design tokens ───────────────────────────────────────────────────────
+  const dark    = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const bg      = dark ? "#0a0b0e" : "#ffffff";   // app base / contrast reference
+  const surface = dark ? "#16181d" : "#ffffff";   // card surface
+  const surface2= dark ? "#1d2026" : "#f8fafc";   // raised / alt surface
+  const bgS     = dark ? "#22262d" : "#f1f3f6";   // subtle fill (chips, inputs bg)
+  const txt     = dark ? "#e9ebf0" : "#0f1115";
+  const txtS    = dark ? "#a6aebb" : "#49505e";
+  const txtT    = dark ? "#6a7280" : "#8b94a3";
+  const brd     = dark ? "rgba(255,255,255,0.08)" : "rgba(15,17,21,0.08)";
+  const brdS    = dark ? "rgba(255,255,255,0.16)" : "rgba(15,17,21,0.14)";
+  const shadowCard = dark ? "0 1px 2px rgba(0,0,0,0.5)" : "0 1px 2px rgba(16,24,40,0.05), 0 1px 3px rgba(16,24,40,0.04)";
+  const shadowPop  = dark ? "0 18px 50px rgba(0,0,0,0.62)" : "0 18px 46px rgba(16,24,40,0.14)";
+  const FONT = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif";
 
   const S = {
-    card:   { background:bg, border:`0.5px solid ${brd}`, borderRadius:14, padding:"1rem 1.125rem", marginBottom:"0.75rem", boxShadow:dark?"none":"0 1px 2px rgba(16,24,40,0.04)" },
-    tab:    (a) => ({ fontSize:13, fontWeight:a?600:450, padding:"6px 13px", borderRadius:20, background:a?txt:"transparent", border:"none", cursor:"pointer", color:a?bg:txtT, whiteSpace:"nowrap", transition:"all .15s" }),
-    btn:    (p, dis) => ({ fontSize:13, padding:"7px 14px", borderRadius:8, cursor:dis?"not-allowed":"pointer", border:`0.5px solid ${brdS}`, opacity:dis?0.5:1, background:p?txt:"transparent", color:p?bg:txt, fontWeight:400 }),
-    inp:    { fontSize:13, padding:"7px 10px", borderRadius:8, border:`0.5px solid ${brdS}`, background:bg, color:txt, width:"100%", boxSizing:"border-box" },
-    lbl:    { fontSize:11, color:txtT, marginBottom:4, display:"block" },
-    statBg: { background:bgS, borderRadius:8, padding:"10px 14px" },
+    card:   { background:surface, border:`1px solid ${brd}`, borderRadius:16, padding:"1.05rem 1.15rem", marginBottom:"0.8rem", boxShadow:shadowCard },
+    tab:    (a) => ({ fontSize:13, fontWeight:a?600:500, padding:"7px 14px", borderRadius:999, background:a?surface:"transparent", border:"none", cursor:"pointer", color:a?txt:txtT, whiteSpace:"nowrap", transition:"all .15s", boxShadow:a?shadowCard:"none" }),
+    btn:    (p, dis) => ({ fontSize:13, fontWeight:p?600:500, padding:"8px 15px", borderRadius:10, cursor:dis?"not-allowed":"pointer", border:p?"1px solid transparent":`1px solid ${brdS}`, opacity:dis?0.5:1, background:p?txt:"transparent", color:p?bg:txt, transition:"all .15s" }),
+    inp:    { fontSize:13, padding:"9px 12px", borderRadius:10, border:`1px solid ${brdS}`, background:surface, color:txt, width:"100%", boxSizing:"border-box", fontFamily:"inherit" },
+    lbl:    { fontSize:10.5, color:txtT, marginBottom:6, display:"block", textTransform:"uppercase", letterSpacing:0.6, fontWeight:600 },
+    statBg: { background:bgS, borderRadius:10, padding:"10px 14px" },
     roiBadge:(s) => pill(roiColor(s)),
     stamp:  { fontSize:11, color:txtT },
   };
   // A muted accent pill: a low-opacity tint of the accent color rather than a
   // saturated pastel fill, so it reads softly in both light and dark mode.
   const pill = (accent, extra) => ({
-    fontSize:11, padding:"2px 8px", borderRadius:10, fontWeight:500, whiteSpace:"nowrap",
-    background:hexA(accent, dark ? 0.20 : 0.11),
+    fontSize:11, padding:"3px 9px", borderRadius:999, fontWeight:600, whiteSpace:"nowrap", letterSpacing:0.1,
+    background:hexA(accent, dark ? 0.18 : 0.10),
     color:accent,
-    border:`0.5px solid ${hexA(accent, dark ? 0.34 : 0.24)}`,
+    border:`1px solid ${hexA(accent, dark ? 0.32 : 0.22)}`,
     ...extra,
   });
   // Vibrant filled track chip — solid track color, white label. Used wherever
   // a track needs to read at a glance.
   const trackBadge = (id) => ({
-    fontSize:11, fontWeight:600, letterSpacing:0.2, padding:"3px 10px", borderRadius:20,
+    fontSize:11, fontWeight:600, letterSpacing:0.2, padding:"3px 11px", borderRadius:999,
     color:"#fff", background:tracks[id]?.color?.border || brdS, whiteSpace:"nowrap", display:"inline-block",
   });
 
@@ -358,26 +363,28 @@ export default function App() {
   // Markdown renderer for P620-generated content (briefings, frontier,
   // advisory, tutor answers). Styled to match the app's typography instead
   // of dumping raw markdown source into a <pre>.
-  const linkC = dark ? "#7FB2FF" : "#185FA5";
+  const linkC = dark ? "#9DBEFF" : "#1f5fc4";
   const mdComponents = {
-    h1: (p) => <div style={{ fontSize:16, fontWeight:600, margin:"14px 0 6px" }} {...p} />,
-    h2: (p) => <div style={{ fontSize:14, fontWeight:600, margin:"14px 0 5px" }} {...p} />,
-    h3: (p) => <div style={{ fontSize:13, fontWeight:600, color:txtS, margin:"12px 0 4px" }} {...p} />,
-    p:  (p) => <p style={{ margin:"0 0 8px", lineHeight:1.7 }} {...p} />,
-    ul: (p) => <ul style={{ margin:"0 0 8px", paddingLeft:18, lineHeight:1.7 }} {...p} />,
-    ol: (p) => <ol style={{ margin:"0 0 8px", paddingLeft:18, lineHeight:1.7 }} {...p} />,
-    li: (p) => <li style={{ margin:"2px 0" }} {...p} />,
-    strong: (p) => <strong style={{ fontWeight:600 }} {...p} />,
-    a:  (p) => <a style={{ color:linkC, textDecoration:"underline", textUnderlineOffset:2, wordBreak:"break-word" }} target="_blank" rel="noreferrer" {...p} />,
-    hr: () => <hr style={{ border:"none", borderTop:`0.5px solid ${brd}`, margin:"12px 0" }} />,
-    code: (p) => <code style={{ fontFamily:"ui-monospace,SFMono-Regular,Menlo,monospace", fontSize:12, background:bgS, padding:"1px 5px", borderRadius:4 }} {...p} />,
-    blockquote: (p) => <blockquote style={{ margin:"0 0 8px", paddingLeft:12, borderLeft:`2px solid ${brd}`, color:txtS }} {...p} />,
-    table: (p) => <div style={{ overflowX:"auto", marginBottom:8 }}><table style={{ borderCollapse:"collapse", fontSize:12.5 }} {...p} /></div>,
-    th: (p) => <th style={{ textAlign:"left", padding:"4px 8px", borderBottom:`1px solid ${brdS}`, fontWeight:600 }} {...p} />,
-    td: (p) => <td style={{ padding:"4px 8px", borderBottom:`0.5px solid ${brd}` }} {...p} />,
+    h1: (p) => <div style={{ fontSize:17, fontWeight:700, letterSpacing:-0.2, margin:"18px 0 8px", color:txt }} {...p} />,
+    h2: (p) => <div style={{ fontSize:14.5, fontWeight:700, margin:"16px 0 6px", color:txt }} {...p} />,
+    h3: (p) => <div style={{ fontSize:11.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, margin:"14px 0 5px" }} {...p} />,
+    p:  (p) => <p style={{ margin:"0 0 10px", lineHeight:1.72, color:txtS }} {...p} />,
+    ul: (p) => <ul style={{ margin:"0 0 10px", paddingLeft:20, lineHeight:1.7, color:txtS }} {...p} />,
+    ol: (p) => <ol style={{ margin:"0 0 10px", paddingLeft:20, lineHeight:1.7, color:txtS }} {...p} />,
+    li: (p) => <li style={{ margin:"3px 0", paddingLeft:2 }} {...p} />,
+    strong: (p) => <strong style={{ fontWeight:700, color:txt }} {...p} />,
+    em: (p) => <em style={{ fontStyle:"italic" }} {...p} />,
+    a:  (p) => <a style={{ color:linkC, textDecoration:"underline", textUnderlineOffset:2, textDecorationThickness:"1px", wordBreak:"break-word" }} target="_blank" rel="noreferrer" {...p} />,
+    hr: () => <hr style={{ border:"none", borderTop:`1px solid ${brd}`, margin:"14px 0" }} />,
+    code: (p) => <code style={{ fontFamily:"ui-monospace,SFMono-Regular,Menlo,monospace", fontSize:12, background:bgS, padding:"1.5px 6px", borderRadius:6, border:`1px solid ${brd}` }} {...p} />,
+    pre: (p) => <pre style={{ background:bgS, border:`1px solid ${brd}`, borderRadius:10, padding:"12px 14px", overflowX:"auto", fontSize:12, lineHeight:1.55, margin:"0 0 12px" }} {...p} />,
+    blockquote: (p) => <blockquote style={{ margin:"0 0 12px", padding:"4px 0 4px 14px", borderLeft:`3px solid ${hexA(linkC,0.5)}`, color:txtS, fontStyle:"italic" }} {...p} />,
+    table: (p) => <div style={{ overflowX:"auto", margin:"0 0 12px", border:`1px solid ${brd}`, borderRadius:10 }}><table style={{ borderCollapse:"collapse", fontSize:12.5, width:"100%" }} {...p} /></div>,
+    th: (p) => <th style={{ textAlign:"left", padding:"7px 10px", borderBottom:`1px solid ${brdS}`, background:bgS, fontWeight:700, fontSize:11.5 }} {...p} />,
+    td: (p) => <td style={{ padding:"7px 10px", borderBottom:`1px solid ${brd}`, verticalAlign:"top" }} {...p} />,
   };
   const Md = ({ children }) => (
-    <div style={{ fontSize:13, color:txt }}>
+    <div style={{ fontSize:13.5, color:txt }}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>{children}</ReactMarkdown>
     </div>
   );
@@ -405,30 +412,33 @@ export default function App() {
   );
 
   return (
-    <div style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif", maxWidth:820, margin:"0 auto", padding:"1.25rem 1rem 4rem", color:txt }}>
+    <div style={{ fontFamily:FONT, color:txt }}>
 
       {/* Header */}
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"1.25rem" }}>
-        <div>
-          <div style={{ fontSize:22, fontWeight:600, letterSpacing:-0.3, display:"flex", alignItems:"center", gap:8 }}>
-            <span>{greetIcon}</span>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, marginBottom:"1.4rem" }}>
+        <div style={{ minWidth:0 }}>
+          <div style={{ fontSize:24, fontWeight:700, letterSpacing:-0.6, lineHeight:1.1, display:"flex", alignItems:"center", gap:9 }}>
+            <span style={{ fontSize:20 }}>{greetIcon}</span>
             <span>{greeting}, Nevyn</span>
           </div>
-          <div style={{ fontSize:12.5, color:txtT, marginTop:4 }}>
-            {todayFmt()} · {trackIds.length || 4} parallel tracks{startDays ? ` · Day ${startDays}` : ""}
+          <div style={{ fontSize:12.5, color:txtT, marginTop:6, display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+            <span>{todayFmt()}</span>
+            <span style={{ width:3, height:3, borderRadius:2, background:txtT, display:"inline-block" }} />
+            <span>{trackIds.length || 4} tracks</span>
+            {startDays && <><span style={{ width:3, height:3, borderRadius:2, background:txtT, display:"inline-block" }} /><span>Day {startDays}</span></>}
           </div>
         </div>
-        <button style={{ ...S.btn(false, loading), fontSize:12 }} onClick={load} disabled={loading}>{loading?"…":"↻ Refresh"}</button>
+        <button aria-label="Refresh" title="Refresh" style={{ ...S.btn(false, loading), width:38, height:38, padding:0, borderRadius:11, fontSize:15, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }} onClick={load} disabled={loading}>{loading?"…":"↻"}</button>
       </div>
 
       {err && (
-        <div style={{ background:"#FCEBEB", border:"0.5px solid #E24B4A", borderRadius:8, padding:"10px 14px", marginBottom:"0.875rem", fontSize:13, color:"#501313" }}>
+        <div style={{ background:hexA("#E24B4A", dark?0.16:0.09), border:`1px solid ${hexA("#E24B4A", dark?0.4:0.3)}`, borderRadius:12, padding:"11px 15px", marginBottom:"0.9rem", fontSize:13, color:dark?"#FF9B9B":"#9b1c1c" }}>
           {err} — is the D1 binding configured on the Worker?
         </div>
       )}
 
-      {/* Tabs */}
-      <div style={{ display:"flex", gap:4, marginBottom:"1.25rem", overflowX:"auto", paddingBottom:2 }}>
+      {/* Tabs — segmented, horizontally scrollable */}
+      <div style={{ display:"flex", gap:2, marginBottom:"1.4rem", overflowX:"auto", padding:4, background:bgS, border:`1px solid ${brd}`, borderRadius:999 }}>
         {TABS.map(t => <button key={t} style={S.tab(tab===t)} onClick={() => setTab(t)}>{TAB_LABELS[t] || (t.charAt(0).toUpperCase()+t.slice(1))}</button>)}
       </div>
 
@@ -828,7 +838,7 @@ export default function App() {
                     const dnum = d.getDate();
                     if (!inRange) return <div key={i} style={{ minHeight:60, borderRadius:8, border:`0.5px solid ${brd}`, opacity:0.3, padding:"5px 7px", fontSize:11, color:txtT }}>{dnum}</div>;
                     const cls = classifyDay(d);
-                    let cellBg = bg, cellBrd = brd, body = null, numColor = txtS;
+                    let cellBg = surface, cellBrd = brd, body = null, numColor = txtS;
                     if (cls.type === "interview") {
                       const a = ivAccent(cls.iv); cellBg = a; cellBrd = a; numColor = "#fff";
                       body = <div style={{ marginTop:3 }}><div style={{ fontSize:11, fontWeight:700, color:"#fff" }}>🎯 {cls.iv.company}</div><div style={{ fontSize:9.5, color:"rgba(255,255,255,0.85)" }}>interview</div></div>;
