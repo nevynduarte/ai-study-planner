@@ -453,181 +453,193 @@ export default function App() {
             const ivDate = new Date(iv.date + "T09:00:00");
             const daysLeft = Math.ceil((ivDate - new Date()) / 864e5);
             const urgency = daysLeft <= 1 ? "#A32D2D" : daysLeft <= 2 ? "#BA7517" : ac;
-            const chip = (extra) => ({ fontSize:12, fontWeight:600, padding:"3px 10px", borderRadius:20, color:"#fff", background:ac, whiteSpace:"nowrap", display:"inline-block", ...extra });
+            const chip = (extra) => ({ fontSize:12, fontWeight:600, padding:"3px 10px", borderRadius:999, color:"#fff", background:ac, whiteSpace:"nowrap", display:"inline-block", ...extra });
+            // Section wrapper: accent tick + uppercase eyebrow + scroll anchor.
+            const sec = (key, label, child) => (
+              <div id={`sec-${iv.id}-${key}`} style={{ marginBottom:18, scrollMarginTop:16 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:9 }}>
+                  <span style={{ width:3, height:12, borderRadius:2, background:ac, display:"inline-block" }} />
+                  <span style={{ ...S.lbl, margin:0 }}>{label}</span>
+                </div>
+                {child}
+              </div>
+            );
+            const nav = [
+              ["rounds","Rounds", iv.rounds?.length>0],
+              ["stack","Stack", (iv.stack||[]).length>0],
+              ["fit","Your fit", (iv.your_strengths||[]).length>0],
+              ["beats","Story beats", (iv.story_beats||[]).length>0],
+              ["prep","Prep", (iv.prep_areas||[]).length>0],
+              ["questions","Likely Qs", (iv.likely_questions||[]).length>0],
+              ["bank","Story bank", iv.behavioral_bank?.length>0],
+              ["ask","Ask them", iv.questions_to_ask?.length>0],
+              ["terms","Domain", iv.domain_terms?.length>0],
+              ["practice","Practice", iv.practice?.length>0],
+              ["checklist","Checklist", iv.final_checklist?.length>0],
+            ].filter(x => x[2]);
+            const jump = (key) => { const el = document.getElementById(`sec-${iv.id}-${key}`); if (el) el.scrollIntoView({ behavior:"smooth", block:"start" }); };
             return (
               <div key={iv.id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, marginBottom:"1.25rem" }}>
 
                 {/* header */}
-                <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(ac, dark?0.18:0.1)}, transparent 72%)` }}>
+                <div style={{ padding:"1.1rem 1.2rem 0.95rem", background:`linear-gradient(125deg, ${hexA(ac, dark?0.2:0.11)}, transparent 72%)` }}>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12 }}>
                     <div style={{ minWidth:0 }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:9, marginBottom:4, flexWrap:"wrap" }}>
-                        <span style={{ fontSize:18, fontWeight:700, letterSpacing:-0.3 }}>{iv.company}</span>
+                      <div style={{ display:"flex", alignItems:"center", gap:9, marginBottom:5, flexWrap:"wrap" }}>
+                        <span style={{ fontSize:20, fontWeight:800, letterSpacing:-0.5 }}>{iv.company}</span>
                         <span style={chip()}>{iv.day}</span>
                       </div>
-                      <div style={{ fontSize:13, color:txtS, fontWeight:500 }}>{iv.role}</div>
-                      <div style={{ fontSize:12, color:txtT, marginTop:2 }}>{iv.location} · {iv.salary}</div>
+                      <div style={{ fontSize:13.5, color:txt, fontWeight:600 }}>{iv.role}</div>
+                      <div style={{ fontSize:12, color:txtT, marginTop:3, display:"flex", alignItems:"center", gap:7, flexWrap:"wrap" }}>
+                        <span>{iv.location}</span>
+                        <span style={{ width:3, height:3, borderRadius:2, background:txtT, display:"inline-block" }} />
+                        <span>{iv.salary}</span>
+                      </div>
                     </div>
-                    <div style={{ textAlign:"center", flexShrink:0, padding:"6px 14px", borderRadius:12, background:hexA(urgency, dark?0.2:0.12), border:`1px solid ${hexA(urgency, dark?0.34:0.24)}` }}>
-                      <div style={{ fontSize:28, fontWeight:800, color:urgency, lineHeight:1, letterSpacing:-1 }}>{daysLeft > 0 ? daysLeft : 0}<span style={{ fontSize:13, fontWeight:600 }}>d</span></div>
-                      <div style={{ fontSize:10.5, color:txtT, marginTop:3 }}>{fmtDate(iv.date)}</div>
+                    <div style={{ textAlign:"center", flexShrink:0, padding:"8px 15px", borderRadius:14, background:hexA(urgency, dark?0.2:0.12), border:`1px solid ${hexA(urgency, dark?0.34:0.24)}` }}>
+                      <div style={{ fontSize:30, fontWeight:800, color:urgency, lineHeight:1, letterSpacing:-1 }}>{daysLeft > 0 ? daysLeft : 0}<span style={{ fontSize:13, fontWeight:700 }}>d</span></div>
+                      <div style={{ fontSize:10.5, color:txtT, marginTop:4 }}>{fmtDate(iv.date)}</div>
                     </div>
                   </div>
+                  {nav.length > 0 && (
+                    <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:13 }}>
+                      {nav.map(([key,label]) => (
+                        <button key={key} onClick={() => jump(key)} style={{ fontSize:11, fontWeight:600, padding:"4px 10px", borderRadius:999, cursor:"pointer", border:`1px solid ${brd}`, background:surface, color:txtS }}>{label}</button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                <div style={{ padding:"0 1.125rem 1.125rem" }}>
-                  <div style={{ fontSize:12, color:txtS, lineHeight:1.65, marginBottom:14, paddingBottom:14, borderBottom:`1px solid ${brd}` }}>{iv.about}</div>
+                <div style={{ padding:"1.1rem 1.2rem 1.2rem" }}>
+                  {iv.about && <div style={{ fontSize:12.5, color:txtS, lineHeight:1.7, marginBottom:18, paddingBottom:16, borderBottom:`1px solid ${brd}` }}>{iv.about}</div>}
 
-                  {/* Expected rounds */}
-                  {iv.rounds?.length > 0 && (
-                    <div style={{ marginBottom:14 }}>
-                      <div style={{ ...S.lbl, marginBottom:6 }}>Expected rounds</div>
-                      {iv.rounds.map(r => (
-                        <div key={r.n} style={{ display:"flex", gap:10, padding:"6px 0", borderBottom:`1px solid ${brd}` }}>
-                          <span style={{ ...chip({ width:22, height:22, padding:0, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }) }}>{r.n}</span>
-                          <div style={{ minWidth:0 }}>
-                            <div style={{ fontSize:12.5, fontWeight:600 }}>{r.title}</div>
-                            <div style={{ fontSize:11.5, color:txtS, lineHeight:1.5, marginTop:1 }}>{r.format}</div>
+                  {iv.rounds?.length > 0 && sec("rounds", "Expected rounds",
+                    <div>
+                      {iv.rounds.map((r,i,arr) => (
+                        <div key={r.n} style={{ display:"flex", gap:12, position:"relative", paddingBottom:i<arr.length-1?14:0 }}>
+                          {i<arr.length-1 && <span style={{ position:"absolute", left:12, top:27, bottom:0, width:2, background:hexA(ac,0.28) }} />}
+                          <span style={{ width:26, height:26, borderRadius:"50%", flexShrink:0, background:ac, color:"#fff", fontSize:12, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", zIndex:1 }}>{r.n}</span>
+                          <div style={{ minWidth:0, paddingTop:3 }}>
+                            <div style={{ fontSize:13, fontWeight:600 }}>{r.title}</div>
+                            <div style={{ fontSize:11.5, color:txtS, lineHeight:1.5, marginTop:2 }}>{r.format}</div>
                           </div>
                         </div>
                       ))}
                     </div>
                   )}
 
-                  {/* Tech stack */}
-                  <div style={{ marginBottom:14 }}>
-                    <div style={{ ...S.lbl, marginBottom:6 }}>Stack to know</div>
+                  {(iv.stack||[]).length > 0 && sec("stack", "Stack to know",
                     <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
                       {(iv.stack||[]).map(s => <span key={s} style={pill(ac, { fontSize:12 })}>{s}</span>)}
                     </div>
-                  </div>
+                  )}
 
-                  {/* Your strengths */}
-                  <div style={{ marginBottom:14 }}>
-                    <div style={{ ...S.lbl, marginBottom:6 }}>Your fit — lead with these</div>
-                    <div style={{ background:hexA(ac, dark?0.1:0.06), border:`1px solid ${hexA(ac, dark?0.24:0.16)}`, borderRadius:10, padding:"9px 12px" }}>
-                      {(iv.your_strengths||[]).map((s,i) => (
-                        <div key={i} style={{ fontSize:12, color:txtS, padding:"4px 0", lineHeight:1.55, borderBottom:i<iv.your_strengths.length-1?`1px solid ${brd}`:"none" }}>
-                          <span style={{ color:ac, fontWeight:700, marginRight:6 }}>✓</span>{s}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Story beats */}
-                  <div style={{ marginBottom:14 }}>
-                    <div style={{ ...S.lbl, marginBottom:6 }}>Story beats — weave these in</div>
-                    {(iv.story_beats||[]).map((s,i) => (
-                      <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0 5px 10px", borderLeft:`2px solid ${ac}`, marginBottom:5, lineHeight:1.6 }}>
-                        {s}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Prep areas — accordion */}
-                  <div style={{ marginBottom:14 }}>
-                    <div style={{ ...S.lbl, marginBottom:6 }}>Prep areas — click to expand</div>
-                    {(iv.prep_areas||[]).map(pa => {
-                      const key = `${iv.id}:${pa.area}`;
-                      const open = expandedAreas.has(key);
-                      return (
-                        <div key={pa.area} style={{ border:`1px solid ${open ? ac : brd}`, borderRadius:10, marginBottom:6, overflow:"hidden", transition:"border-color .15s" }}>
-                          <button
-                            onClick={() => toggleArea(key)}
-                            style={{ width:"100%", textAlign:"left", padding:"9px 13px", background:open?hexA(ac,dark?0.14:0.07):"transparent", border:"none", cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", color:txt }}
-                          >
-                            <span style={{ fontSize:13, fontWeight:600 }}>{pa.area}</span>
-                            <span style={{ fontSize:11, color:open?ac:txtT, marginLeft:8, transform:open?"rotate(180deg)":"none", transition:"transform .15s" }}>▾</span>
-                          </button>
-                          {open && (
-                            <div style={{ padding:"4px 13px 11px", borderTop:`1px solid ${brd}` }}>
-                              {(pa.items||[]).map((item,i) => (
-                                <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.6, borderBottom:i<pa.items.length-1?`1px solid ${brd}`:"none" }}>
-                                  <span style={{ color:ac, marginRight:6 }}>•</span>{item}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Likely questions */}
-                  <div style={{ marginBottom:14 }}>
-                    <div style={{ ...S.lbl, marginBottom:6 }}>Likely questions — prep answers out loud</div>
-                    <div style={{ background:bgS, borderRadius:10, padding:"9px 12px" }}>
-                      {(iv.likely_questions||[]).map((lq,i) => (
-                        <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.55, borderBottom:i<iv.likely_questions.length-1?`1px solid ${brd}`:"none" }}>
-                          <span style={{ fontWeight:700, color:ac, marginRight:6 }}>{i+1}.</span>{lq}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Behavioral story bank */}
-                  {iv.behavioral_bank?.length > 0 && (
-                    <div style={{ marginBottom:14 }}>
-                      <div style={{ ...S.lbl, marginBottom:6 }}>Story bank — prompt → which story to tell</div>
-                      {iv.behavioral_bank.map((b,i) => (
-                        <div key={i} style={{ padding:"6px 0", borderBottom:i<iv.behavioral_bank.length-1?`1px solid ${brd}`:"none" }}>
-                          <div style={{ fontSize:12, fontWeight:600 }}>{b.prompt}</div>
-                          <div style={{ fontSize:11.5, color:txtS, lineHeight:1.55, marginTop:2, paddingLeft:10, borderLeft:`2px solid ${ac}` }}>{b.story}</div>
+                  {(iv.your_strengths||[]).length > 0 && sec("fit", "Your fit — lead with these",
+                    <div style={{ background:hexA(ac, dark?0.1:0.06), border:`1px solid ${hexA(ac, dark?0.24:0.16)}`, borderRadius:12, padding:"2px 13px" }}>
+                      {iv.your_strengths.map((s,i) => (
+                        <div key={i} style={{ fontSize:12.5, color:txtS, padding:"8px 0", lineHeight:1.55, display:"flex", gap:9, borderBottom:i<iv.your_strengths.length-1?`1px solid ${hexA(ac,0.18)}`:"none" }}>
+                          <span style={{ color:ac, fontWeight:700, flexShrink:0 }}>✓</span><span>{s}</span>
                         </div>
                       ))}
                     </div>
                   )}
 
-                  {/* Questions to ask them */}
-                  {iv.questions_to_ask?.length > 0 && (
-                    <div style={{ marginBottom:14 }}>
-                      <div style={{ ...S.lbl, marginBottom:6 }}>Questions to ask them</div>
-                      {iv.questions_to_ask.map((qa,i) => (
-                        <div key={i} style={{ fontSize:12, color:txtS, padding:"5px 0", lineHeight:1.55, display:"flex", gap:8, borderBottom:i<iv.questions_to_ask.length-1?`1px solid ${brd}`:"none" }}>
-                          <span style={pill(ac, { flexShrink:0, alignSelf:"flex-start" })}>{qa.round}</span><span>{qa.q}</span>
-                        </div>
+                  {(iv.story_beats||[]).length > 0 && sec("beats", "Story beats — weave these in",
+                    <div>
+                      {iv.story_beats.map((s,i) => (
+                        <div key={i} style={{ fontSize:12.5, color:txtS, lineHeight:1.6, background:bgS, borderRadius:10, borderLeft:`3px solid ${ac}`, padding:"9px 13px", marginBottom:6 }}>{s}</div>
                       ))}
                     </div>
                   )}
 
-                  {/* Domain terms (Equi) */}
-                  {iv.domain_terms?.length > 0 && (
-                    <div style={{ marginBottom:14 }}>
-                      <div style={{ ...S.lbl, marginBottom:6 }}>Domain terms — know these cold</div>
-                      <div style={{ background:hexA(ac, dark?0.08:0.05), border:`1px solid ${hexA(ac, dark?0.2:0.14)}`, borderRadius:10, padding:"9px 12px" }}>
-                        {iv.domain_terms.map((dt,i) => (
-                          <div key={i} style={{ fontSize:12, color:txtS, padding:"4px 0", lineHeight:1.55, borderBottom:i<iv.domain_terms.length-1?`1px solid ${brd}`:"none" }}>
-                            <strong style={{ color:txt }}>{dt.term}</strong> — {dt.def}
+                  {(iv.prep_areas||[]).length > 0 && sec("prep", "Prep areas — click to expand",
+                    <div>
+                      {iv.prep_areas.map(pa => {
+                        const key = `${iv.id}:${pa.area}`;
+                        const open = expandedAreas.has(key);
+                        return (
+                          <div key={pa.area} style={{ border:`1px solid ${open ? hexA(ac,0.5) : brd}`, borderRadius:10, marginBottom:6, overflow:"hidden", transition:"border-color .15s" }}>
+                            <button onClick={() => toggleArea(key)} style={{ width:"100%", textAlign:"left", padding:"10px 13px", background:open?hexA(ac,dark?0.12:0.06):"transparent", border:"none", cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", color:txt }}>
+                              <span style={{ fontSize:13, fontWeight:600 }}>{pa.area}</span>
+                              <span style={{ fontSize:11, color:open?ac:txtT, marginLeft:8, transform:open?"rotate(180deg)":"none", transition:"transform .15s" }}>▾</span>
+                            </button>
+                            {open && (
+                              <div style={{ padding:"2px 13px 11px", borderTop:`1px solid ${brd}` }}>
+                                {(pa.items||[]).map((item,i) => (
+                                  <div key={i} style={{ fontSize:12, color:txtS, padding:"6px 0", lineHeight:1.6, display:"flex", gap:8 }}>
+                                    <span style={{ color:ac, flexShrink:0 }}>•</span><span>{item}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
-                        ))}
-                      </div>
+                        );
+                      })}
                     </div>
                   )}
 
-                  {/* Practice materials */}
-                  {iv.practice?.length > 0 && (
-                    <div style={{ marginBottom:14 }}>
-                      <div style={{ ...S.lbl, marginBottom:6 }}>Practice — build cold, timed</div>
+                  {(iv.likely_questions||[]).length > 0 && sec("questions", "Likely questions — prep out loud",
+                    <div style={{ display:"flex", flexDirection:"column", gap:9 }}>
+                      {iv.likely_questions.map((lq,i) => (
+                        <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start" }}>
+                          <span style={{ width:20, height:20, borderRadius:"50%", flexShrink:0, background:hexA(ac,dark?0.22:0.12), color:ac, fontSize:11, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center", marginTop:1 }}>{i+1}</span>
+                          <span style={{ fontSize:12.5, color:txtS, lineHeight:1.55 }}>{lq}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {iv.behavioral_bank?.length > 0 && sec("bank", "Story bank — prompt → which story",
+                    <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                      {iv.behavioral_bank.map((b,i) => (
+                        <div key={i} style={{ background:bgS, borderRadius:10, padding:"10px 13px" }}>
+                          <div style={{ fontSize:12.5, fontWeight:600, marginBottom:4 }}>{b.prompt}</div>
+                          <div style={{ fontSize:11.5, color:txtS, lineHeight:1.55, paddingLeft:10, borderLeft:`2px solid ${ac}` }}>{b.story}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {iv.questions_to_ask?.length > 0 && sec("ask", "Questions to ask them",
+                    <div style={{ display:"flex", flexDirection:"column", gap:9 }}>
+                      {iv.questions_to_ask.map((qa,i) => (
+                        <div key={i} style={{ fontSize:12.5, color:txtS, lineHeight:1.55, display:"flex", gap:9, alignItems:"flex-start" }}>
+                          <span style={pill(ac, { flexShrink:0 })}>{qa.round}</span><span>{qa.q}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {iv.domain_terms?.length > 0 && sec("terms", "Domain terms — know these cold",
+                    <div style={{ background:hexA(ac, dark?0.08:0.05), border:`1px solid ${hexA(ac, dark?0.2:0.14)}`, borderRadius:12, padding:"2px 13px" }}>
+                      {iv.domain_terms.map((dt,i) => (
+                        <div key={i} style={{ fontSize:12.5, color:txtS, padding:"8px 0", lineHeight:1.55, borderBottom:i<iv.domain_terms.length-1?`1px solid ${hexA(ac,0.16)}`:"none" }}>
+                          <strong style={{ color:txt }}>{dt.term}</strong> — {dt.def}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {iv.practice?.length > 0 && sec("practice", "Practice — build cold, timed",
+                    <div>
                       {iv.practice.map((p,i) => (
-                        <div key={i} style={{ border:`1px solid ${brd}`, borderRadius:10, padding:"9px 12px", marginBottom:6 }}>
-                          <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", marginBottom:3 }}>
+                        <div key={i} style={{ border:`1px solid ${brd}`, borderRadius:10, padding:"10px 13px", marginBottom:6, background:surface2 }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", marginBottom:4 }}>
                             <span style={{ fontSize:12.5, fontWeight:600 }}>{p.title}</span>
-                            <span style={pill(ac, { padding:"1px 7px" })}>{p.type}</span>
+                            <span style={pill(ac, { padding:"1px 8px" })}>{p.type}</span>
                           </div>
                           <div style={{ fontSize:11.5, color:txtS, lineHeight:1.55 }}>{p.desc}</div>
-                          {p.path && <div style={{ fontSize:11, color:txtT, marginTop:4, fontFamily:"ui-monospace,SFMono-Regular,Menlo,monospace" }}>{p.path}</div>}
+                          {p.path && <div style={{ fontSize:11, color:txtT, marginTop:5, fontFamily:"ui-monospace,SFMono-Regular,Menlo,monospace", background:bgS, padding:"3px 7px", borderRadius:6, display:"inline-block" }}>{p.path}</div>}
                         </div>
                       ))}
                     </div>
                   )}
 
-                  {/* Final checklist */}
-                  {iv.final_checklist?.length > 0 && (
-                    <div style={{ marginBottom:14 }}>
-                      <div style={{ ...S.lbl, marginBottom:6 }}>Final checklist</div>
+                  {iv.final_checklist?.length > 0 && sec("checklist", "Final checklist",
+                    <div>
                       {iv.final_checklist.map((c,i) => (
-                        <div key={i} style={{ fontSize:12, color:txtS, padding:"3px 0", lineHeight:1.5 }}>
-                          <span style={{ marginRight:8, color:ac }}>☐</span>{c}
+                        <div key={i} style={{ fontSize:12.5, color:txtS, padding:"4px 0", lineHeight:1.5, display:"flex", gap:9 }}>
+                          <span style={{ color:ac, flexShrink:0 }}>☐</span><span>{c}</span>
                         </div>
                       ))}
                     </div>
@@ -635,17 +647,15 @@ export default function App() {
 
                   {/* Full guide — opens the document reader */}
                   {iv.guide_md && (
-                    <button onClick={() => openGuide(iv)}
-                      style={{ width:"100%", textAlign:"left", display:"flex", justifyContent:"space-between", alignItems:"center", gap:10, cursor:"pointer",
-                        padding:"11px 14px", borderRadius:10, border:`1px solid ${hexA(ac, dark?0.34:0.24)}`, background:hexA(ac, dark?0.12:0.07), color:txt }}>
-                      <span style={{ display:"flex", alignItems:"center", gap:9, minWidth:0 }}>
-                        <span style={{ fontSize:16 }}>📖</span>
+                    <button onClick={() => openGuide(iv)} style={{ width:"100%", textAlign:"left", display:"flex", justifyContent:"space-between", alignItems:"center", gap:10, cursor:"pointer", marginTop:4, padding:"12px 14px", borderRadius:12, border:`1px solid ${hexA(ac, dark?0.34:0.24)}`, background:hexA(ac, dark?0.12:0.07), color:txt }}>
+                      <span style={{ display:"flex", alignItems:"center", gap:10, minWidth:0 }}>
+                        <span style={{ fontSize:17 }}>📖</span>
                         <span style={{ minWidth:0 }}>
                           <span style={{ fontSize:13, fontWeight:600, display:"block" }}>Open full prep guide</span>
-                          <span style={{ fontSize:11, color:txtT }}>Document reader — table of contents, reading progress, download</span>
+                          <span style={{ fontSize:11, color:txtT }}>Document reader — contents, progress, download</span>
                         </span>
                       </span>
-                      <span style={{ fontSize:12, fontWeight:600, color:ac, flexShrink:0 }}>Read →</span>
+                      <span style={{ fontSize:12, fontWeight:700, color:ac, flexShrink:0 }}>Read →</span>
                     </button>
                   )}
                 </div>
