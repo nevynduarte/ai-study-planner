@@ -1271,6 +1271,17 @@ export default function App() {
                 <div style={{ fontSize:16, fontWeight:700, letterSpacing:-0.2 }}>{sel.title}</div>
                 {sel.note && <div style={{ fontSize:12, color:txtS, marginTop:5, lineHeight:1.6, maxWidth:620 }}>{sel.note}</div>}
                 {sel.ref && <a href={sel.ref} target="_blank" rel="noreferrer" style={{ fontSize:11.5, color:linkC, textDecoration:"none", marginTop:7, display:"inline-block" }}>Reference ↗</a>}
+                {(sel.resources || []).length > 0 && (
+                  <div style={{ marginTop:10 }}>
+                    <div style={{ ...S.lbl, marginBottom:6 }}>Resources</div>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                      {sel.resources.map(r => (
+                        <a key={r.url} href={r.url} target="_blank" rel="noreferrer"
+                          style={{ fontSize:11, fontWeight:600, color:ac, textDecoration:"none", padding:"3px 9px", borderRadius:999, border:`1px solid ${hexA(ac, dark?0.34:0.24)}`, background:hexA(ac, dark?0.1:0.06), whiteSpace:"nowrap" }}>{r.name} ↗</a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div style={{ textAlign:"center", flexShrink:0 }}>
                 <Ring pct={total?done/total*100:0} color={ac} size={52} stroke={5} />

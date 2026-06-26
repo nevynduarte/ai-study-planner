@@ -834,6 +834,17 @@
         "accent": "#185FA5",
         "ref": "https://neetcode.io/roadmap",
         "note": "Work pattern by pattern, not problem by problem. Do the Blind 75 (★) first for breadth, then fill in the rest of each pattern. Premium-locked problems have no direct link — solve them on NeetCode.",
+        "resources": [
+          { "name": "NeetCode (YouTube)", "url": "https://www.youtube.com/@NeetCode/playlists" },
+          { "name": "take U forward", "url": "https://www.youtube.com/@takeUforward" },
+          { "name": "Cracking FAANG", "url": "https://www.youtube.com/@crackfaang/playlists" },
+          { "name": "WilliamFiset (graphs/DS)", "url": "https://www.youtube.com/c/WilliamFiset-videos" },
+          { "name": "Back To Back SWE", "url": "https://www.youtube.com/c/BackToBackSWE/videos" },
+          { "name": "Greg Hogg", "url": "https://www.youtube.com/@GregHogg" },
+          { "name": "CS 1332 DS&A Visualizations", "url": "https://csvistool.com/" },
+          { "name": "C++ — StudyPlan.dev", "url": "https://www.studyplan.dev/cpp" },
+          { "name": "cppreference", "url": "https://www.cppreference.com/index.html" }
+        ],
         "groups": [
           { "name": "Arrays & Hashing", "problems": [
             { "n": "Two Sum", "d": "E", "s": 1, "u": "two-sum" },
@@ -1047,7 +1058,19 @@
         "title": "Data Science & ML",
         "accent": "#7F77DD",
         "ref": "https://leetcode.com/studyplan/introduction-to-pandas/",
-        "note": "Pandas problems are on LeetCode (Introduction to Pandas). The stats/probability and ML items are conceptual — say the answer out loud or whiteboard the derivation, then tick it.",
+        "note": "Pandas problems are on LeetCode (Introduction to Pandas). The stats/probability and ML items are conceptual — say the answer out loud or whiteboard the derivation, then tick it. Deep-ML is the 'LeetCode for ML' — implement algorithms from scratch.",
+        "resources": [
+          { "name": "Deep-ML — Problems", "url": "https://www.deep-ml.com/problems" },
+          { "name": "Deep-ML — Labs", "url": "https://www.deep-ml.com/labs" },
+          { "name": "Cracked · DS Interview Prep", "url": "https://cracked-ds-platform.vercel.app/" },
+          { "name": "PaperCode — ML150", "url": "https://www.papercode.in/papers/ml150_prerequisites" },
+          { "name": "MLQuestions (GitHub)", "url": "https://github.com/andrewekhalel/MLQuestions" },
+          { "name": "Cracking ML Interview (GitHub)", "url": "https://github.com/shafaypro/CrackingMachineLearningInterview" },
+          { "name": "DS Interview Q&A (GitHub)", "url": "https://github.com/youssefHosni/Data-Science-Interview-Questions-Answers" },
+          { "name": "Backprop — Free ML Resources", "url": "https://www.trybackprop.com/blog/top_ml_learning_resources" },
+          { "name": "Exponent — ML Qs", "url": "https://www.tryexponent.com/blog/top-machine-learning-interview-questions" },
+          { "name": "InterviewBit — ML Qs", "url": "https://www.interviewbit.com/machine-learning-interview-questions/" }
+        ],
         "groups": [
           { "name": "Pandas (LeetCode)", "problems": [
             { "n": "Create a DataFrame from List", "d": "E" },
@@ -1125,6 +1148,11 @@
         "accent": "#0D9488",
         "ref": "https://brainstellar.com/",
         "note": "Probability brainteasers and market intuition — the kind D.E. Shaw / Woodline-adjacent quant chats throw out. Optional, but genuinely fun and sharpens the stats muscle.",
+        "resources": [
+          { "name": "BrainStellar Puzzles", "url": "https://brainstellar.com/" },
+          { "name": "Quant Finance Resources (GitHub)", "url": "https://github.com/PyPatel/Quant-Finance-Resources" },
+          { "name": "Quant Developers Resources (GitHub)", "url": "https://github.com/cybergeekgyan/Quant-Developers-Resources" }
+        ],
         "groups": [
           { "name": "Probability Brainteasers", "problems": [
             { "n": "Expected flips to get HH vs HT" },
