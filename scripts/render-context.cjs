@@ -44,7 +44,7 @@ for (const role of cur.roles || []) {
 }
 out.push("");
 
-out.push("ACTIVE TRACKS (parallel, daily-weighted). For each: weight of the 10h day, current month focus, and per-skill coverage [status]:");
+out.push("ACTIVE TRACKS (parallel, daily-weighted). For each: weight of the 3h day, current month focus, and per-skill coverage [status]:");
 const trackPos = status.tracks || {};
 for (const [id, t] of Object.entries(cur.tracks || {})) {
   const pos = trackPos[id] || {};

@@ -162,8 +162,25 @@ const COV = {
 };
 const covOf = (m, track, skill) => m[`${track}:::${skill}`] || "not-started";
 
+// Single-user, client-side persisted UI state (localStorage). Used for toggles
+// the static curriculum + D1 don't model: crash-day completion, archived
+// interviews, papers marked read. Falls back to `initial` if storage is empty
+// or unavailable, and ignores write errors (private mode / quota).
+function usePersisted(key, initial) {
+  const [val, setVal] = useState(() => {
+    try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : initial; } catch { return initial; }
+  });
+  useEffect(() => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }, [key, val]);
+  return [val, setVal];
+}
+
+// Daily study commitment. 3 focused hours/day (21h/week) — a realistic pace.
+// Per-track hours derive from each track's weight, so this is the only knob.
+const DAILY_HOURS   = 3;
+const WEEKLY_TARGET = DAILY_HOURS * 7;
+
 export default function App() {
-  const [tab,     setTab]     = useState("interviews");
+  const [tab,     setTab]     = useState("today");
   const [data,    setData]    = useState(null);
   const [cur,     setCur]     = useState(null);   // curriculum.json
   const [loading, setLoading] = useState(true);
@@ -179,6 +196,15 @@ export default function App() {
   const toggleArea = (key) => setExpandedAreas(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
   const [guideMd,   setGuideMd]   = useState({});  // id -> markdown string
   const [readerIv,  setReaderIv]  = useState(null); // interview whose guide is open in the doc reader
+  // Client-side persisted toggles
+  const [completedDays, setCompletedDays] = usePersisted("asp.crash.completed", []); // crash-course day numbers done
+  const [archivedIvs,   setArchivedIvs]   = usePersisted("asp.iv.archived", []);     // archived interview ids
+  const [readPapers,    setReadPapers]    = usePersisted("asp.papers.read", []);     // research paper ids read
+  const [planChecked,   setPlanChecked]   = usePersisted("asp.plan.checked", {});    // { [planDate]: [checked item labels] }
+  const toggleCrashDay = (n) => setCompletedDays(prev => prev.includes(n) ? prev.filter(x => x !== n) : [...prev, n]);
+  const archiveIv      = (id) => setArchivedIvs(prev => prev.includes(id) ? prev : [...prev, id]);
+  const reactivateIv   = (id) => setArchivedIvs(prev => prev.filter(x => x !== id));
+  const togglePaper    = (id) => setReadPapers(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   const openGuide = async (iv) => {
     setReaderIv(iv);
     if (guideMd[iv.id] === undefined && iv.guide_md) {
@@ -226,6 +252,7 @@ export default function App() {
   const weekLog = log.filter(e => new Date(e.date + "T12:00:00") >= monday);
   const weekHrs = weekLog.reduce((s, e) => s + Number(e.hours), 0);
   const weekHrsByTrack = (id) => weekLog.filter(e => e.track === id).reduce((s, e) => s + Number(e.hours), 0);
+  const weekColor = weekHrs >= WEEKLY_TARGET ? "#1D9E75" : weekHrs >= WEEKLY_TARGET*0.7 ? "#185FA5" : weekHrs >= WEEKLY_TARGET*0.4 ? "#BA7517" : "#A32D2D";
   const startDays = status.started_date ? Math.max(1, Math.round((now - new Date(status.started_date + "T12:00:00")) / 864e5) + 1) : null;
 
   // ─── Interview scheduling: prep windows + study pushback ──────────
@@ -236,7 +263,11 @@ export default function App() {
   const startOfDay = (d) => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
   const daysBetween = (a,b) => Math.round((startOfDay(b) - startOfDay(a)) / DAY_MS);
   const today0 = startOfDay(now);
+  // Archived interviews are "done" — they drop out of scheduling (no prep/focus
+  // mode, no calendar markers) but stay reactivatable from the Archive section.
+  const archivedSet = new Set(archivedIvs);
   const interviews = (cur?.interviews || [])
+    .filter(iv => !archivedSet.has(iv.id))
     .map(iv => ({ ...iv, _date: new Date(iv.date + "T09:00:00") }))
     .sort((a,b) => a._date - b._date);
 
@@ -270,13 +301,25 @@ export default function App() {
   const crashCourse = cur?.crash_course || null;
   const crashDays   = crashCourse?.days || [];
   const crashStart  = crashCourse?.start_date ? startOfDay(new Date(crashCourse.start_date + "T12:00:00")) : null;
-  const crashDayOf  = (d) => {
-    if (!crashStart || !crashDays.length) return null;
-    const n = daysBetween(crashStart, startOfDay(d)) + 1;
-    return n >= 1 && n <= crashDays.length ? (crashDays.find(x => x.n === n) || null) : null;
+  // Progression is completion-driven, not calendar-driven: an unfinished day
+  // rolls forward instead of being lost. "Today" is always the first day not
+  // yet marked complete, once the sprint has started.
+  const crashDone     = new Set(completedDays);
+  const crashStarted  = !!crashStart && today0 >= crashStart;
+  const orderedDays   = [...crashDays].sort((a,b) => a.n - b.n);
+  const remainingDays = orderedDays.filter(d => !crashDone.has(d.n));
+  const crashToday    = crashStarted ? (remainingDays[0] || null) : null;
+  const crashActive   = crashToday != null;
+  const crashAllDone  = crashDays.length > 0 && remainingDays.length === 0;
+  // Calendar projection: each remaining day lands on a successive calendar day
+  // from today (or the start date if the sprint hasn't begun), so skipped days
+  // visibly push the whole schedule forward.
+  const crashProjBase = crashStart && today0 < crashStart ? crashStart : today0;
+  const crashProjFor  = (d) => {
+    if (!remainingDays.length) return null;
+    const off = daysBetween(crashProjBase, startOfDay(d));
+    return off >= 0 && off < remainingDays.length ? remainingDays[off] : null;
   };
-  const crashToday   = crashDayOf(today0);
-  const crashActive  = crashToday != null;
   const tracksPaused = focusMode || crashActive;
 
   async function logSession() {
@@ -383,18 +426,63 @@ export default function App() {
     th: (p) => <th style={{ textAlign:"left", padding:"7px 10px", borderBottom:`1px solid ${brdS}`, background:bgS, fontWeight:700, fontSize:11.5 }} {...p} />,
     td: (p) => <td style={{ padding:"7px 10px", borderBottom:`1px solid ${brd}`, verticalAlign:"top" }} {...p} />,
   };
-  const Md = ({ children }) => (
+  const Md = ({ children, components }) => (
     <div style={{ fontSize:13.5, color:txt }}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>{children}</ReactMarkdown>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components || mdComponents}>{children}</ReactMarkdown>
     </div>
   );
 
-  const TAB_LABELS = { "crash-course": "Crash Course" };
-  const TABS = ["interviews","today","crash-course","calendar","tutor","frontier","advisory","coverage","log","roadmap"];
+  // ── Today's-plan checklist ──────────────────────────────────────────────
+  // The plan is freeform markdown from P620. We make every list item tappable:
+  // checked state is keyed by (plan date → item label) so it persists per day
+  // and resets when a fresh plan lands. A markdown variant renders each <li>
+  // as an interactive checkbox instead of a bullet.
+  const planDate = plan?.date || "";
+  const planCheckedSet = new Set(planChecked[planDate] || []);
+  const togglePlanItem = (label) => setPlanChecked(prev => {
+    const cur = new Set(prev[planDate] || []);
+    cur.has(label) ? cur.delete(label) : cur.add(label);
+    return { ...prev, [planDate]: [...cur] };
+  });
+  // Count items so the card can show progress (regex-extracted to mirror the
+  // plain-text labels the renderer produces).
+  const planItemLabels = (plan?.content || "").split("\n")
+    .filter(l => /^\s*([-*+]|\d+[.)])\s+/.test(l))
+    .map(l => l.replace(/^\s*([-*+]|\d+[.)])\s+/, "").replace(/^\[[ xX]\]\s*/, "").replace(/[*`]/g, "").trim())
+    .filter(Boolean);
+  const planTotal = planItemLabels.length;
+  const planDone  = planItemLabels.filter(l => planCheckedSet.has(l)).length;
+  const planMd = {
+    ...mdComponents,
+    ul: (p) => <ul style={{ margin:"0 0 10px", paddingLeft:0, listStyle:"none" }} {...p} />,
+    ol: (p) => <ol style={{ margin:"0 0 10px", paddingLeft:0, listStyle:"none" }} {...p} />,
+    li: ({ children }) => {
+      const arr = (Array.isArray(children) ? children : [children]).filter(c => c != null && c !== "");
+      // Drop the disabled checkbox react-markdown emits for GFM task items.
+      const parts = arr.filter(c => !(c && c.props && c.props.type === "checkbox"));
+      const label = nodeText(parts).trim();
+      if (!label) return <li style={{ margin:"3px 0", paddingLeft:2 }}>{children}</li>;
+      const checked = planCheckedSet.has(label);
+      return (
+        <li style={{ listStyle:"none", margin:"5px 0", display:"flex", gap:9, alignItems:"flex-start" }}>
+          <button onClick={() => togglePlanItem(label)} role="checkbox" aria-checked={checked} aria-label={label}
+            style={{ flexShrink:0, marginTop:1, width:18, height:18, borderRadius:5, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+              fontSize:11, fontWeight:700, lineHeight:1,
+              border:`1.5px solid ${checked ? "#1D9E75" : brdS}`, background:checked ? "#1D9E75" : surface, color:checked ? "#fff" : "transparent" }}>
+            ✓
+          </button>
+          <span style={{ lineHeight:1.6, color:checked ? txtT : txtS, textDecoration:checked ? "line-through" : "none", textDecorationColor:hexA("#1D9E75",0.7) }}>{parts}</span>
+        </li>
+      );
+    },
+  };
+
+  const TAB_LABELS = {};
+  const TABS = ["today","interviews","plan","calendar","tutor","frontier","research","advisory","coverage","log"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
-  const ContentCard = ({ title, sub, item, empty, accent = "#185FA5" }) => (
+  const ContentCard = ({ title, sub, item, empty, accent = "#185FA5", components }) => (
     <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${accent}` }}>
       <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(accent, dark?0.15:0.08)}, transparent 70%)` }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:item?.content?10:6 }}>
@@ -406,7 +494,7 @@ export default function App() {
           </div>
           <div style={S.stamp}>{item?.generated_at ? `Updated ${fmtTs(item.generated_at)} · P620` : "Awaiting P620"}</div>
         </div>
-        {item?.content ? <Md>{item.content}</Md> : <div style={{ fontSize:13, color:txtT, marginLeft:15 }}>{empty}</div>}
+        {item?.content ? <Md components={components}>{item.content}</Md> : <div style={{ fontSize:13, color:txtT, marginLeft:15 }}>{empty}</div>}
       </div>
     </div>
   );
@@ -443,12 +531,19 @@ export default function App() {
       </div>
 
       {/* ── INTERVIEWS ── */}
-      {tab==="interviews" && (
+      {tab==="interviews" && (() => {
+        const allIvs = cur?.interviews || [];
+        const activeIvs   = allIvs.filter(iv => !archivedSet.has(iv.id));
+        const archivedList = allIvs.filter(iv => archivedSet.has(iv.id));
+        return (
         <div>
-          {!(cur?.interviews?.length) && (
+          {!allIvs.length && (
             <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No interviews loaded from curriculum.json yet.</div>
           )}
-          {(cur?.interviews || []).map((iv, idx) => {
+          {allIvs.length > 0 && activeIvs.length === 0 && (
+            <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>All interviews archived — reactivate one from the Archive below.</div>
+          )}
+          {activeIvs.map((iv, idx) => {
             const ac = ({ aaru:"#1D9E75", equi:"#7F77DD" })[iv.id] || ["#185FA5","#BA7517","#1D9E75","#7F77DD"][idx%4];
             const ivDate = new Date(iv.date + "T09:00:00");
             const daysLeft = Math.ceil((ivDate - new Date()) / 864e5);
@@ -496,9 +591,15 @@ export default function App() {
                         <span>{iv.salary}</span>
                       </div>
                     </div>
-                    <div style={{ textAlign:"center", flexShrink:0, padding:"8px 15px", borderRadius:14, background:hexA(urgency, dark?0.2:0.12), border:`1px solid ${hexA(urgency, dark?0.34:0.24)}` }}>
-                      <div style={{ fontSize:30, fontWeight:800, color:urgency, lineHeight:1, letterSpacing:-1 }}>{daysLeft > 0 ? daysLeft : 0}<span style={{ fontSize:13, fontWeight:700 }}>d</span></div>
-                      <div style={{ fontSize:10.5, color:txtT, marginTop:4 }}>{fmtDate(iv.date)}</div>
+                    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, flexShrink:0 }}>
+                      <div style={{ textAlign:"center", padding:"8px 15px", borderRadius:14, background:hexA(urgency, dark?0.2:0.12), border:`1px solid ${hexA(urgency, dark?0.34:0.24)}` }}>
+                        <div style={{ fontSize:30, fontWeight:800, color:urgency, lineHeight:1, letterSpacing:-1 }}>{daysLeft > 0 ? daysLeft : 0}<span style={{ fontSize:13, fontWeight:700 }}>d</span></div>
+                        <div style={{ fontSize:10.5, color:txtT, marginTop:4 }}>{fmtDate(iv.date)}</div>
+                      </div>
+                      <button onClick={() => archiveIv(iv.id)} title="Mark this interview done and move it to the archive"
+                        style={{ fontSize:11, fontWeight:600, padding:"4px 11px", borderRadius:8, cursor:"pointer", border:`1px solid ${brdS}`, background:surface, color:txtS, whiteSpace:"nowrap" }}>
+                        Archive ✓
+                      </button>
                     </div>
                   </div>
                   {nav.length > 0 && (
@@ -663,8 +764,32 @@ export default function App() {
               </div>
             );
           })}
+
+          {/* Archive — completed interviews, reactivatable */}
+          {archivedList.length > 0 && (
+            <div style={{ marginTop:8 }}>
+              <div style={{ ...S.lbl, margin:"0 0 8px 2px" }}>Archive — {archivedList.length} done</div>
+              {archivedList.map(iv => {
+                const ac = ({ aaru:"#1D9E75", equi:"#7F77DD" })[iv.id] || "#185FA5";
+                return (
+                  <div key={iv.id} style={{ ...S.card, marginBottom:"0.6rem", display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, flexWrap:"wrap", opacity:0.85 }}>
+                    <div style={{ minWidth:0 }}>
+                      <div style={{ fontSize:13.5, fontWeight:600, display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                        <span style={{ width:8, height:8, borderRadius:2, background:ac, display:"inline-block", flexShrink:0 }} />
+                        {iv.company}
+                        <span style={pill("#888888", { padding:"1px 8px" })}>done</span>
+                      </div>
+                      <div style={{ fontSize:11.5, color:txtT, marginTop:3 }}>{iv.role} · {fmtDate(iv.date)}</div>
+                    </div>
+                    <button onClick={() => reactivateIv(iv.id)} style={{ ...S.btn(false), fontSize:12, flexShrink:0 }}>↩ Reactivate</button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
+        );
+      })()}
 
       {/* ── TODAY ── */}
       {tab==="today" && (
@@ -721,77 +846,35 @@ export default function App() {
                     <div style={{ fontSize:12.5, color:txtS, marginTop:4, lineHeight:1.6 }}><strong style={{ color:txt }}>Build:</strong> {crashToday.build}</div>
                     <div style={{ fontSize:12, color:txtS, marginTop:3, lineHeight:1.6 }}><strong style={{ color:txt }}>Drill:</strong> {crashToday.drill} &nbsp;·&nbsp; <strong style={{ color:txt }}>Done when:</strong> {crashToday.done}</div>
                   </div>
-                  <button style={S.btn(true)} onClick={() => setTab("crash-course")}>Open plan →</button>
+                  <div style={{ display:"flex", flexDirection:"column", gap:7, flexShrink:0 }}>
+                    <button style={S.btn(true)} onClick={() => toggleCrashDay(crashToday.n)}>✓ Mark done</button>
+                    <button style={S.btn(false)} onClick={() => setTab("plan")}>Full plan →</button>
+                  </div>
+                </div>
+                <div style={{ fontSize:11, color:txtT, padding:"0 1.125rem 0.9rem", lineHeight:1.5 }}>
+                  Don't finish today? It stays here tomorrow — days roll forward as you complete them, they're never skipped.
                 </div>
               </div>
             </div>
           )}
 
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:"0.875rem" }}>
-            {[["Total hours",totalHrs,"#1D9E75"],["This week",`${weekHrs}`,"#185FA5","/ 70h"],["Day",startDays||"—","#7F77DD"],["Sessions",log.length,"#BA7517"]].map(([l,v,ac,suf]) => (
-              <div key={l} style={{ borderRadius:14, padding:"12px 14px", background:`linear-gradient(155deg, ${hexA(ac, dark?0.24:0.14)}, ${hexA(ac, dark?0.08:0.05)})`, border:`1px solid ${hexA(ac, dark?0.34:0.2)}`, boxShadow:shadowCard }}>
-                <div style={{ fontSize:10, color:txtT, marginBottom:4, textTransform:"uppercase", letterSpacing:0.5, fontWeight:600 }}>{l}</div>
-                <div style={{ fontSize:24, fontWeight:800, color:ac, lineHeight:1, letterSpacing:-0.6 }}>{v}<span style={{ fontSize:11, fontWeight:600, color:txtT, marginLeft:3 }}>{suf}</span></div>
+          {/* Sprint finished — tracks resume */}
+          {crashAllDone && !focusMode && (
+            <div style={{ ...S.card, borderLeft:`3px solid ${CRASH_AC}`, marginBottom:"0.875rem", display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, flexWrap:"wrap" }}>
+              <div style={{ fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:8 }}>
+                <span>✅</span>Crash course complete — all {crashDays.length} days done. Regular track study has resumed.
               </div>
-            ))}
-          </div>
-
-          <div style={{ ...S.card, marginBottom:"0.875rem", display:"flex", alignItems:"center", gap:16 }}>
-            <Ring pct={weekHrs/70*100} color={weekHrs>=70?"#1D9E75":weekHrs>=49?"#185FA5":weekHrs>=28?"#BA7517":"#A32D2D"} size={58} stroke={6} />
-            <div style={{ flex:1 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-                <span style={{ fontSize:13, fontWeight:600 }}>Weekly progress</span>
-                <span style={{ fontSize:12, color:txtT }}>{weekHrs}h of 70h</span>
-              </div>
-              <div style={{ height:8, borderRadius:5, background:bgS, overflow:"hidden" }}>
-                <div style={{ height:"100%", width:`${Math.min(100,weekHrs/70*100)}%`, borderRadius:5, background:"linear-gradient(90deg, #1D9E75, #185FA5, #7F77DD, #BA7517)" }} />
-              </div>
-              <div style={{ fontSize:12, color:txtT, marginTop:6 }}>{Math.max(0,70-weekHrs).toFixed(1)}h remaining this week</div>
+              <button style={S.btn(false)} onClick={() => setTab("plan")}>Review sprint →</button>
             </div>
-          </div>
-
-          {/* Per-track focus + weekly balance */}
-          <div style={{ fontSize:11, color:txtT, margin:"0 0 8px 2px" }}>
-            {focusMode
-              ? `Tracks paused for interview prep${resumeDate ? ` — resume ${resumeDate.toLocaleDateString("en-US",{ weekday:"short", month:"short", day:"numeric" })}` : ""}`
-              : crashActive
-              ? "Tracks paused — running the 2-week crash course (months-long plan resumes after)"
-              : "Active tracks — weights, current month, this week's balance"}
-          </div>
-          {trackIds.map(id => {
-            const t = tracks[id]; const md = monthData(id);
-            const target = (t.weight || 0) * 70; const got = weekHrsByTrack(id);
-            const pct = target ? Math.min(100, got/target*100) : 0;
-            const ac = t.color?.border || brdS;
-            return (
-              <div key={id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, opacity:tracksPaused?0.6:1 }}>
-                <div style={{ display:"flex", gap:14, padding:"0.875rem 1rem", background:`linear-gradient(120deg, ${hexA(ac, dark?0.16:0.09)}, transparent 75%)` }}>
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, flexWrap:"wrap" }}>
-                      <span style={trackBadge(id)}>{t.name}</span>
-                      {tracksPaused && <span style={pill("#888888", { padding:"1px 7px" })}>⏸ paused</span>}
-                      <span style={{ fontSize:11, color:txtT }}>{Math.round((t.weight||0)*100)}% · ~{t.daily_hours}h/day</span>
-                      <span style={{ ...S.roiBadge(md.roi||75), marginLeft:"auto" }}>ROI {md.roi||"—"}</span>
-                    </div>
-                    <div style={{ fontSize:13.5, fontWeight:600, marginBottom:2 }}>Month {monthOf(id)} — {md.title}</div>
-                    <div style={{ fontSize:12, color:txtS, lineHeight:1.55 }}>{md.focus}</div>
-                    <div style={{ fontSize:11, color:txtT, marginTop:8 }}>{got.toFixed(1)}h this week · target ~{target.toFixed(1)}h</div>
-                  </div>
-                  <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
-                    <Ring pct={pct} color={ac} size={50} stroke={5} />
-                    <div style={{ fontSize:9.5, color:txtT, marginTop:4 }}>of target</div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          )}
 
           <ContentCard
             title="Today's plan"
-            sub="Weighted across all 4 tracks · generated 6am ET"
+            sub={planTotal > 0 ? `Checklist · ${planDone}/${planTotal} done · tap to check off` : `Weighted across your tracks · ${DAILY_HOURS}h/day · generated 6am ET`}
             item={plan}
             accent="#1D9E75"
-            empty="P620 writes a time-blocked, track-weighted 10-hour plan here every morning at 6am ET."
+            components={planMd}
+            empty={`P620 writes a focused, track-weighted ${DAILY_HOURS}-hour plan here every morning at 6am ET.`}
           />
 
           <div style={S.card}>
@@ -855,8 +938,8 @@ export default function App() {
                     } else if (cls.type === "prep") {
                       const a = ivAccent(cls.iv); cellBg = hexA(a, dark?0.2:0.12); cellBrd = hexA(a, dark?0.34:0.24);
                       body = <div style={{ marginTop:3 }}><div style={{ fontSize:10.5, fontWeight:700, color:dark?a:"#8a5a10" }}>Prep</div><div style={{ fontSize:9.5, color:txtT }}>{cls.iv.company}</div></div>;
-                    } else if (crashDayOf(d)) {
-                      const cd = crashDayOf(d); cellBg = hexA(CRASH_AC, dark?0.18:0.1); cellBrd = hexA(CRASH_AC, dark?0.34:0.24);
+                    } else if (crashProjFor(d)) {
+                      const cd = crashProjFor(d); cellBg = hexA(CRASH_AC, dark?0.18:0.1); cellBrd = hexA(CRASH_AC, dark?0.34:0.24);
                       body = <div style={{ marginTop:3 }}><div style={{ fontSize:10.5, fontWeight:700, color:CRASH_AC }}>CC · Day {cd.n}</div><div style={{ fontSize:9, color:txtT, lineHeight:1.25, maxHeight:23, overflow:"hidden" }}>{cd.title}</div></div>;
                     } else {
                       body = <div style={{ marginTop:6, display:"flex", gap:3, flexWrap:"wrap" }}>{trackIds.map(id => <span key={id} style={{ width:7, height:7, borderRadius:2, background:tracks[id]?.color?.border||brdS }} />)}</div>;
@@ -875,10 +958,73 @@ export default function App() {
         </div>
       )}
 
-      {/* ── CRASH COURSE (2-week intensive) ── */}
-      {tab==="crash-course" && (
+      {/* ── PLAN (progress · crash course · roadmap) ── */}
+      {tab==="plan" && (
         <div>
-          {!crashCourse && <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No crash course configured in curriculum.json.</div>}
+          {/* Progress overview */}
+          <div style={{ ...S.lbl, margin:"0 0 8px 2px" }}>This week · {DAILY_HOURS}h/day target</div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:"0.875rem" }}>
+            {[["Total hours",totalHrs,"#1D9E75"],["This week",`${weekHrs}`,"#185FA5",`/ ${WEEKLY_TARGET}h`],["Day",startDays||"—","#7F77DD"],["Sessions",log.length,"#BA7517"]].map(([l,v,ac,suf]) => (
+              <div key={l} style={{ borderRadius:14, padding:"12px 14px", background:`linear-gradient(155deg, ${hexA(ac, dark?0.24:0.14)}, ${hexA(ac, dark?0.08:0.05)})`, border:`1px solid ${hexA(ac, dark?0.34:0.2)}`, boxShadow:shadowCard }}>
+                <div style={{ fontSize:10, color:txtT, marginBottom:4, textTransform:"uppercase", letterSpacing:0.5, fontWeight:600 }}>{l}</div>
+                <div style={{ fontSize:24, fontWeight:800, color:ac, lineHeight:1, letterSpacing:-0.6 }}>{v}<span style={{ fontSize:11, fontWeight:600, color:txtT, marginLeft:3 }}>{suf}</span></div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ ...S.card, marginBottom:"0.875rem", display:"flex", alignItems:"center", gap:16 }}>
+            <Ring pct={weekHrs/WEEKLY_TARGET*100} color={weekColor} size={58} stroke={6} />
+            <div style={{ flex:1 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
+                <span style={{ fontSize:13, fontWeight:600 }}>Weekly progress</span>
+                <span style={{ fontSize:12, color:txtT }}>{weekHrs}h of {WEEKLY_TARGET}h</span>
+              </div>
+              <div style={{ height:8, borderRadius:5, background:bgS, overflow:"hidden" }}>
+                <div style={{ height:"100%", width:`${Math.min(100,weekHrs/WEEKLY_TARGET*100)}%`, borderRadius:5, background:"linear-gradient(90deg, #1D9E75, #185FA5, #7F77DD, #BA7517)" }} />
+              </div>
+              <div style={{ fontSize:12, color:txtT, marginTop:6 }}>{Math.max(0,WEEKLY_TARGET-weekHrs).toFixed(1)}h remaining this week</div>
+            </div>
+          </div>
+
+          {/* Per-track focus + weekly balance */}
+          <div style={{ fontSize:11, color:txtT, margin:"0 0 8px 2px" }}>
+            {focusMode
+              ? `Tracks paused for interview prep${resumeDate ? ` — resume ${resumeDate.toLocaleDateString("en-US",{ weekday:"short", month:"short", day:"numeric" })}` : ""}`
+              : crashActive
+              ? "Tracks paused — running the 2-week crash course (months-long plan resumes after)"
+              : "Active tracks — weights, current month, this week's balance"}
+          </div>
+          {trackIds.map(id => {
+            const t = tracks[id]; const md = monthData(id);
+            const target = (t.weight || 0) * WEEKLY_TARGET; const got = weekHrsByTrack(id);
+            const pct = target ? Math.min(100, got/target*100) : 0;
+            const ac = t.color?.border || brdS;
+            return (
+              <div key={id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, opacity:tracksPaused?0.6:1 }}>
+                <div style={{ display:"flex", gap:14, padding:"0.875rem 1rem", background:`linear-gradient(120deg, ${hexA(ac, dark?0.16:0.09)}, transparent 75%)` }}>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, flexWrap:"wrap" }}>
+                      <span style={trackBadge(id)}>{t.name}</span>
+                      {tracksPaused && <span style={pill("#888888", { padding:"1px 7px" })}>⏸ paused</span>}
+                      <span style={{ fontSize:11, color:txtT }}>{Math.round((t.weight||0)*100)}% · ~{((t.weight||0)*DAILY_HOURS).toFixed(1)}h/day</span>
+                      <span style={{ ...S.roiBadge(md.roi||75), marginLeft:"auto" }}>ROI {md.roi||"—"}</span>
+                    </div>
+                    <div style={{ fontSize:13.5, fontWeight:600, marginBottom:2 }}>Month {monthOf(id)} — {md.title}</div>
+                    <div style={{ fontSize:12, color:txtS, lineHeight:1.55 }}>{md.focus}</div>
+                    <div style={{ fontSize:11, color:txtT, marginTop:8 }}>{got.toFixed(1)}h this week · target ~{target.toFixed(1)}h</div>
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
+                    <Ring pct={pct} color={ac} size={50} stroke={5} />
+                    <div style={{ fontSize:9.5, color:txtT, marginTop:4 }}>of target</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Crash course */}
+          <div style={{ ...S.lbl, margin:"22px 0 8px 2px" }}>2-week crash course</div>
+          {!crashCourse && <div style={{ fontSize:13, color:txtT, padding:"0.25rem 0.25rem 0.75rem" }}>No crash course configured in curriculum.json.</div>}
           {crashCourse && (
             <>
               <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${CRASH_AC}` }}>
@@ -891,8 +1037,9 @@ export default function App() {
                     </div>
                     {crashActive
                       ? <span style={{ fontSize:12, fontWeight:700, padding:"4px 12px", borderRadius:20, color:"#fff", background:CRASH_AC, whiteSpace:"nowrap" }}>Day {crashToday.n} / {crashDays.length}</span>
-                      : <span style={pill(CRASH_AC)}>{crashStart && today0 < crashStart ? `Starts ${fmtDate(crashCourse.start_date)}` : "Complete"}</span>}
+                      : <span style={pill(CRASH_AC)}>{crashAllDone ? "Complete ✓" : crashStart && today0 < crashStart ? `Starts ${fmtDate(crashCourse.start_date)}` : "Not started"}</span>}
                   </div>
+                  <div style={{ fontSize:11, color:txtT, marginTop:9 }}>{crashDone.size} of {crashDays.length} days complete · tick days off as you finish — unfinished days roll forward.</div>
                   {crashCourse.pillars?.length > 0 && (
                     <div style={{ marginTop:13 }}>
                       <div style={{ ...S.lbl, marginBottom:6 }}>Covers</div>
@@ -913,22 +1060,26 @@ export default function App() {
                 <div key={wk}>
                   <div style={{ fontSize:11, color:txtT, margin:"14px 0 6px 2px", fontWeight:600, letterSpacing:0.3 }}>WEEK {wk}{wk===1?" — DATA + AI CORE":" — FULL-STACK + DESIGN + PROOF"}</div>
                   {crashDays.filter(d => d.week === wk).map(d => {
+                    const isDone  = crashDone.has(d.n);
                     const isToday = crashToday?.n === d.n;
-                    const isPast  = crashActive ? d.n < crashToday.n : (crashStart && today0 >= crashStart);
                     return (
                       <div key={d.n} style={{ ...S.card, marginBottom:"0.5rem", padding:0, overflow:"hidden",
-                          borderLeft:`3px solid ${isToday?CRASH_AC:isPast?hexA(CRASH_AC,0.5):brd}`, opacity:isPast && !isToday?0.6:1 }}>
-                        <div style={{ display:"flex", gap:12, padding:"0.8rem 1rem", background:isToday?`linear-gradient(120deg, ${hexA(CRASH_AC, dark?0.18:0.1)}, transparent 78%)`:"transparent" }}>
-                          <div style={{ flexShrink:0, width:30, height:30, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:"#fff", background:isToday?CRASH_AC:hexA(CRASH_AC,0.45) }}>{d.n}</div>
+                          borderLeft:`3px solid ${isToday?CRASH_AC:isDone?hexA(CRASH_AC,0.5):brd}`, opacity:isDone && !isToday?0.6:1 }}>
+                        <div style={{ display:"flex", gap:12, padding:"0.8rem 1rem", alignItems:"flex-start", background:isToday?`linear-gradient(120deg, ${hexA(CRASH_AC, dark?0.18:0.1)}, transparent 78%)`:"transparent" }}>
+                          <div style={{ flexShrink:0, width:30, height:30, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:"#fff", background:isDone||isToday?CRASH_AC:hexA(CRASH_AC,0.45) }}>{isDone?"✓":d.n}</div>
                           <div style={{ flex:1, minWidth:0 }}>
                             <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
                               <span style={{ fontSize:13.5, fontWeight:600 }}>{d.title}</span>
                               {isToday && <span style={pill(CRASH_AC, { padding:"1px 7px" })}>today</span>}
-                              {isPast && !isToday && <span style={{ fontSize:11, color:CRASH_AC, fontWeight:600 }}>✓</span>}
                             </div>
                             <div style={{ fontSize:12, color:txtS, lineHeight:1.6, marginTop:3 }}><strong style={{ color:txt }}>Build:</strong> {d.build}</div>
                             <div style={{ fontSize:11.5, color:txtS, lineHeight:1.6, marginTop:2 }}><strong style={{ color:txt }}>Drill:</strong> {d.drill} &nbsp;·&nbsp; <strong style={{ color:txt }}>Done:</strong> {d.done}</div>
                           </div>
+                          <button onClick={() => toggleCrashDay(d.n)} title={isDone?"Mark not done":"Mark done"}
+                            style={{ flexShrink:0, alignSelf:"center", fontSize:11, fontWeight:600, padding:"5px 11px", borderRadius:8, cursor:"pointer", whiteSpace:"nowrap",
+                              border:`1px solid ${isDone?hexA(CRASH_AC,0.4):brdS}`, background:isDone?hexA(CRASH_AC, dark?0.18:0.1):surface, color:isDone?CRASH_AC:txtS }}>
+                            {isDone ? "✓ Done" : "Mark done"}
+                          </button>
                         </div>
                       </div>
                     );
@@ -937,6 +1088,43 @@ export default function App() {
               ))}
             </>
           )}
+
+          {/* 12-month roadmap */}
+          <div style={{ ...S.lbl, margin:"22px 0 8px 2px" }}>12-month roadmap</div>
+          {trackIds.map(id => {
+            const t = tracks[id];
+            return (
+              <div key={id} style={{ marginBottom:"1.25rem" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:10, margin:"0 0 8px 2px", flexWrap:"wrap" }}>
+                  <span style={trackBadge(id)}>{t.name}</span>
+                  <span style={{ fontSize:12, color:txtT }}>{Math.round((t.weight||0)*100)}% of day · {t.summary}</span>
+                </div>
+                {(t.months||[]).map(mo => {
+                  const ac = t.color?.border || brdS;
+                  const active = mo.n === monthOf(id);
+                  const done = mo.n < monthOf(id);
+                  return (
+                    <div key={mo.n} style={{ ...S.card, marginBottom:"0.5rem", padding:0, overflow:"hidden",
+                        borderLeft:`3px solid ${active?ac:done?hexA(ac,0.5):brd}`, opacity:done?0.62:1 }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", padding:"0.875rem 1rem",
+                          background:active?`linear-gradient(120deg, ${hexA(ac, dark?0.18:0.1)}, transparent 78%)`:"transparent" }}>
+                        <div style={{ flex:1 }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4, flexWrap:"wrap" }}>
+                            <span style={{ fontSize:11, color:txtT, minWidth:54 }}>Month {mo.n}</span>
+                            {active && <span style={trackBadge(id)}>active</span>}
+                            {done && <span style={{ fontSize:11, color:ac, fontWeight:600 }}>✓ done</span>}
+                          </div>
+                          <div style={{ fontSize:14, fontWeight:600, marginBottom:4 }}>{mo.title}</div>
+                          <div style={{ fontSize:12, color:txtS, lineHeight:1.55 }}>{mo.focus}</div>
+                        </div>
+                        <span style={{ ...S.roiBadge(mo.roi), marginLeft:12, whiteSpace:"nowrap" }}>ROI {mo.roi}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -991,6 +1179,53 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* ── RESEARCH (curated reading list) ── */}
+      {tab==="research" && (() => {
+        const papers = cur?.research || [];
+        const readCount = papers.filter(p => readPapers.includes(p.id)).length;
+        const catColor = { Foundational:"#185FA5", LLMs:"#1D9E75", "RAG & Retrieval":"#7F77DD", Agents:"#BA7517", Evaluation:"#A35BBA", "Data Integration":"#0D9488", Efficiency:"#A32D2D" };
+        return (
+        <div>
+          <div style={{ ...S.card, borderLeft:`3px solid #7F77DD`, background:`linear-gradient(125deg, ${hexA("#7F77DD", dark?0.13:0.07)}, ${bg} 65%)` }}>
+            <div style={{ fontSize:13.5, fontWeight:600, marginBottom:4, display:"flex", alignItems:"center", gap:7 }}>
+              <span style={{ width:8, height:8, borderRadius:3, background:"#7F77DD", display:"inline-block" }} />Papers to read
+            </div>
+            <div style={{ ...S.stamp, marginLeft:15, lineHeight:1.6 }}>The highest-leverage papers behind your tracks and target roles. Read the summary here; open the paper only when you want to go deep.{papers.length>0 ? ` ${readCount} of ${papers.length} read.` : ""}</div>
+          </div>
+
+          {papers.length === 0 && <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No papers in curriculum.json yet.</div>}
+
+          {papers.map(p => {
+            const ac = catColor[p.tag] || tracks[p.track]?.color?.border || "#185FA5";
+            const isRead = readPapers.includes(p.id);
+            return (
+              <div key={p.id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, opacity:isRead?0.7:1 }}>
+                <div style={{ padding:"1rem 1.125rem" }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12 }}>
+                    <div style={{ minWidth:0 }}>
+                      <div style={{ display:"flex", gap:7, flexWrap:"wrap", marginBottom:6 }}>
+                        {p.tag && <span style={pill(ac, { fontSize:11 })}>{p.tag}</span>}
+                        {p.track && tracks[p.track] && <span style={trackBadge(p.track)}>{tracks[p.track].name}</span>}
+                      </div>
+                      <div style={{ fontSize:14.5, fontWeight:700, letterSpacing:-0.2, lineHeight:1.3 }}>{p.title}</div>
+                      <div style={{ fontSize:11.5, color:txtT, marginTop:3 }}>{p.authors}{p.year ? ` · ${p.year}` : ""}</div>
+                    </div>
+                    {isRead && <span style={{ fontSize:11, color:ac, fontWeight:700, flexShrink:0 }}>✓ read</span>}
+                  </div>
+                  {p.why && <div style={{ fontSize:12.5, color:txtS, lineHeight:1.6, marginTop:10 }}><strong style={{ color:txt }}>Why it matters:</strong> {p.why}</div>}
+                  {p.summary && <div style={{ fontSize:12.5, color:txtS, lineHeight:1.7, marginTop:8 }}>{p.summary}</div>}
+                  <div style={{ display:"flex", gap:8, alignItems:"center", marginTop:12, flexWrap:"wrap" }}>
+                    <button onClick={() => togglePaper(p.id)} style={{ ...S.btn(!isRead), fontSize:12 }}>{isRead ? "↩ Mark unread" : "✓ Mark read"}</button>
+                    {p.url && <a href={p.url} target="_blank" rel="noreferrer" style={{ ...S.btn(false), fontSize:12, textDecoration:"none", display:"inline-block" }}>Read paper ↗</a>}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        );
+      })()}
 
       {/* ── ADVISORY (read-only) ── */}
       {tab==="advisory" && (
@@ -1091,42 +1326,6 @@ export default function App() {
           })}
         </div>
       )}
-
-      {/* ── ROADMAP (per track) ── */}
-      {tab==="roadmap" && trackIds.map(id => {
-        const t = tracks[id];
-        return (
-          <div key={id} style={{ marginBottom:"1.5rem" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:10, margin:"0 0 8px 2px", flexWrap:"wrap" }}>
-              <span style={trackBadge(id)}>{t.name}</span>
-              <span style={{ fontSize:12, color:txtT }}>{Math.round((t.weight||0)*100)}% of day · {t.summary}</span>
-            </div>
-            {(t.months||[]).map(mo => {
-              const ac = t.color?.border || brdS;
-              const active = mo.n === monthOf(id);
-              const done = mo.n < monthOf(id);
-              return (
-                <div key={mo.n} style={{ ...S.card, marginBottom:"0.5rem", padding:0, overflow:"hidden",
-                    borderLeft:`3px solid ${active?ac:done?hexA(ac,0.5):brd}`, opacity:done?0.62:1 }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", padding:"0.875rem 1rem",
-                      background:active?`linear-gradient(120deg, ${hexA(ac, dark?0.18:0.1)}, transparent 78%)`:"transparent" }}>
-                    <div style={{ flex:1 }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4, flexWrap:"wrap" }}>
-                        <span style={{ fontSize:11, color:txtT, minWidth:54 }}>Month {mo.n}</span>
-                        {active && <span style={trackBadge(id)}>active</span>}
-                        {done && <span style={{ fontSize:11, color:ac, fontWeight:600 }}>✓ done</span>}
-                      </div>
-                      <div style={{ fontSize:14, fontWeight:600, marginBottom:4 }}>{mo.title}</div>
-                      <div style={{ fontSize:12, color:txtS, lineHeight:1.55 }}>{mo.focus}</div>
-                    </div>
-                    <span style={{ ...S.roiBadge(mo.roi), marginLeft:12, whiteSpace:"nowrap" }}>ROI {mo.roi}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
 
       {/* Full-screen document reader for a prep guide */}
       {readerIv && <DocReader iv={readerIv} md={guideMd[readerIv.id]} onClose={() => setReaderIv(null)} />}

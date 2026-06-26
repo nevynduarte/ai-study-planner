@@ -3,7 +3,7 @@
   "student": {
     "name": "Nevyn Duarte",
     "background": "BS Mathematics (UT Austin), MS Data Science CU Boulder (GPA 3.84). Co-Founder/CTO Bridges AI. Ex-quantitative equity researcher (M Science / Jefferies). Strong Python, RAG systems, LLM workflows, agentic systems.",
-    "commitment": "10 hours/day, 12-month elite curriculum across 4 parallel tracks",
+    "commitment": "3 focused hours/day (~21h/week), 12-month elite curriculum across 4 parallel tracks",
     "income_target": "$300K–$600K+"
   },
   "crash_course": {
@@ -460,7 +460,7 @@
     "ai-eng": {
       "name": "AI Engineering",
       "weight": 0.40,
-      "daily_hours": 4,
+      "daily_hours": 1.2,
       "color": { "bg": "#E1F5EE", "text": "#085041", "border": "#1D9E75" },
       "summary": "From-scratch implementations: math → autograd → transformers → LLMs → RAG/agents → CUDA → alignment → distributed inference.",
       "skills": [
@@ -494,7 +494,7 @@
     "ml-eng": {
       "name": "ML Engineering",
       "weight": 0.25,
-      "daily_hours": 2.5,
+      "daily_hours": 0.75,
       "color": { "bg": "#E6F1FB", "text": "#0C447C", "border": "#185FA5" },
       "summary": "The production ML lifecycle: clean code → pipelines → serving → CI/CD → monitoring → orchestration → platform. What turns a model into a system.",
       "skills": [
@@ -527,7 +527,7 @@
     "data-sci": {
       "name": "Data Science",
       "weight": 0.20,
-      "daily_hours": 2,
+      "daily_hours": 0.6,
       "color": { "bg": "#EEEDFE", "text": "#3C3489", "border": "#7F77DD" },
       "summary": "Statistical rigor and inference: hypothesis testing → experiments → causal inference → modeling → Bayesian → communication. The analyst muscle for the D.E. Shaw / Woodline data roles.",
       "skills": [
@@ -559,7 +559,7 @@
     "quant": {
       "name": "Quant / Alt-Data",
       "weight": 0.15,
-      "daily_hours": 1.5,
+      "daily_hours": 0.45,
       "color": { "bg": "#FAEEDA", "text": "#633806", "border": "#BA7517" },
       "summary": "The differentiator for D.E. Shaw Alt-Data and Woodline: alt-data sourcing → factor research → backtesting → portfolio/risk → research platform. Builds directly on the quant-research background.",
       "skills": [
@@ -594,6 +594,140 @@
     "Production AI systems", "Distributed systems", "LLM internals", "AI product dev",
     "Fine-tuning/alignment", "MLOps & CI/CD", "Evaluation & observability",
     "Data engineering", "Vector DBs & retrieval", "CUDA & GPU", "Multi-agent systems"
+  ],
+  "research": [
+    {
+      "id": "attention-2017",
+      "title": "Attention Is All You Need",
+      "authors": "Vaswani et al. (Google)",
+      "year": 2017,
+      "track": "ai-eng",
+      "tag": "Foundational",
+      "url": "https://arxiv.org/abs/1706.03762",
+      "why": "The transformer paper. Every LLM you'll build, fine-tune, or interview about descends from this architecture — you must be able to explain self-attention from memory.",
+      "summary": "Replaces recurrence and convolutions with a pure attention mechanism: each token attends to every other token via scaled dot-product attention, run in parallel across multiple heads. Adds positional encodings (since attention is order-agnostic), residual connections, and layernorm. The result trains far faster than RNNs and captures long-range dependencies directly. Know the Q/K/V formulation, why you divide by √d_k, and the difference between encoder self-attention, decoder masked self-attention, and cross-attention."
+    },
+    {
+      "id": "gpt3-2020",
+      "title": "Language Models are Few-Shot Learners (GPT-3)",
+      "authors": "Brown et al. (OpenAI)",
+      "year": 2020,
+      "track": "ai-eng",
+      "tag": "LLMs",
+      "url": "https://arxiv.org/abs/2005.14165",
+      "why": "Established in-context learning and the scaling-laws mindset that defines how the field thinks about model capability vs. parameters and data.",
+      "summary": "Scales a decoder-only transformer to 175B parameters and shows that a single frozen model performs new tasks from a few examples in the prompt — no gradient updates — purely via in-context learning. Documents how performance scales smoothly with model size and how prompt format (zero- vs. one- vs. few-shot) changes results. The conceptual takeaway for interviews: prompting is a capability that emerges with scale, and 'just add examples to the context' is often a viable alternative to fine-tuning."
+    },
+    {
+      "id": "instructgpt-2022",
+      "title": "Training Language Models to Follow Instructions with Human Feedback (InstructGPT)",
+      "authors": "Ouyang et al. (OpenAI)",
+      "year": 2022,
+      "track": "ai-eng",
+      "tag": "LLMs",
+      "url": "https://arxiv.org/abs/2203.02155",
+      "why": "The RLHF recipe behind ChatGPT-style assistants. This is how raw next-token predictors become aligned, useful products.",
+      "summary": "Three stages: (1) supervised fine-tuning on human-written demonstrations, (2) train a reward model on human rankings of model outputs, (3) optimize the policy against that reward model with PPO. A 1.3B InstructGPT was preferred by humans over the 175B base GPT-3, showing alignment matters more than raw scale for usefulness. Understand the SFT → reward model → PPO pipeline and the failure modes (reward hacking, alignment tax) — DPO (a simpler, RL-free alternative) is the natural follow-up read."
+    },
+    {
+      "id": "cot-2022",
+      "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+      "authors": "Wei et al. (Google)",
+      "year": 2022,
+      "track": "ai-eng",
+      "tag": "LLMs",
+      "url": "https://arxiv.org/abs/2201.11903",
+      "why": "The single most practical prompting technique — and the basis for agentic reasoning loops you'll design at Equi/Aaru.",
+      "summary": "Simply prompting the model to 'think step by step' and produce intermediate reasoning before the final answer dramatically improves performance on arithmetic, commonsense, and symbolic reasoning — but only for sufficiently large models. Reasoning emerges as a scale-dependent capability. In practice this underpins self-consistency (sample multiple chains, take the majority) and ReAct-style agents. Cheap to apply, big wins on multi-step tasks; the cost is more tokens and latency."
+    },
+    {
+      "id": "lora-2021",
+      "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+      "authors": "Hu et al. (Microsoft)",
+      "year": 2021,
+      "track": "ml-eng",
+      "tag": "Efficiency",
+      "url": "https://arxiv.org/abs/2106.09685",
+      "why": "How fine-tuning is actually done in production on a budget. You'll be expected to know parameter-efficient fine-tuning cold.",
+      "summary": "Instead of updating all weights, freeze the pretrained model and inject small trainable low-rank matrices (A·B) into each layer; only those are trained. This cuts trainable parameters by ~10,000× and storage per task to megabytes, with no added inference latency (the deltas merge into the base weights). Multiple task-specific LoRA adapters can be swapped on one base model. QLoRA extends this to 4-bit quantized base models so you can fine-tune large models on a single GPU."
+    },
+    {
+      "id": "rag-2020",
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "authors": "Lewis et al. (Meta)",
+      "year": 2020,
+      "track": "ai-eng",
+      "tag": "RAG & Retrieval",
+      "url": "https://arxiv.org/abs/2005.11401",
+      "why": "The paper that named RAG — directly the Equi system-design round (Q&A over fund documents) and the crash-course /ask endpoint.",
+      "summary": "Couples a parametric model (a seq2seq generator) with a non-parametric memory (a dense vector index of documents). At inference it retrieves the top-k relevant passages and conditions generation on them, so knowledge lives in an updatable index rather than the weights. This reduces hallucination, lets you cite sources, and means you update knowledge by re-indexing instead of retraining. Modern RAG elaborates every stage (chunking, hybrid retrieval, reranking, eval) but the core retrieve-then-generate loop is here."
+    },
+    {
+      "id": "dpr-2020",
+      "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+      "authors": "Karpukhin et al. (Meta)",
+      "year": 2020,
+      "track": "ai-eng",
+      "tag": "RAG & Retrieval",
+      "url": "https://arxiv.org/abs/2004.04906",
+      "why": "The retrieval half of RAG. Explains why embedding search beats keyword search — and, by contrast, when BM25 still wins (the case for hybrid).",
+      "summary": "Trains a dual-encoder (separate encoders for questions and passages) with a contrastive objective so that relevant Q–passage pairs land close in embedding space, using in-batch negatives for efficient training. Dense retrieval substantially outperforms BM25 on open-domain QA because it matches on meaning, not surface tokens. The practical lesson for your RAG designs: dense retrieval handles paraphrase and synonymy but can miss exact identifiers/codes — which is exactly why production systems fuse dense + sparse (hybrid) retrieval."
+    },
+    {
+      "id": "lost-middle-2023",
+      "title": "Lost in the Middle: How Language Models Use Long Contexts",
+      "authors": "Liu et al. (Stanford)",
+      "year": 2023,
+      "track": "ai-eng",
+      "tag": "RAG & Retrieval",
+      "url": "https://arxiv.org/abs/2307.03172",
+      "why": "A concrete, defensible reason to rerank and keep context tight — great to cite in a RAG design discussion.",
+      "summary": "Models use information best when it sits at the very start or very end of the context window; relevant facts buried in the middle are frequently ignored, producing a U-shaped accuracy curve. Simply stuffing more retrieved chunks in does not help and can hurt. The takeaways for RAG: retrieve fewer, higher-precision chunks; rerank so the strongest evidence sits at the edges; and don't assume a long context window removes the need for good retrieval."
+    },
+    {
+      "id": "contextual-retrieval-2024",
+      "title": "Introducing Contextual Retrieval",
+      "authors": "Anthropic",
+      "year": 2024,
+      "track": "ai-eng",
+      "tag": "RAG & Retrieval",
+      "url": "https://www.anthropic.com/news/contextual-retrieval",
+      "why": "The exact technique the crash course's Day-6 /ask endpoint is built on — a cheap, high-impact upgrade to naive chunking.",
+      "summary": "Standard chunking strips each chunk of the document context it needs to be retrievable (a chunk saying 'revenue grew 3%' loses which company and quarter). Contextual Retrieval prepends a short, LLM-generated context blurb to each chunk before embedding/indexing, and combines contextual embeddings with contextual BM25. Anthropic reports large drops in retrieval-failure rate, further improved by adding a reranking step. Prompt-caching makes generating the per-chunk context cheap. This is the pragmatic, ship-it version of everything in the academic RAG papers."
+    },
+    {
+      "id": "react-2022",
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "authors": "Yao et al. (Princeton/Google)",
+      "year": 2022,
+      "track": "ai-eng",
+      "tag": "Agents",
+      "url": "https://arxiv.org/abs/2210.03629",
+      "why": "The mental model for the agentic/tool-use workflows Equi wants (due-diligence automation) and the crash-course agent work.",
+      "summary": "Interleaves reasoning traces ('thoughts') with actions (tool/API calls) and observations in a loop: the model reasons about what to do, acts, reads the result, and reasons again. Grounding reasoning in real tool outputs reduces hallucination versus chain-of-thought alone, and the explicit trace makes the agent's behavior inspectable. This is the conceptual backbone of modern tool-using agents — function calling, retrieval, calculators, code execution all slot into the thought→action→observation cycle."
+    },
+    {
+      "id": "ragas-2023",
+      "title": "RAGAS: Automated Evaluation of Retrieval Augmented Generation",
+      "authors": "Es et al.",
+      "year": 2023,
+      "track": "ai-eng",
+      "tag": "Evaluation",
+      "url": "https://arxiv.org/abs/2309.15217",
+      "why": "You can't ship RAG without measuring it. Maps directly to the crash-course Day-13 eval work and any 'how do you know it's good?' interview question.",
+      "summary": "Proposes reference-free metrics to evaluate a RAG pipeline without hand-labeled answers: faithfulness (is the answer grounded in the retrieved context?), answer relevance (does it address the question?), and context precision/recall (did retrieval surface the right passages?). Metrics are computed with an LLM-as-judge. The practical discipline: separate retrieval quality from generation quality so you know which half to fix, and calibrate the LLM judge against a small human-labeled set before trusting its numbers."
+    },
+    {
+      "id": "fellegi-sunter-1969",
+      "title": "A Theory for Record Linkage",
+      "authors": "Fellegi & Sunter",
+      "year": 1969,
+      "track": "ml-eng",
+      "tag": "Data Integration",
+      "url": "https://www.tandfonline.com/doi/abs/10.1080/01621459.1969.10501049",
+      "why": "The probabilistic foundation of entity resolution — the core Aaru skill and the crash-course Day-3 build. Splink is a direct modern implementation.",
+      "summary": "Formalizes record linkage as a decision problem: for each candidate pair of records, compute a likelihood ratio from the agreement/disagreement of their fields, weighting each field by how discriminating it is (matching on a rare surname says more than matching on a common state). Compare the score to two thresholds to declare match / non-match / needs-human-review, with the thresholds set to bound false-match and false-non-match rates. This 'compare fields, weight by informativeness, threshold the score' framework is exactly what probabilistic matchers like Splink implement today — pair it with blocking (to avoid all-pairs comparison) and you have scalable entity resolution."
+    }
   ],
   "day_of_week": {
     "Monday": "Set weekly goals per track, review last week's deliverables",

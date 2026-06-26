@@ -97,7 +97,7 @@ All three are grounded by `build_context()` (in `lib.sh`), which injects the cur
 ## Daily workflow
 
 - **6am**: text arrives with today's focus, frontier paper, and don't-skip item; the full
-  10-hour plan and frontier digest land in the web app automatically
+  3-hour plan and frontier digest land in the web app automatically
 - **During the day**: open the web app — the plan is already there. Log sessions on the Today tab, tagging each with its track so the weekly balance and coverage stay accurate.
 - **Coverage tab**: see the skill heatmap per track — your map of ground covered vs. remaining.
 - **Tutor tab**: type a question; it's answered on the next hourly cron run
