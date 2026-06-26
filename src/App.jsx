@@ -198,12 +198,16 @@ export default function App() {
   const [readerIv,  setReaderIv]  = useState(null); // interview whose guide is open in the doc reader
   // Client-side persisted toggles
   const [completedDays, setCompletedDays] = usePersisted("asp.crash.completed", []); // crash-course day numbers done
-  const [archivedIvs,   setArchivedIvs]   = usePersisted("asp.iv.archived", []);     // archived interview ids
+  const [archivedIvs,   setArchivedIvs]   = usePersisted("asp.iv.archived", []);     // explicitly archived interview ids
+  const [activatedIvs,  setActivatedIvs]  = usePersisted("asp.iv.activated", []);    // dormant roles the user pulled back out of the archive
   const [readPapers,    setReadPapers]    = usePersisted("asp.papers.read", []);     // research paper ids read
   const [planChecked,   setPlanChecked]   = usePersisted("asp.plan.checked", {});    // { [planDate]: [checked item labels] }
+  const [solvedProblems,setSolvedProblems]= usePersisted("asp.practice.solved", []); // practice problem ids solved
+  const [practiceSec,   setPracticeSec]   = useState(null);                          // selected practice section id
   const toggleCrashDay = (n) => setCompletedDays(prev => prev.includes(n) ? prev.filter(x => x !== n) : [...prev, n]);
-  const archiveIv      = (id) => setArchivedIvs(prev => prev.includes(id) ? prev : [...prev, id]);
-  const reactivateIv   = (id) => setArchivedIvs(prev => prev.filter(x => x !== id));
+  const toggleSolved   = (id) => setSolvedProblems(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  const archiveIv      = (id) => { setArchivedIvs(prev => prev.includes(id) ? prev : [...prev, id]); setActivatedIvs(prev => prev.filter(x => x !== id)); };
+  const reactivateIv   = (id) => { setArchivedIvs(prev => prev.filter(x => x !== id)); setActivatedIvs(prev => prev.includes(id) ? prev : [...prev, id]); };
   const togglePaper    = (id) => setReadPapers(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   const openGuide = async (iv) => {
     setReaderIv(iv);
@@ -265,9 +269,13 @@ export default function App() {
   const today0 = startOfDay(now);
   // Archived interviews are "done" — they drop out of scheduling (no prep/focus
   // mode, no calendar markers) but stay reactivatable from the Archive section.
-  const archivedSet = new Set(archivedIvs);
+  // Roles flagged `dormant` in the curriculum (e.g. Woodline, D.E. Shaw) start
+  // archived; explicit user archive/reactivate overrides that default.
+  const archivedExplicit = new Set(archivedIvs);
+  const activatedExplicit = new Set(activatedIvs);
+  const isArchived = (iv) => archivedExplicit.has(iv.id) ? true : (iv.dormant && !activatedExplicit.has(iv.id));
   const interviews = (cur?.interviews || [])
-    .filter(iv => !archivedSet.has(iv.id))
+    .filter(iv => !isArchived(iv))
     .map(iv => ({ ...iv, _date: new Date(iv.date + "T09:00:00") }))
     .sort((a,b) => a._date - b._date);
 
@@ -478,7 +486,7 @@ export default function App() {
   };
 
   const TAB_LABELS = {};
-  const TABS = ["today","interviews","plan","calendar","tutor","frontier","research","advisory","coverage","log"];
+  const TABS = ["today","interviews","plan","calendar","tutor","research","practice","frontier","advisory","coverage","log"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
@@ -533,8 +541,8 @@ export default function App() {
       {/* ── INTERVIEWS ── */}
       {tab==="interviews" && (() => {
         const allIvs = cur?.interviews || [];
-        const activeIvs   = allIvs.filter(iv => !archivedSet.has(iv.id));
-        const archivedList = allIvs.filter(iv => archivedSet.has(iv.id));
+        const activeIvs    = allIvs.filter(iv => !isArchived(iv));
+        const archivedList = allIvs.filter(iv => isArchived(iv));
         return (
         <div>
           {!allIvs.length && (
@@ -545,9 +553,9 @@ export default function App() {
           )}
           {activeIvs.map((iv, idx) => {
             const ac = ({ aaru:"#1D9E75", equi:"#7F77DD" })[iv.id] || ["#185FA5","#BA7517","#1D9E75","#7F77DD"][idx%4];
-            const ivDate = new Date(iv.date + "T09:00:00");
-            const daysLeft = Math.ceil((ivDate - new Date()) / 864e5);
-            const urgency = daysLeft <= 1 ? "#A32D2D" : daysLeft <= 2 ? "#BA7517" : ac;
+            const hasDate = !!iv.date;
+            const daysLeft = hasDate ? Math.ceil((new Date(iv.date + "T09:00:00") - new Date()) / 864e5) : null;
+            const urgency = hasDate ? (daysLeft <= 1 ? "#A32D2D" : daysLeft <= 2 ? "#BA7517" : ac) : ac;
             const chip = (extra) => ({ fontSize:12, fontWeight:600, padding:"3px 10px", borderRadius:999, color:"#fff", background:ac, whiteSpace:"nowrap", display:"inline-block", ...extra });
             // Section wrapper: accent tick + uppercase eyebrow + scroll anchor.
             const sec = (key, label, child) => (
@@ -593,8 +601,10 @@ export default function App() {
                     </div>
                     <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, flexShrink:0 }}>
                       <div style={{ textAlign:"center", padding:"8px 15px", borderRadius:14, background:hexA(urgency, dark?0.2:0.12), border:`1px solid ${hexA(urgency, dark?0.34:0.24)}` }}>
-                        <div style={{ fontSize:30, fontWeight:800, color:urgency, lineHeight:1, letterSpacing:-1 }}>{daysLeft > 0 ? daysLeft : 0}<span style={{ fontSize:13, fontWeight:700 }}>d</span></div>
-                        <div style={{ fontSize:10.5, color:txtT, marginTop:4 }}>{fmtDate(iv.date)}</div>
+                        {hasDate
+                          ? <><div style={{ fontSize:30, fontWeight:800, color:urgency, lineHeight:1, letterSpacing:-1 }}>{daysLeft > 0 ? daysLeft : 0}<span style={{ fontSize:13, fontWeight:700 }}>d</span></div>
+                              <div style={{ fontSize:10.5, color:txtT, marginTop:4 }}>{fmtDate(iv.date)}</div></>
+                          : <div style={{ fontSize:13, fontWeight:700, color:urgency }}>Role</div>}
                       </div>
                       <button onClick={() => archiveIv(iv.id)} title="Mark this interview done and move it to the archive"
                         style={{ fontSize:11, fontWeight:600, padding:"4px 11px", borderRadius:8, cursor:"pointer", border:`1px solid ${brdS}`, background:surface, color:txtS, whiteSpace:"nowrap" }}>
@@ -779,7 +789,7 @@ export default function App() {
                         {iv.company}
                         <span style={pill("#888888", { padding:"1px 8px" })}>done</span>
                       </div>
-                      <div style={{ fontSize:11.5, color:txtT, marginTop:3 }}>{iv.role} · {fmtDate(iv.date)}</div>
+                      <div style={{ fontSize:11.5, color:txtT, marginTop:3 }}>{iv.role}{iv.date ? ` · ${fmtDate(iv.date)}` : iv.location ? ` · ${iv.location}` : ""}</div>
                     </div>
                     <button onClick={() => reactivateIv(iv.id)} style={{ ...S.btn(false), fontSize:12, flexShrink:0 }}>↩ Reactivate</button>
                   </div>
@@ -1182,9 +1192,9 @@ export default function App() {
 
       {/* ── RESEARCH (curated reading list) ── */}
       {tab==="research" && (() => {
-        const papers = cur?.research || [];
+        const papers = [...(cur?.research || [])].sort((a,b) => (a.year||0) - (b.year||0));
         const readCount = papers.filter(p => readPapers.includes(p.id)).length;
-        const catColor = { Foundational:"#185FA5", LLMs:"#1D9E75", "RAG & Retrieval":"#7F77DD", Agents:"#BA7517", Evaluation:"#A35BBA", "Data Integration":"#0D9488", Efficiency:"#A32D2D" };
+        const catColor = { Foundational:"#185FA5", LLMs:"#1D9E75", "RAG & Retrieval":"#7F77DD", Agents:"#BA7517", Evaluation:"#A35BBA", "Data Integration":"#0D9488", Efficiency:"#A32D2D", Vision:"#C2410C", "Sequence & Attention":"#185FA5", Generative:"#BE185D", "Representation Learning":"#0D9488", Optimization:"#3B6D11" };
         return (
         <div>
           <div style={{ ...S.card, borderLeft:`3px solid #7F77DD`, background:`linear-gradient(125deg, ${hexA("#7F77DD", dark?0.13:0.07)}, ${bg} 65%)` }}>
@@ -1220,6 +1230,81 @@ export default function App() {
                     {p.url && <a href={p.url} target="_blank" rel="noreferrer" style={{ ...S.btn(false), fontSize:12, textDecoration:"none", display:"inline-block" }}>Read paper ↗</a>}
                   </div>
                 </div>
+              </div>
+            );
+          })}
+        </div>
+        );
+      })()}
+
+      {/* ── PRACTICE (problem banks: DSA, SQL, DS/ML, system design, quant, behavioral) ── */}
+      {tab==="practice" && (() => {
+        const sections = cur?.practice?.sections || [];
+        if (!sections.length) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No practice bank in curriculum.json yet.</div>;
+        const sel = sections.find(s => s.id === practiceSec) || sections[0];
+        const pid  = (p) => p.u || slugify(p.n);
+        const purl = (p) => p.u ? `https://leetcode.com/problems/${p.u}/` : (p.url || null);
+        const allP = (s) => (s.groups || []).flatMap(g => g.problems || []);
+        const doneIn = (s) => allP(s).filter(p => solvedProblems.includes(pid(p))).length;
+        const diffMeta = { E:["Easy","#3B6D11"], M:["Med","#BA7517"], H:["Hard","#A32D2D"] };
+        const ac = sel.accent || "#185FA5";
+        const total = allP(sel).length, done = doneIn(sel);
+        return (
+        <div>
+          {/* section selector */}
+          <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
+            {sections.map(s => {
+              const on = s.id === sel.id; const sac = s.accent || "#185FA5";
+              return (
+                <button key={s.id} onClick={() => setPracticeSec(s.id)}
+                  style={{ fontSize:12, fontWeight:600, padding:"6px 12px", borderRadius:999, cursor:"pointer", border:`1px solid ${on?sac:brd}`, background:on?hexA(sac,dark?0.2:0.1):surface, color:on?sac:txtS, whiteSpace:"nowrap" }}>
+                  {s.title} <span style={{ opacity:0.65, fontWeight:500 }}>{doneIn(s)}/{allP(s).length}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* section header */}
+          <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
+            <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(ac, dark?0.16:0.09)}, transparent 72%)`, display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12, flexWrap:"wrap" }}>
+              <div style={{ minWidth:0 }}>
+                <div style={{ fontSize:16, fontWeight:700, letterSpacing:-0.2 }}>{sel.title}</div>
+                {sel.note && <div style={{ fontSize:12, color:txtS, marginTop:5, lineHeight:1.6, maxWidth:620 }}>{sel.note}</div>}
+                {sel.ref && <a href={sel.ref} target="_blank" rel="noreferrer" style={{ fontSize:11.5, color:linkC, textDecoration:"none", marginTop:7, display:"inline-block" }}>Reference ↗</a>}
+              </div>
+              <div style={{ textAlign:"center", flexShrink:0 }}>
+                <Ring pct={total?done/total*100:0} color={ac} size={52} stroke={5} />
+                <div style={{ fontSize:10, color:txtT, marginTop:4 }}>{done}/{total} done</div>
+              </div>
+            </div>
+          </div>
+
+          {/* groups */}
+          {(sel.groups || []).map(g => {
+            const probs = g.problems || [];
+            const gDone = probs.filter(p => solvedProblems.includes(pid(p))).length;
+            return (
+              <div key={g.name} style={S.card}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+                  <div style={{ fontSize:13, fontWeight:700 }}>{g.name}</div>
+                  <div style={{ fontSize:11, color:txtT }}>{gDone}/{probs.length}</div>
+                </div>
+                {probs.map((p,i) => {
+                  const id = pid(p); const solved = solvedProblems.includes(id); const url = purl(p); const dm = diffMeta[p.d];
+                  return (
+                    <div key={id} style={{ display:"flex", gap:10, alignItems:"center", padding:"7px 0", borderBottom:i<probs.length-1?`1px solid ${brd}`:"none" }}>
+                      <button onClick={() => toggleSolved(id)} role="checkbox" aria-checked={solved} aria-label={p.n}
+                        style={{ flexShrink:0, width:18, height:18, borderRadius:5, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, lineHeight:1,
+                          border:`1.5px solid ${solved?ac:brdS}`, background:solved?ac:surface, color:solved?"#fff":"transparent" }}>✓</button>
+                      <span style={{ flex:1, minWidth:0, fontSize:12.5, lineHeight:1.5, color:solved?txtT:txt, textDecoration:solved?"line-through":"none", textDecorationColor:hexA(ac,0.6) }}>
+                        {p.s ? <span title="Blind 75" style={{ color:"#BA7517", marginRight:5 }}>★</span> : null}
+                        {url ? <a href={url} target="_blank" rel="noreferrer" style={{ color:"inherit", textDecoration:"none" }}>{p.n}</a> : p.n}
+                      </span>
+                      {dm && <span style={{ fontSize:10.5, fontWeight:600, color:dm[1], background:hexA(dm[1],dark?0.18:0.1), border:`1px solid ${hexA(dm[1],dark?0.3:0.2)}`, padding:"2px 8px", borderRadius:999, flexShrink:0 }}>{dm[0]}</span>}
+                      {url && <a href={url} target="_blank" rel="noreferrer" title="Open" style={{ fontSize:12, color:txtT, textDecoration:"none", flexShrink:0 }}>↗</a>}
+                    </div>
+                  );
+                })}
               </div>
             );
           })}

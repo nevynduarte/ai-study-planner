@@ -454,6 +454,72 @@
           "path": "prep/equi/practice_build/README.md"
         }
       ]
+    },
+    {
+      "id": "woodline",
+      "company": "Woodline Partners",
+      "role": "Sector Data Analyst",
+      "dormant": true,
+      "location": "San Francisco / NYC",
+      "salary": "Competitive base + bonus",
+      "about": "Woodline Partners is a multi-strategy / multi-manager hedge fund. The Sector Data Analyst role pairs fundamental/sector modeling with data analysis — building the datasets and KPIs that support a portfolio manager's stock-picking in a coverage sector.",
+      "your_strengths": [
+        "M Science / Jefferies quant equity research — sector and fundamental modeling is directly your background",
+        "Strong Python + SQL for sourcing, cleaning, and modeling company/sector KPI data",
+        "MS Data Science — statistical rigor for signal validation and anomaly detection",
+        "Clear communication of analysis to non-technical stakeholders (PMs)"
+      ],
+      "likely_questions": [
+        "Walk me through how you'd build a fundamental model for a sector you cover.",
+        "How do you source and validate a new alternative dataset for a thesis?",
+        "Tell me about a data-driven insight that changed an investment view.",
+        "How do you decide which KPIs actually drive a stock vs. noise?",
+        "How would you communicate a complex analysis to a portfolio manager in 5 minutes?"
+      ]
+    },
+    {
+      "id": "deshaw-ai",
+      "company": "D.E. Shaw",
+      "role": "Applied AI Engineer",
+      "dormant": true,
+      "location": "NYC",
+      "salary": "Top-of-market base + bonus",
+      "about": "The D.E. Shaw group is a global investment and technology firm. The Applied AI Engineer builds production AI systems with ML-engineering rigor — the bar is strong software engineering plus genuine ML/LLM depth, applied to real research and infrastructure problems.",
+      "your_strengths": [
+        "Production RAG and LLM workflow systems built end-to-end at Bridges AI",
+        "ML-engineering discipline — testing, packaging, serving, evaluation, observability",
+        "From-scratch ML/transformer understanding (the AI Engineering track)",
+        "Quant-research background gives domain fluency for a finance-AI firm"
+      ],
+      "likely_questions": [
+        "Design a production RAG / LLM system end-to-end — retrieval, serving, eval.",
+        "How do you evaluate and monitor an LLM system in production?",
+        "Implement and explain a core ML component from scratch (e.g. attention).",
+        "Walk me through a hard engineering bug you debugged in an ML pipeline.",
+        "How do you reason about latency, cost, and reliability for model serving?"
+      ]
+    },
+    {
+      "id": "deshaw-alt",
+      "company": "D.E. Shaw",
+      "role": "Alternative Data Analyst",
+      "dormant": true,
+      "location": "NYC",
+      "salary": "Top-of-market base + bonus",
+      "about": "Sources, evaluates, and onboards alternative datasets for systematic and discretionary strategies — turning messy third-party data into validated, point-in-time signals while reasoning carefully about biases and licensing.",
+      "your_strengths": [
+        "M Science alt-data experience — sourcing, entity resolution, signal construction",
+        "Statistical rigor: look-ahead/survivorship awareness, sampling bias, imputation",
+        "Strong data engineering — pipelines, quality gates, point-in-time correctness",
+        "Factor/IC research intuition from the Quant track"
+      ],
+      "likely_questions": [
+        "How would you evaluate whether a new alt-dataset has alpha?",
+        "Walk me through cleaning and entity-resolving a noisy vendor feed at scale.",
+        "How do you guard against look-ahead and survivorship bias in point-in-time data?",
+        "What are the licensing / derived-data pitfalls of re-selling signals?",
+        "How do you measure a signal's information coefficient and decay?"
+      ]
     }
   ],
   "tracks": {
@@ -727,8 +793,485 @@
       "url": "https://www.tandfonline.com/doi/abs/10.1080/01621459.1969.10501049",
       "why": "The probabilistic foundation of entity resolution — the core Aaru skill and the crash-course Day-3 build. Splink is a direct modern implementation.",
       "summary": "Formalizes record linkage as a decision problem: for each candidate pair of records, compute a likelihood ratio from the agreement/disagreement of their fields, weighting each field by how discriminating it is (matching on a rare surname says more than matching on a common state). Compare the score to two thresholds to declare match / non-match / needs-human-review, with the thresholds set to bound false-match and false-non-match rates. This 'compare fields, weight by informativeness, threshold the score' framework is exactly what probabilistic matchers like Splink implement today — pair it with blocking (to avoid all-pairs comparison) and you have scalable entity resolution."
-    }
+    },
+    { "id": "alexnet-2012", "title": "ImageNet Classification with Deep Convolutional Neural Networks", "authors": "Alex Krizhevsky et al. (Toronto)", "year": 2012, "track": "ml-eng", "tag": "Vision", "url": "https://proceedings.neurips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html", "why": "The paper that kicked off the deep-learning era and the standard 'where did this start' reference.", "summary": "AlexNet trained a deep CNN on ImageNet and crushed the prior state of the art, halving the top-5 error of classical computer-vision pipelines. It popularized ReLU activations, dropout, data augmentation, and GPU training at scale. The result convinced the field that learned hierarchical features beat hand-engineered ones. Nearly every modern vision architecture descends from its design choices." },
+    { "id": "word2vec-2013", "title": "Distributed Representations of Words and Phrases and their Compositionality", "authors": "Mikolov et al. (Google)", "year": 2013, "track": "ml-eng", "tag": "Representation Learning", "url": "https://arxiv.org/abs/1310.4546", "why": "Introduced the dense word-embedding intuition that underpins all modern vector search and retrieval.", "summary": "word2vec learns low-dimensional word vectors by predicting context words, using the efficient skip-gram model with negative sampling. The embeddings capture semantic and syntactic structure so well that analogies become vector arithmetic (king − man + woman ≈ queen). It made dense distributed representations practical at web scale. This is the conceptual ancestor of today's text embeddings and similarity search." },
+    { "id": "vae-2013", "title": "Auto-Encoding Variational Bayes (VAE)", "authors": "Kingma & Welling (Amsterdam)", "year": 2013, "track": "ml-eng", "tag": "Generative", "url": "https://arxiv.org/abs/1312.6114", "why": "Foundational generative model that introduced the reparameterization trick used throughout probabilistic deep learning.", "summary": "The VAE frames generative modeling as learning a latent-variable model trained by maximizing a variational lower bound (the ELBO). Its key contribution, the reparameterization trick, lets you backpropagate through random sampling. This yields a smooth, continuous latent space you can sample from and interpolate over. VAEs remain a core building block and appear inside modern systems like latent diffusion." },
+    { "id": "vgg-2014", "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition (VGG)", "authors": "Simonyan & Zisserman (Oxford)", "year": 2014, "track": "ml-eng", "tag": "Vision", "url": "https://arxiv.org/abs/1409.1556", "why": "Established the depth-with-small-filters pattern and remains a common backbone / feature extractor.", "summary": "VGG showed that stacking many small 3×3 convolutions into very deep, uniform networks substantially improves accuracy. Its simple, repetitive architecture made it easy to reason about and reuse. Pretrained VGG features became a default choice for transfer learning and perceptual losses. The design clarified that depth, not exotic filters, was a primary driver of CNN performance." },
+    { "id": "googlenet-inception-2014", "title": "Going Deeper with Convolutions (GoogLeNet / Inception)", "authors": "Szegedy et al. (Google)", "year": 2014, "track": "ml-eng", "tag": "Vision", "url": "https://arxiv.org/abs/1409.4842", "why": "Introduced the efficiency-minded Inception module and 1×1 bottleneck convolutions still used to control compute.", "summary": "GoogLeNet introduced the Inception module, which runs convolutions of multiple kernel sizes in parallel and concatenates them, capturing multi-scale features. It used 1×1 convolutions as cheap dimensionality-reduction bottlenecks to keep parameter count low. The result was a deep, accurate network far more compute-efficient than its peers. This efficiency-vs-accuracy framing recurs throughout production model design." },
+    { "id": "seq2seq-2014", "title": "Sequence to Sequence Learning with Neural Networks", "authors": "Sutskever et al. (Google)", "year": 2014, "track": "ml-eng", "tag": "Sequence & Attention", "url": "https://arxiv.org/abs/1409.3215", "why": "The encoder–decoder framework every modern generative / translation model conceptually builds on.", "summary": "This paper showed an LSTM encoder could compress an input sequence into a fixed vector that a second LSTM decoder expands into an output sequence, enabling end-to-end machine translation. It established the encoder–decoder paradigm for variable-length input/output. A notable trick was reversing the source sentence to improve optimization. It set the stage for attention and ultimately transformers." },
+    { "id": "bahdanau-attention-2014", "title": "Neural Machine Translation by Jointly Learning to Align and Translate", "authors": "Bahdanau et al. (Montréal)", "year": 2014, "track": "ai-eng", "tag": "Sequence & Attention", "url": "https://arxiv.org/abs/1409.0473", "why": "The original attention mechanism — understanding it is the foundation for understanding transformers.", "summary": "This work fixed the bottleneck of compressing an entire sentence into one vector by letting the decoder attend to a weighted combination of all encoder states at each step. This soft alignment dramatically improved translation of long sentences. It introduced the core attention idea later generalized into self-attention. It is the direct intellectual precursor to 'Attention Is All You Need.'" },
+    { "id": "gan-2014", "title": "Generative Adversarial Nets (GAN)", "authors": "Goodfellow et al. (Montréal)", "year": 2014, "track": "ml-eng", "tag": "Generative", "url": "https://arxiv.org/abs/1406.2661", "why": "Defined adversarial training — a foundational generative paradigm and a frequent conceptual interview topic.", "summary": "GANs pit a generator that fabricates samples against a discriminator that tries to tell real from fake, training both in a minimax game. As the discriminator improves, the generator is pushed to produce increasingly realistic outputs. This adversarial framework produced a wave of high-fidelity image-synthesis research. It introduced training dynamics and instabilities that motivated much follow-on work." },
+    { "id": "adam-2014", "title": "Adam: A Method for Stochastic Optimization", "authors": "Kingma & Ba (Toronto)", "year": 2014, "track": "ml-eng", "tag": "Optimization", "url": "https://arxiv.org/abs/1412.6980", "why": "The default optimizer you configure in virtually every training job — expect questions on how it works.", "summary": "Adam combines momentum (a running average of gradients) with per-parameter adaptive learning rates (a running average of squared gradients), plus bias correction for the early steps. This makes it robust to sparse gradients and largely insensitive to hyperparameter tuning. It became the de facto optimizer for deep learning. Understanding its first/second-moment estimates is standard ML-engineering knowledge." },
+    { "id": "dropout-2014", "title": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting", "authors": "Srivastava et al. (Toronto)", "year": 2014, "track": "ml-eng", "tag": "Optimization", "url": "https://jmlr.org/papers/v15/srivastava14a.html", "why": "Core regularization technique and a classic 'how do you prevent overfitting' interview answer.", "summary": "Dropout randomly zeroes a fraction of neurons during each training step, preventing co-adaptation and forcing redundant, robust representations. At test time all units are used with scaled weights, approximating an ensemble average over many sub-networks. It provided a cheap, effective regularizer that became standard in deep nets. The ensemble interpretation is a frequently asked conceptual point." },
+    { "id": "batchnorm-2015", "title": "Batch Normalization", "authors": "Ioffe & Szegedy (Google)", "year": 2015, "track": "ml-eng", "tag": "Optimization", "url": "https://arxiv.org/abs/1502.03167", "why": "Made very deep networks trainable and is a staple normalization question in ML interviews.", "summary": "Batch normalization standardizes layer activations using per-minibatch mean and variance, then rescales with learned parameters. This stabilizes and speeds up training, allows higher learning rates, and acts as a mild regularizer. It became near-universal in CNNs and reshaped how people think about optimization landscapes. The train-vs-inference behavior (running statistics) is a common gotcha worth knowing." },
+    { "id": "resnet-2015", "title": "Deep Residual Learning for Image Recognition (ResNet)", "authors": "He et al. (Microsoft Research)", "year": 2015, "track": "ml-eng", "tag": "Vision", "url": "https://arxiv.org/abs/1512.03385", "why": "Residual / skip connections are everywhere (including transformers); one of the most-cited, most-asked papers.", "summary": "ResNet introduced skip connections that let a layer learn a residual function relative to its input, so identity mappings are easy to preserve. This solved the degradation problem where adding layers hurt accuracy, enabling networks hundreds of layers deep. Residual connections turned out to be essential for gradient flow and are now a default building block, including inside transformer blocks. It is arguably the single most influential architecture paper of the decade." },
+    { "id": "unet-2015", "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation", "authors": "Ronneberger et al. (Freiburg)", "year": 2015, "track": "ml-eng", "tag": "Vision", "url": "https://arxiv.org/abs/1505.04597", "why": "The encoder–decoder-with-skips backbone reused as the denoising network inside modern diffusion models.", "summary": "U-Net pairs a contracting encoder with an expanding decoder and adds skip connections that pass high-resolution features across, enabling precise dense pixel-level predictions from little data. Originally for biomedical segmentation, its symmetric design generalized far beyond it. Today it is the standard noise-prediction backbone in diffusion image generators. Knowing U-Net is essential context for how Stable Diffusion works under the hood." },
+    { "id": "knowledge-distillation-2015", "title": "Distilling the Knowledge in a Neural Network", "authors": "Hinton et al. (Google)", "year": 2015, "track": "ml-eng", "tag": "Efficiency", "url": "https://arxiv.org/abs/1503.02531", "why": "The basis for shrinking large models into cheap deployable ones — a core production-AI concern.", "summary": "Knowledge distillation trains a small student model to mimic the soft probability outputs of a large teacher, using a temperature to expose the teacher's 'dark knowledge' about class similarities. The student often matches teacher accuracy at a fraction of the size and cost. It is a foundational technique for model compression and efficient serving. Modern distilled LLMs and small on-device models trace directly to this idea." },
+    { "id": "dcgan-2015", "title": "Unsupervised Representation Learning with Deep Convolutional GANs (DCGAN)", "authors": "Radford et al.", "year": 2015, "track": "ml-eng", "tag": "Generative", "url": "https://arxiv.org/abs/1511.06434", "why": "Stabilized GAN training and showed latent spaces support semantic interpolation — a key generative-AI concept.", "summary": "DCGAN provided architectural guidelines (strided convolutions, batch norm, no fully connected layers) that made GAN training reliably stable for images. It demonstrated smooth latent-space arithmetic and interpolation over generated faces and scenes. This bridged GANs from a fragile idea to a practical image-generation tool. It also showed GANs learn useful unsupervised representations." },
+    { "id": "layernorm-2016", "title": "Layer Normalization", "authors": "Ba et al. (Toronto)", "year": 2016, "track": "ml-eng", "tag": "Optimization", "url": "https://arxiv.org/abs/1607.06450", "why": "The normalization actually used inside transformers / LLMs — more relevant to NLP than batchnorm.", "summary": "Layer normalization normalizes across the features of a single example rather than across the batch, making it independent of batch size and well-suited to sequence models. This batch-independence is exactly why transformers adopt it instead of batch norm. It stabilizes training of attention-based architectures. Variants like RMSNorm and the pre-norm vs post-norm placement debate all build on it." },
+    { "id": "bert-2018", "title": "BERT: Pre-training of Deep Bidirectional Transformers", "authors": "Devlin et al. (Google)", "year": 2018, "track": "ai-eng", "tag": "LLMs", "url": "https://arxiv.org/abs/1810.04805", "why": "Defined the pretrain-then-finetune encoder paradigm and still powers many embedding / retrieval systems.", "summary": "BERT pretrains a bidirectional transformer encoder using masked language modeling (predict hidden tokens from both directions) plus next-sentence prediction. The resulting representations transfer to a wide range of NLP tasks with light fine-tuning, setting new state of the art across the board. It established the now-standard pretrain/fine-tune workflow. Encoder models in this lineage remain the backbone of many text-embedding and reranking systems." },
+    { "id": "distilbert-2019", "title": "DistilBERT: smaller, faster, cheaper, lighter", "authors": "Sanh et al. (Hugging Face)", "year": 2019, "track": "ai-eng", "tag": "Efficiency", "url": "https://arxiv.org/abs/1910.01108", "why": "A concrete, widely deployed case study of distilling a transformer for cheaper production inference.", "summary": "DistilBERT applies knowledge distillation during pretraining to compress BERT by ~40% while keeping ~97% of its performance and running ~60% faster. It uses a triple loss combining language modeling, distillation, and cosine-embedding alignment with the teacher. It became a go-to lightweight model for latency- and cost-sensitive deployments. It is a practical demonstration of distillation applied to transformers." },
+    { "id": "scaling-laws-2020", "title": "Scaling Laws for Neural Language Models", "authors": "Kaplan et al. (OpenAI)", "year": 2020, "track": "ai-eng", "tag": "LLMs", "url": "https://arxiv.org/abs/2001.08361", "why": "Quantified how loss scales with model / data / compute — the reasoning that justifies modern LLM scaling.", "summary": "This paper showed that language-model loss falls as a smooth power law in model size, dataset size, and compute, with remarkably predictable behavior across orders of magnitude. It argued larger models are more sample-efficient and gave guidance on allocating a fixed compute budget. These empirical laws underpinned the strategic decision to scale up aggressively. It is essential context for any conversation about why LLMs got big (later refined by Chinchilla)." },
+    { "id": "ddpm-2020", "title": "Denoising Diffusion Probabilistic Models (DDPM)", "authors": "Ho et al. (UC Berkeley)", "year": 2020, "track": "ml-eng", "tag": "Generative", "url": "https://arxiv.org/abs/2006.11239", "why": "The paper that made diffusion models competitive and launched the modern image-generation wave.", "summary": "DDPM defines a forward process that gradually adds Gaussian noise to data and trains a network to reverse it step by step, recovering samples from pure noise. It reframed the training objective as a simple noise-prediction loss, making diffusion practical and high quality. This dethroned GANs as the leading image generators. It is the technical foundation beneath Stable Diffusion, DALL·E 2, and friends." },
+    { "id": "simclr-2020", "title": "A Simple Framework for Contrastive Learning of Visual Representations (SimCLR)", "authors": "Chen et al. (Google Brain)", "year": 2020, "track": "ml-eng", "tag": "Representation Learning", "url": "https://arxiv.org/abs/2002.05709", "why": "Canonical self-supervised / contrastive learning method; the loss intuition recurs across embeddings and retrieval.", "summary": "SimCLR learns image representations without labels by pulling together two augmented views of the same image and pushing apart views of different images, using the InfoNCE contrastive loss. It showed that strong data augmentation, a projection head, and large batches are the keys to making this work. The learned features rival supervised pretraining when fine-tuned. Its contrastive recipe is the template for much modern representation and embedding learning." },
+    { "id": "vit-2020", "title": "An Image is Worth 16×16 Words: Transformers for Image Recognition (ViT)", "authors": "Dosovitskiy et al. (Google Brain)", "year": 2020, "track": "ml-eng", "tag": "Vision", "url": "https://arxiv.org/abs/2010.11929", "why": "Unified vision and language under one transformer architecture — a key step toward multimodal models.", "summary": "The Vision Transformer splits an image into fixed-size patches, embeds them as tokens, and feeds them to a standard transformer encoder with no convolutions. Given enough pretraining data, it matches or beats top CNNs, showing convolutional inductive biases are not strictly necessary. This convergence on a single architecture across modalities enabled today's multimodal systems. ViT backbones now power CLIP, modern detectors, and vision-language models." },
+    { "id": "clip-2021", "title": "Learning Transferable Visual Models From Natural Language Supervision (CLIP)", "authors": "Radford et al. (OpenAI)", "year": 2021, "track": "ai-eng", "tag": "Representation Learning", "url": "https://arxiv.org/abs/2103.00020", "why": "The shared image-text embedding space behind multimodal search, zero-shot classification, and diffusion conditioning.", "summary": "CLIP trains an image encoder and a text encoder jointly with a contrastive objective over 400M image-caption pairs, aligning both into a shared embedding space. This enables zero-shot classification by comparing an image to text prompts, with no task-specific fine-tuning. The embeddings became a workhorse for multimodal retrieval and for conditioning generative models. It is a cornerstone of applied multimodal AI." },
+    { "id": "roformer-rope-2021", "title": "RoFormer: Rotary Position Embedding (RoPE)", "authors": "Su et al. (Zhuiyi)", "year": 2021, "track": "ai-eng", "tag": "Sequence & Attention", "url": "https://arxiv.org/abs/2104.09864", "why": "RoPE is the positional encoding used in LLaMA and most modern LLMs, and underlies context-length extension.", "summary": "RoPE encodes token position by rotating query and key vectors by an angle proportional to their position, so attention naturally depends on relative distance. This gives clean relative-position behavior and extrapolates better to longer sequences than learned absolute embeddings. It became the standard positional scheme in contemporary open LLMs. Understanding RoPE is central to discussions of context-window extension." },
+    { "id": "latent-diffusion-2021", "title": "High-Resolution Image Synthesis with Latent Diffusion Models", "authors": "Rombach et al. (LMU / Stability AI)", "year": 2021, "track": "ai-eng", "tag": "Generative", "url": "https://arxiv.org/abs/2112.10752", "why": "The architecture behind Stable Diffusion — the most production-relevant generative-image paper to know.", "summary": "Latent diffusion runs the diffusion process in a compressed latent space produced by a pretrained autoencoder rather than directly on pixels, slashing compute while preserving quality. Cross-attention layers inject conditioning such as text prompts. This made high-resolution text-to-image generation feasible on consumer GPUs and became Stable Diffusion. It is the canonical reference for how modern image generators are engineered." },
+    { "id": "chinchilla-2022", "title": "Training Compute-Optimal Large Language Models (Chinchilla)", "authors": "Hoffmann et al. (DeepMind)", "year": 2022, "track": "ai-eng", "tag": "LLMs", "url": "https://arxiv.org/abs/2203.15556", "why": "Reset how the field balances model size vs training tokens; 'Chinchilla-optimal' is standard interview knowledge.", "summary": "Chinchilla revisited scaling laws and found prior LLMs were badly undertrained: for a fixed compute budget, model size and training tokens should scale roughly equally. A 70B model trained on far more data beat the much larger 280B Gopher. This shifted the field toward smaller-but-more-trained models. The token-to-parameter ratio it popularized still guides pretraining decisions today." },
+    { "id": "flashattention-2022", "title": "FlashAttention: Fast and Memory-Efficient Exact Attention", "authors": "Dao et al. (Stanford)", "year": 2022, "track": "ai-eng", "tag": "Efficiency", "url": "https://arxiv.org/abs/2205.14135", "why": "The GPU-level optimization that makes long-context transformers practical — a hot systems-engineering topic.", "summary": "FlashAttention computes exact attention without ever materializing the full N×N attention matrix in slow GPU memory, instead tiling the computation and fusing it in fast on-chip SRAM. This makes attention memory-linear and substantially faster by being IO-aware about the GPU memory hierarchy. It enabled longer context windows and cheaper training/inference. It is now a default kernel in modern LLM stacks and a favorite systems interview topic." },
+    { "id": "llm-int8-2022", "title": "LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale", "authors": "Dettmers et al. (UW / Meta AI)", "year": 2022, "track": "ai-eng", "tag": "Efficiency", "url": "https://arxiv.org/abs/2208.07339", "why": "Made it possible to run large models on far less hardware; quantization is a core deployment skill.", "summary": "LLM.int8() quantizes most transformer matrix multiplications to 8-bit integers while isolating a small number of high-magnitude 'outlier' features in 16-bit, preserving accuracy. This roughly halves memory for inference with essentially no quality loss, letting large models fit on smaller GPUs. It shipped in the widely used bitsandbytes library. It is a foundational reference for the now-essential practice of LLM quantization." },
+    { "id": "llama-2023", "title": "LLaMA: Open and Efficient Foundation Language Models", "authors": "Touvron et al. (Meta AI)", "year": 2023, "track": "ai-eng", "tag": "LLMs", "url": "https://arxiv.org/abs/2302.13971", "why": "The open-weights model that catalyzed the entire local / open-source LLM ecosystem engineers now build on.", "summary": "LLaMA showed that relatively small models trained on far more tokens (following Chinchilla-style reasoning) can match or beat much larger models like GPT-3. It consolidated modern architecture choices, including RMSNorm, SwiGLU activations, and rotary embeddings. Its release seeded a massive open-source fine-tuning and tooling ecosystem. It is the practical foundation behind a large share of today's deployed open LLMs." },
+    { "id": "mixtral-2024", "title": "Mixtral of Experts", "authors": "Jiang et al. (Mistral AI)", "year": 2024, "track": "ai-eng", "tag": "Efficiency", "url": "https://arxiv.org/abs/2401.04088", "why": "The clearest modern reference for sparse Mixture-of-Experts — the efficiency technique behind many frontier models.", "summary": "Mixtral is a sparse Mixture-of-Experts model where a router selects 2 of 8 feed-forward experts per token, so only a fraction of the total parameters activate for any given input. This gives the quality of a much larger dense model at the inference cost of a small one. It matched or beat larger dense models while being far cheaper to serve. It is the go-to concrete example for explaining how sparse MoE trades total capacity against active compute." }
   ],
+  "practice": {
+    "_comment": "Problem banks for interview prep. Each section → groups → problems. Problem keys: n=name, d=difficulty (E/M/H), s=1 marks Blind-75, u=leetcode slug (app builds https://leetcode.com/problems/{u}/), url=full link for non-leetcode items. Solved state is tracked client-side in localStorage.",
+    "sections": [
+      {
+        "id": "dsa",
+        "title": "DSA — NeetCode 150",
+        "accent": "#185FA5",
+        "ref": "https://neetcode.io/roadmap",
+        "note": "Work pattern by pattern, not problem by problem. Do the Blind 75 (★) first for breadth, then fill in the rest of each pattern. Premium-locked problems have no direct link — solve them on NeetCode.",
+        "groups": [
+          { "name": "Arrays & Hashing", "problems": [
+            { "n": "Two Sum", "d": "E", "s": 1, "u": "two-sum" },
+            { "n": "Contains Duplicate", "d": "E", "s": 1, "u": "contains-duplicate" },
+            { "n": "Valid Anagram", "d": "E", "s": 1, "u": "valid-anagram" },
+            { "n": "Group Anagrams", "d": "M", "s": 1, "u": "group-anagrams" },
+            { "n": "Top K Frequent Elements", "d": "M", "s": 1, "u": "top-k-frequent-elements" },
+            { "n": "Encode and Decode Strings", "d": "M", "s": 1 },
+            { "n": "Product of Array Except Self", "d": "M", "s": 1, "u": "product-of-array-except-self" },
+            { "n": "Valid Sudoku", "d": "M", "u": "valid-sudoku" },
+            { "n": "Longest Consecutive Sequence", "d": "M", "s": 1, "u": "longest-consecutive-sequence" }
+          ] },
+          { "name": "Two Pointers", "problems": [
+            { "n": "Valid Palindrome", "d": "E", "s": 1, "u": "valid-palindrome" },
+            { "n": "Two Sum II", "d": "M", "u": "two-sum-ii-input-array-is-sorted" },
+            { "n": "3Sum", "d": "M", "s": 1, "u": "3sum" },
+            { "n": "Container With Most Water", "d": "M", "s": 1, "u": "container-with-most-water" },
+            { "n": "Trapping Rain Water", "d": "H", "u": "trapping-rain-water" }
+          ] },
+          { "name": "Sliding Window", "problems": [
+            { "n": "Best Time to Buy and Sell Stock", "d": "E", "s": 1, "u": "best-time-to-buy-and-sell-stock" },
+            { "n": "Longest Substring Without Repeating Characters", "d": "M", "s": 1, "u": "longest-substring-without-repeating-characters" },
+            { "n": "Longest Repeating Character Replacement", "d": "M", "s": 1, "u": "longest-repeating-character-replacement" },
+            { "n": "Permutation in String", "d": "M", "u": "permutation-in-string" },
+            { "n": "Minimum Window Substring", "d": "H", "s": 1, "u": "minimum-window-substring" },
+            { "n": "Sliding Window Maximum", "d": "H", "u": "sliding-window-maximum" }
+          ] },
+          { "name": "Stack", "problems": [
+            { "n": "Valid Parentheses", "d": "E", "s": 1, "u": "valid-parentheses" },
+            { "n": "Min Stack", "d": "M", "u": "min-stack" },
+            { "n": "Evaluate Reverse Polish Notation", "d": "M", "u": "evaluate-reverse-polish-notation" },
+            { "n": "Generate Parentheses", "d": "M", "u": "generate-parentheses" },
+            { "n": "Daily Temperatures", "d": "M", "u": "daily-temperatures" },
+            { "n": "Car Fleet", "d": "M", "u": "car-fleet" },
+            { "n": "Largest Rectangle in Histogram", "d": "H", "u": "largest-rectangle-in-histogram" }
+          ] },
+          { "name": "Binary Search", "problems": [
+            { "n": "Binary Search", "d": "E", "u": "binary-search" },
+            { "n": "Search a 2D Matrix", "d": "M", "u": "search-a-2d-matrix" },
+            { "n": "Koko Eating Bananas", "d": "M", "u": "koko-eating-bananas" },
+            { "n": "Find Minimum in Rotated Sorted Array", "d": "M", "s": 1, "u": "find-minimum-in-rotated-sorted-array" },
+            { "n": "Search in Rotated Sorted Array", "d": "M", "s": 1, "u": "search-in-rotated-sorted-array" },
+            { "n": "Time Based Key-Value Store", "d": "M", "u": "time-based-key-value-store" },
+            { "n": "Median of Two Sorted Arrays", "d": "H", "u": "median-of-two-sorted-arrays" }
+          ] },
+          { "name": "Linked List", "problems": [
+            { "n": "Reverse Linked List", "d": "E", "s": 1, "u": "reverse-linked-list" },
+            { "n": "Merge Two Sorted Lists", "d": "E", "s": 1, "u": "merge-two-sorted-lists" },
+            { "n": "Reorder List", "d": "M", "s": 1, "u": "reorder-list" },
+            { "n": "Remove Nth Node From End of List", "d": "M", "s": 1, "u": "remove-nth-node-from-end-of-list" },
+            { "n": "Copy List With Random Pointer", "d": "M", "u": "copy-list-with-random-pointer" },
+            { "n": "Add Two Numbers", "d": "M", "u": "add-two-numbers" },
+            { "n": "Linked List Cycle", "d": "E", "s": 1, "u": "linked-list-cycle" },
+            { "n": "Find the Duplicate Number", "d": "M", "u": "find-the-duplicate-number" },
+            { "n": "LRU Cache", "d": "M", "u": "lru-cache" },
+            { "n": "Merge k Sorted Lists", "d": "H", "s": 1, "u": "merge-k-sorted-lists" },
+            { "n": "Reverse Nodes in k-Group", "d": "H", "u": "reverse-nodes-in-k-group" }
+          ] },
+          { "name": "Trees", "problems": [
+            { "n": "Invert Binary Tree", "d": "E", "s": 1, "u": "invert-binary-tree" },
+            { "n": "Maximum Depth of Binary Tree", "d": "E", "s": 1, "u": "maximum-depth-of-binary-tree" },
+            { "n": "Diameter of Binary Tree", "d": "E", "u": "diameter-of-binary-tree" },
+            { "n": "Balanced Binary Tree", "d": "E", "u": "balanced-binary-tree" },
+            { "n": "Same Tree", "d": "E", "s": 1, "u": "same-tree" },
+            { "n": "Subtree of Another Tree", "d": "E", "s": 1, "u": "subtree-of-another-tree" },
+            { "n": "Lowest Common Ancestor of a BST", "d": "M", "s": 1, "u": "lowest-common-ancestor-of-a-binary-search-tree" },
+            { "n": "Binary Tree Level Order Traversal", "d": "M", "s": 1, "u": "binary-tree-level-order-traversal" },
+            { "n": "Binary Tree Right Side View", "d": "M", "u": "binary-tree-right-side-view" },
+            { "n": "Count Good Nodes in Binary Tree", "d": "M", "u": "count-good-nodes-in-binary-tree" },
+            { "n": "Validate Binary Search Tree", "d": "M", "s": 1, "u": "validate-binary-search-tree" },
+            { "n": "Kth Smallest Element in a BST", "d": "M", "s": 1, "u": "kth-smallest-element-in-a-bst" },
+            { "n": "Construct Binary Tree from Preorder and Inorder Traversal", "d": "M", "s": 1, "u": "construct-binary-tree-from-preorder-and-inorder-traversal" },
+            { "n": "Binary Tree Maximum Path Sum", "d": "H", "s": 1, "u": "binary-tree-maximum-path-sum" },
+            { "n": "Serialize and Deserialize Binary Tree", "d": "H", "s": 1, "u": "serialize-and-deserialize-binary-tree" }
+          ] },
+          { "name": "Tries", "problems": [
+            { "n": "Implement Trie (Prefix Tree)", "d": "M", "s": 1, "u": "implement-trie-prefix-tree" },
+            { "n": "Design Add and Search Words Data Structure", "d": "M", "s": 1, "u": "design-add-and-search-words-data-structure" },
+            { "n": "Word Search II", "d": "H", "s": 1, "u": "word-search-ii" }
+          ] },
+          { "name": "Heap / Priority Queue", "problems": [
+            { "n": "Kth Largest Element in a Stream", "d": "E", "u": "kth-largest-element-in-a-stream" },
+            { "n": "Last Stone Weight", "d": "E", "u": "last-stone-weight" },
+            { "n": "K Closest Points to Origin", "d": "M", "u": "k-closest-points-to-origin" },
+            { "n": "Kth Largest Element in an Array", "d": "M", "u": "kth-largest-element-in-an-array" },
+            { "n": "Task Scheduler", "d": "M", "u": "task-scheduler" },
+            { "n": "Design Twitter", "d": "M", "u": "design-twitter" },
+            { "n": "Find Median from Data Stream", "d": "H", "s": 1, "u": "find-median-from-data-stream" }
+          ] },
+          { "name": "Backtracking", "problems": [
+            { "n": "Subsets", "d": "M", "u": "subsets" },
+            { "n": "Combination Sum", "d": "M", "s": 1, "u": "combination-sum" },
+            { "n": "Permutations", "d": "M", "u": "permutations" },
+            { "n": "Subsets II", "d": "M", "u": "subsets-ii" },
+            { "n": "Combination Sum II", "d": "M", "u": "combination-sum-ii" },
+            { "n": "Word Search", "d": "M", "s": 1, "u": "word-search" },
+            { "n": "Palindrome Partitioning", "d": "M", "u": "palindrome-partitioning" },
+            { "n": "Letter Combinations of a Phone Number", "d": "M", "u": "letter-combinations-of-a-phone-number" },
+            { "n": "N-Queens", "d": "H", "u": "n-queens" }
+          ] },
+          { "name": "Graphs", "problems": [
+            { "n": "Number of Islands", "d": "M", "s": 1, "u": "number-of-islands" },
+            { "n": "Max Area of Island", "d": "M", "u": "max-area-of-island" },
+            { "n": "Clone Graph", "d": "M", "s": 1, "u": "clone-graph" },
+            { "n": "Rotting Oranges", "d": "M", "u": "rotting-oranges" },
+            { "n": "Pacific Atlantic Water Flow", "d": "M", "s": 1, "u": "pacific-atlantic-water-flow" },
+            { "n": "Surrounded Regions", "d": "M", "u": "surrounded-regions" },
+            { "n": "Course Schedule", "d": "M", "s": 1, "u": "course-schedule" },
+            { "n": "Course Schedule II", "d": "M", "u": "course-schedule-ii" },
+            { "n": "Graph Valid Tree", "d": "M", "s": 1 },
+            { "n": "Number of Connected Components in an Undirected Graph", "d": "M", "s": 1 },
+            { "n": "Redundant Connection", "d": "M", "u": "redundant-connection" },
+            { "n": "Word Ladder", "d": "H", "u": "word-ladder" },
+            { "n": "Alien Dictionary", "d": "H", "s": 1 }
+          ] },
+          { "name": "1-D Dynamic Programming", "problems": [
+            { "n": "Climbing Stairs", "d": "E", "s": 1, "u": "climbing-stairs" },
+            { "n": "Min Cost Climbing Stairs", "d": "E", "u": "min-cost-climbing-stairs" },
+            { "n": "House Robber", "d": "M", "s": 1, "u": "house-robber" },
+            { "n": "House Robber II", "d": "M", "s": 1, "u": "house-robber-ii" },
+            { "n": "Longest Palindromic Substring", "d": "M", "s": 1, "u": "longest-palindromic-substring" },
+            { "n": "Palindromic Substrings", "d": "M", "s": 1, "u": "palindromic-substrings" },
+            { "n": "Decode Ways", "d": "M", "s": 1, "u": "decode-ways" },
+            { "n": "Coin Change", "d": "M", "s": 1, "u": "coin-change" },
+            { "n": "Maximum Product Subarray", "d": "M", "s": 1, "u": "maximum-product-subarray" },
+            { "n": "Word Break", "d": "M", "s": 1, "u": "word-break" },
+            { "n": "Longest Increasing Subsequence", "d": "M", "s": 1, "u": "longest-increasing-subsequence" },
+            { "n": "Partition Equal Subset Sum", "d": "M", "u": "partition-equal-subset-sum" }
+          ] },
+          { "name": "2-D Dynamic Programming", "problems": [
+            { "n": "Unique Paths", "d": "M", "s": 1, "u": "unique-paths" },
+            { "n": "Longest Common Subsequence", "d": "M", "s": 1, "u": "longest-common-subsequence" },
+            { "n": "Best Time to Buy and Sell Stock With Cooldown", "d": "M", "u": "best-time-to-buy-and-sell-stock-with-cooldown" },
+            { "n": "Coin Change II", "d": "M", "u": "coin-change-ii" },
+            { "n": "Target Sum", "d": "M", "u": "target-sum" },
+            { "n": "Interleaving String", "d": "M", "u": "interleaving-string" },
+            { "n": "Edit Distance", "d": "M", "u": "edit-distance" }
+          ] },
+          { "name": "Greedy", "problems": [
+            { "n": "Maximum Subarray", "d": "M", "s": 1, "u": "maximum-subarray" },
+            { "n": "Jump Game", "d": "M", "s": 1, "u": "jump-game" },
+            { "n": "Jump Game II", "d": "M", "u": "jump-game-ii" },
+            { "n": "Gas Station", "d": "M", "u": "gas-station" },
+            { "n": "Hand of Straights", "d": "M", "u": "hand-of-straights" },
+            { "n": "Merge Triplets to Form Target Triplet", "d": "M", "u": "merge-triplets-to-form-target-triplet" }
+          ] },
+          { "name": "Intervals", "problems": [
+            { "n": "Insert Interval", "d": "M", "s": 1, "u": "insert-interval" },
+            { "n": "Merge Intervals", "d": "M", "s": 1, "u": "merge-intervals" },
+            { "n": "Non-overlapping Intervals", "d": "M", "s": 1, "u": "non-overlapping-intervals" },
+            { "n": "Meeting Rooms", "d": "E", "s": 1 },
+            { "n": "Meeting Rooms II", "d": "M", "s": 1 },
+            { "n": "Minimum Interval to Include Each Query", "d": "H", "u": "minimum-interval-to-include-each-query" }
+          ] },
+          { "name": "Math & Geometry", "problems": [
+            { "n": "Rotate Image", "d": "M", "s": 1, "u": "rotate-image" },
+            { "n": "Spiral Matrix", "d": "M", "s": 1, "u": "spiral-matrix" },
+            { "n": "Set Matrix Zeroes", "d": "M", "s": 1, "u": "set-matrix-zeroes" },
+            { "n": "Happy Number", "d": "E", "u": "happy-number" },
+            { "n": "Plus One", "d": "E", "u": "plus-one" },
+            { "n": "Pow(x, n)", "d": "M", "u": "powx-n" },
+            { "n": "Multiply Strings", "d": "M", "u": "multiply-strings" }
+          ] },
+          { "name": "Bit Manipulation", "problems": [
+            { "n": "Single Number", "d": "E", "s": 1, "u": "single-number" },
+            { "n": "Number of 1 Bits", "d": "E", "s": 1, "u": "number-of-1-bits" },
+            { "n": "Counting Bits", "d": "E", "s": 1, "u": "counting-bits" },
+            { "n": "Reverse Bits", "d": "E", "s": 1, "u": "reverse-bits" },
+            { "n": "Missing Number", "d": "E", "s": 1, "u": "missing-number" },
+            { "n": "Sum of Two Integers", "d": "M", "s": 1, "u": "sum-of-two-integers" }
+          ] }
+        ]
+      },
+      {
+        "id": "sql",
+        "title": "SQL",
+        "accent": "#1D9E75",
+        "ref": "https://leetcode.com/studyplan/top-sql-50/",
+        "note": "The Top SQL 50 covers the patterns that come up in data/analyst/ML interviews: joins, aggregation, ranking, and window functions. Get the window-function block automatic.",
+        "groups": [
+          { "name": "Basics & Joins", "problems": [
+            { "n": "Combine Two Tables", "d": "E", "u": "combine-two-tables" },
+            { "n": "Employees Earning More Than Their Managers", "d": "E", "u": "employees-earning-more-than-their-managers" },
+            { "n": "Customers Who Never Order", "d": "E", "u": "customers-who-never-order" },
+            { "n": "Duplicate Emails", "d": "E", "u": "duplicate-emails" },
+            { "n": "Find Customer Referee", "d": "E", "u": "find-customer-referee" },
+            { "n": "Big Countries", "d": "E", "u": "big-countries" },
+            { "n": "Classes More Than 5 Students", "d": "E", "u": "classes-more-than-5-students" }
+          ] },
+          { "name": "Aggregation & Logic", "problems": [
+            { "n": "Rising Temperature", "d": "E", "u": "rising-temperature" },
+            { "n": "Employee Bonus", "d": "E", "u": "employee-bonus" },
+            { "n": "Not Boring Movies", "d": "E", "u": "not-boring-movies" },
+            { "n": "Swap Salary", "d": "E", "u": "swap-salary" },
+            { "n": "Average Selling Price", "d": "E", "u": "average-selling-price" },
+            { "n": "Group Sold Products By The Date", "d": "E", "u": "group-sold-products-by-the-date" }
+          ] },
+          { "name": "Ranking & Window Functions", "problems": [
+            { "n": "Second Highest Salary", "d": "M", "u": "second-highest-salary" },
+            { "n": "Nth Highest Salary", "d": "M", "u": "nth-highest-salary" },
+            { "n": "Rank Scores", "d": "M", "u": "rank-scores" },
+            { "n": "Consecutive Numbers", "d": "M", "u": "consecutive-numbers" },
+            { "n": "Department Highest Salary", "d": "M", "u": "department-highest-salary" },
+            { "n": "Department Top Three Salaries", "d": "H", "u": "department-top-three-salaries" },
+            { "n": "Trips and Users", "d": "H", "u": "trips-and-users" }
+          ] }
+        ]
+      },
+      {
+        "id": "ds-ml",
+        "title": "Data Science & ML",
+        "accent": "#7F77DD",
+        "ref": "https://leetcode.com/studyplan/introduction-to-pandas/",
+        "note": "Pandas problems are on LeetCode (Introduction to Pandas). The stats/probability and ML items are conceptual — say the answer out loud or whiteboard the derivation, then tick it.",
+        "groups": [
+          { "name": "Pandas (LeetCode)", "problems": [
+            { "n": "Create a DataFrame from List", "d": "E" },
+            { "n": "Select Data", "d": "E" },
+            { "n": "Create a New Column", "d": "E" },
+            { "n": "Drop Duplicate Rows", "d": "E" },
+            { "n": "Drop Missing Data", "d": "E" },
+            { "n": "Rename Columns", "d": "E" },
+            { "n": "Fill Missing Data", "d": "E" },
+            { "n": "Reshape Data: Pivot", "d": "M" },
+            { "n": "Reshape Data: Melt", "d": "M" },
+            { "n": "Method Chaining", "d": "M" }
+          ] },
+          { "name": "Statistics & Probability", "problems": [
+            { "n": "Derive the bias–variance decomposition" },
+            { "n": "Explain p-value, Type I/II error, and statistical power" },
+            { "n": "Compute A/B test sample size for a target MDE" },
+            { "n": "Maximum likelihood vs MAP — derive for a Gaussian" },
+            { "n": "State and apply the Central Limit Theorem" },
+            { "n": "Bootstrap a confidence interval from scratch" },
+            { "n": "Bayes' theorem: the disease-testing / base-rate problem" },
+            { "n": "Confounders, colliders, and DAGs — when does correlation imply causation?" }
+          ] },
+          { "name": "ML Modeling (conceptual)", "problems": [
+            { "n": "Derive the logistic-regression gradient" },
+            { "n": "L1 vs L2 regularization — effect on weights and when to use each" },
+            { "n": "ROC/AUC vs PR curve — which to use when" },
+            { "n": "Handle class imbalance — resampling, weighting, threshold tuning" },
+            { "n": "Diagnose under/overfitting from learning curves" },
+            { "n": "Gradient boosting vs random forest — bias/variance trade-off" },
+            { "n": "Cross-validation pitfalls and data leakage" },
+            { "n": "Interpret a model with feature importance / SHAP" },
+            { "n": "Evaluate an LLM/RAG system — offline, online, and human eval" }
+          ] }
+        ]
+      },
+      {
+        "id": "system-design",
+        "title": "System Design & Cases",
+        "accent": "#BA7517",
+        "ref": "https://github.com/ByteByteGoHq/system-design-101",
+        "note": "For each prompt, talk through requirements → high-level design → data model → scaling/bottlenecks → trade-offs. The first two map directly to your Aaru and Equi rounds.",
+        "groups": [
+          { "name": "ML / AI System Design", "problems": [
+            { "n": "RAG over fund documents with cited, traceable answers (Equi)" },
+            { "n": "Ingest a 100TB alt-data source + entity resolution (Aaru)" },
+            { "n": "Recommendation system (YouTube / Netflix-style)" },
+            { "n": "News feed ranking" },
+            { "n": "Ad click-through-rate prediction" },
+            { "n": "Fraud / anomaly detection system" },
+            { "n": "Search ranking & typeahead" },
+            { "n": "Real-time feature store + low-latency model serving" },
+            { "n": "LLM evaluation & observability pipeline" }
+          ] },
+          { "name": "Classic System Design", "problems": [
+            { "n": "Design a URL shortener (TinyURL)" },
+            { "n": "Design a rate limiter" },
+            { "n": "Design a chat / messaging system" },
+            { "n": "Design a distributed cache" },
+            { "n": "Design a web crawler" },
+            { "n": "Design a notification system" }
+          ] },
+          { "name": "Analytics / Product Cases", "problems": [
+            { "n": "DAU dropped 20% overnight — diagnose it" },
+            { "n": "Define success metrics for a new feature" },
+            { "n": "Should we launch feature X? (experiment design + decision)" },
+            { "n": "Estimate the market size (guesstimate)" },
+            { "n": "Prioritize a roadmap under limited engineering capacity" }
+          ] }
+        ]
+      },
+      {
+        "id": "quant",
+        "title": "Quant (for fun)",
+        "accent": "#0D9488",
+        "ref": "https://brainstellar.com/",
+        "note": "Probability brainteasers and market intuition — the kind D.E. Shaw / Woodline-adjacent quant chats throw out. Optional, but genuinely fun and sharpens the stats muscle.",
+        "groups": [
+          { "name": "Probability Brainteasers", "problems": [
+            { "n": "Expected flips to get HH vs HT" },
+            { "n": "Gambler's ruin — probability of reaching N before 0" },
+            { "n": "Expected value of the max of two dice" },
+            { "n": "Is this coin fair? (Bayesian update)" },
+            { "n": "Birthday paradox — derive the 23 result" },
+            { "n": "Coupon collector — expected draws for all N" },
+            { "n": "Random walk — probability of return to the origin" },
+            { "n": "Secretary problem / optimal stopping (the 1/e rule)" },
+            { "n": "Monty Hall and its N-door generalization" },
+            { "n": "Reservoir sampling — prove uniformity" }
+          ] },
+          { "name": "Markets & Pricing (intuition)", "problems": [
+            { "n": "Why is a call worth more when volatility is higher?" },
+            { "n": "Derive the no-arbitrage forward price" },
+            { "n": "How would you quote a two-sided market as a market maker?" },
+            { "n": "Kelly criterion — derive the optimal bet fraction" },
+            { "n": "Expected PnL of a biased coin-flip betting game" }
+          ] }
+        ]
+      },
+      {
+        "id": "behavioral",
+        "title": "Behavioral (100 Qs)",
+        "accent": "#A35BBA",
+        "note": "The top ~100 behavioral and motivation questions across the themes these interviews filter for. Map each to a concrete STAR story from your bank (M Science, Bridges AI, CU Boulder), rehearse it to ~90s, then tick it. Reuse stories across themes.",
+        "groups": [
+          { "name": "Motivation & Fit", "problems": [
+            { "n": "Tell me about yourself." },
+            { "n": "Walk me through your resume / career arc." },
+            { "n": "Why this role?" },
+            { "n": "Why this company specifically?" },
+            { "n": "Why now — why are you leaving / making this move?" },
+            { "n": "Why are you moving from founder/CTO back to an IC engineering role?" },
+            { "n": "What are you looking for in your next role?" },
+            { "n": "Where do you see yourself in 2–3 years?" },
+            { "n": "What's your greatest strength? Greatest weakness?" },
+            { "n": "What questions do you have for us?" }
+          ] },
+          { "name": "Leadership & Influence", "problems": [
+            { "n": "Tell me about a time you led a project end-to-end." },
+            { "n": "Describe a time you influenced a decision without authority." },
+            { "n": "Tell me about a time you mentored or unblocked a teammate." },
+            { "n": "Describe a time you set technical direction for a team." },
+            { "n": "Tell me about a time you drove alignment among stakeholders." },
+            { "n": "How have you hired or built a team?" },
+            { "n": "Describe a time you had to motivate others through a hard stretch." },
+            { "n": "Tell me about a time you took initiative beyond your role." }
+          ] },
+          { "name": "Conflict & Disagreement", "problems": [
+            { "n": "Tell me about a disagreement with a coworker — how did it resolve?" },
+            { "n": "Describe disagreeing with your manager / a senior person." },
+            { "n": "Tell me about a time you were wrong in a debate and changed your mind." },
+            { "n": "How do you handle a teammate who isn't pulling their weight?" },
+            { "n": "Describe defending an unpopular technical position." },
+            { "n": "Tell me about a conflict over priorities between teams." },
+            { "n": "How do you disagree and commit?" },
+            { "n": "Describe giving difficult feedback to a peer." }
+          ] },
+          { "name": "Failure & Mistakes", "problems": [
+            { "n": "Tell me about your biggest professional failure." },
+            { "n": "Describe a project that didn't go as planned." },
+            { "n": "Tell me about a bug/outage you caused — and what you learned." },
+            { "n": "Describe a decision you'd make differently in hindsight." },
+            { "n": "Tell me about a time you missed a deadline." },
+            { "n": "How do you handle criticism of your work?" },
+            { "n": "Describe a time you took a risk that didn't pay off." },
+            { "n": "Tell me about feedback that was hard to hear." }
+          ] },
+          { "name": "Ownership & Autonomy", "problems": [
+            { "n": "Tell me about something you owned end-to-end with no one to defer to." },
+            { "n": "Describe going above and beyond what was asked." },
+            { "n": "Tell me about a time you fixed something nobody asked you to." },
+            { "n": "How do you operate with little direction or process?" },
+            { "n": "Describe taking responsibility for a team failure." },
+            { "n": "Tell me about a long-term bet you championed." },
+            { "n": "How do you decide what to work on when nobody tells you?" }
+          ] },
+          { "name": "Ambiguity & Decision-Making", "problems": [
+            { "n": "Tell me about a decision made with incomplete information." },
+            { "n": "Describe a time requirements were unclear — how did you proceed?" },
+            { "n": "How do you make a reversible vs irreversible decision?" },
+            { "n": "Tell me about a high-stakes call you made under pressure." },
+            { "n": "Describe choosing between two strong technical options." },
+            { "n": "How do you avoid analysis paralysis?" },
+            { "n": "Tell me about a time you had to change course mid-project." },
+            { "n": "Describe a time you said no to a request." }
+          ] },
+          { "name": "Teamwork & Collaboration", "problems": [
+            { "n": "Tell me about a great team you were part of — why did it work?" },
+            { "n": "Describe working with a difficult stakeholder." },
+            { "n": "Tell me about collaborating across functions (design/PM/data)." },
+            { "n": "How do you onboard onto an unfamiliar codebase or team?" },
+            { "n": "Describe a time you helped the team over your own task." },
+            { "n": "Tell me about building consensus on an approach." },
+            { "n": "How do you work with people more/less experienced than you?" }
+          ] },
+          { "name": "Execution & Prioritization", "problems": [
+            { "n": "How do you prioritize when everything is urgent?" },
+            { "n": "Tell me about juggling multiple projects at once." },
+            { "n": "Describe cutting scope to hit a deadline." },
+            { "n": "Tell me about a time you shipped under significant time pressure." },
+            { "n": "How do you estimate and plan a project?" },
+            { "n": "Describe managing competing stakeholder demands." },
+            { "n": "Tell me about a time you had to push back on scope." },
+            { "n": "How do you handle being overcommitted?" }
+          ] },
+          { "name": "Bias to Action & Product Thinking", "problems": [
+            { "n": "Tell me about shipping something fast with incomplete information." },
+            { "n": "Describe challenging a product or technical assumption." },
+            { "n": "Tell me about a time you simplified an over-engineered solution." },
+            { "n": "How do you balance speed vs quality / tech debt?" },
+            { "n": "Describe an idea you pushed from concept to launch." },
+            { "n": "Tell me about using data to drive a product decision." },
+            { "n": "How do you think about the user/customer as an engineer?" }
+          ] },
+          { "name": "Communication & Growth", "problems": [
+            { "n": "Explain a complex technical concept to a non-technical audience." },
+            { "n": "Tell me about presenting work to leadership." },
+            { "n": "Describe writing a doc/spec that drove a decision." },
+            { "n": "How do you keep up with a fast-moving field?" },
+            { "n": "Tell me about teaching yourself something hard, fast." },
+            { "n": "Describe a piece of feedback that changed how you work." },
+            { "n": "What's something you've learned recently that excites you?" },
+            { "n": "How do you handle stress and avoid burnout?" }
+          ] },
+          { "name": "Startup / Founding Engineer (Equi)", "problems": [
+            { "n": "Why do you want to be a founding engineer again?" },
+            { "n": "What would you build in your first 30/60/90 days?" },
+            { "n": "How do you operate without process or specs?" },
+            { "n": "How do you decide what NOT to build?" },
+            { "n": "Tell me about wearing many hats at once." },
+            { "n": "How do you think about technical debt at an early-stage company?" }
+          ] },
+          { "name": "Investing & Domain Motivation", "problems": [
+            { "n": "Why investing / fintech — and why is it authentic for you?" },
+            { "n": "What do you find interesting about fund-of-funds / alt investments?" },
+            { "n": "How does your quant-research background apply here?" },
+            { "n": "What's a recent thing in markets/AI you found interesting?" },
+            { "n": "How would AI most help an investment workflow today?" },
+            { "n": "What would you want to learn about the business in month one?" }
+          ] }
+        ]
+      }
+    ]
+  },
   "day_of_week": {
     "Monday": "Set weekly goals per track, review last week's deliverables",
     "Tuesday": "Implementation focus — code runs today",

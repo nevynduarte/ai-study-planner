@@ -12,3 +12,6 @@ config/notify.local.json
 # one-off interview-prep source archive (extracted into prep/)
 files(*).zip
 .prep_tmp/
+
+# personal browser bookmarks export (scraped for the research list; not for the repo)
+bookmarks.html
