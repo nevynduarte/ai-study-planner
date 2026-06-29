@@ -79,16 +79,28 @@ async function getData(env) {
 async function postLog(request, env) {
   try {
     const { hours, topic, track, notes } = await request.json();
-    if (!topic || !hours || Number(hours) <= 0) {
-      return json({ error: "topic and positive hours required" }, 400);
+
+    // Validate topic: must be a non-empty string (after trimming).
+    const topicStr = topic ? String(topic).trim() : "";
+    if (!topicStr) return json({ error: "topic is required" }, 400);
+    if (topicStr.length > 500) return json({ error: "topic must be 500 characters or fewer" }, 400);
+
+    // Validate hours: Number(x) converts "abc" → NaN and Infinity passes
+    // a simple > 0 check, so we must use isFinite() to catch both cases.
+    const hoursNum = Number(hours);
+    if (!isFinite(hoursNum) || hoursNum <= 0 || hoursNum > 24) {
+      return json({ error: "hours must be a finite positive number no greater than 24" }, 400);
     }
+
     const VALID_TRACKS = ["ai-eng", "ml-eng", "data-sci", "quant"];
     const trackVal = VALID_TRACKS.includes(track) ? track : null;
+    const notesStr = notes ? String(notes).trim().slice(0, 2000) : "";
+
     const date = new Date().toISOString().slice(0, 10);
     const now = new Date().toISOString();
     const res = await env.DB
       .prepare("INSERT INTO study_log (date, hours, topic, track, notes, created_at) VALUES (?, ?, ?, ?, ?, ?)")
-      .bind(date, Number(hours), String(topic), trackVal, notes ? String(notes) : "", now)
+      .bind(date, hoursNum, topicStr, trackVal, notesStr, now)
       .run();
     return json({ ok: true, id: res.meta?.last_row_id });
   } catch (e) {
@@ -99,14 +111,15 @@ async function postLog(request, env) {
 async function postAsk(request, env) {
   try {
     const { question } = await request.json();
-    if (!question || !String(question).trim()) {
-      return json({ error: "question required" }, 400);
-    }
+    const questionStr = question ? String(question).trim() : "";
+    if (!questionStr) return json({ error: "question required" }, 400);
+    if (questionStr.length > 5000) return json({ error: "question must be 5000 characters or fewer" }, 400);
+
     const date = new Date().toISOString().slice(0, 10);
     const now = new Date().toISOString();
     const res = await env.DB
       .prepare("INSERT INTO tutor_qa (date, question, created_at) VALUES (?, ?, ?)")
-      .bind(date, String(question).trim(), now)
+      .bind(date, questionStr, now)
       .run();
     return json({ ok: true, id: res.meta?.last_row_id });
   } catch (e) {
