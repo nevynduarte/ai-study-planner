@@ -473,7 +473,7 @@ export default function App() {
       const checked = planCheckedSet.has(label);
       return (
         <li style={{ listStyle:"none", margin:"5px 0", display:"flex", gap:9, alignItems:"flex-start" }}>
-          <button onClick={() => togglePlanItem(label)} role="checkbox" aria-checked={checked} aria-label={label}
+          <button onClick={() => togglePlanItem(label)} role="checkbox" aria-checked={checked} aria-label={label} aria-describedby="plan-item-desc-{label}"
             style={{ flexShrink:0, marginTop:1, width:18, height:18, borderRadius:5, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
               fontSize:11, fontWeight:700, lineHeight:1,
               border:`1.5px solid ${checked ? "#1D9E75" : brdS}`, background:checked ? "#1D9E75" : surface, color:checked ? "#fff" : "transparent" }}>
@@ -1304,7 +1304,7 @@ export default function App() {
                   const id = pid(p); const solved = solvedProblems.includes(id); const url = purl(p); const dm = diffMeta[p.d];
                   return (
                     <div key={id} style={{ display:"flex", gap:10, alignItems:"center", padding:"7px 0", borderBottom:i<probs.length-1?`1px solid ${brd}`:"none" }}>
-                      <button onClick={() => toggleSolved(id)} role="checkbox" aria-checked={solved} aria-label={p.n}
+                      <button onClick={() => toggleSolved(id)} role="checkbox" aria-checked={solved} aria-label={p.n} aria-describedby="problem-item-desc-{id}"
                         style={{ flexShrink:0, width:18, height:18, borderRadius:5, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, lineHeight:1,
                           border:`1.5px solid ${solved?ac:brdS}`, background:solved?ac:surface, color:solved?"#fff":"transparent" }}>✓</button>
                       <span style={{ flex:1, minWidth:0, fontSize:12.5, lineHeight:1.5, color:solved?txtT:txt, textDecoration:solved?"line-through":"none", textDecorationColor:hexA(ac,0.6) }}>
