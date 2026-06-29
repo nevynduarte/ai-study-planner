@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { calcStreak, todayHours } from "./utils.js";
 
 // slug + text-extraction helpers shared by the document reader (TOC anchors).
 const slugify = (s) => String(s).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
@@ -251,6 +252,8 @@ export default function App() {
   for (const r of data?.coverage || []) covMap[`${r.track}:::${r.skill}`] = r.status;
 
   const totalHrs = log.reduce((s, e) => s + (Number(e.hours) || 0), 0);
+  const streak  = calcStreak(log.map(e => e.date));
+  const dayHrs  = todayHours(log);
   const now = new Date();
   const monday = new Date(now); monday.setDate(now.getDate() - (now.getDay() || 7) + 1); monday.setHours(0,0,0,0);
   const weekLog = log.filter(e => new Date(e.date + "T12:00:00") >= monday);
@@ -522,6 +525,8 @@ export default function App() {
             <span style={{ width:3, height:3, borderRadius:2, background:txtT, display:"inline-block" }} />
             <span>{trackIds.length || 4} tracks</span>
             {startDays && <><span style={{ width:3, height:3, borderRadius:2, background:txtT, display:"inline-block" }} /><span>Day {startDays}</span></>}
+            {streak > 0 && <><span style={{ width:3, height:3, borderRadius:2, background:txtT, display:"inline-block" }} /><span>🔥 {streak}d streak</span></>}
+            {dayHrs > 0 && <><span style={{ width:3, height:3, borderRadius:2, background:txtT, display:"inline-block" }} /><span style={{ color: dayHrs >= DAILY_HOURS ? "#1D9E75" : txtT }}>{dayHrs % 1 === 0 ? dayHrs : dayHrs.toFixed(1)}h today</span></>}
           </div>
         </div>
         <button aria-label="Refresh" title="Refresh" style={{ ...S.btn(false, loading), width:38, height:38, padding:0, borderRadius:11, fontSize:15, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }} onClick={load} disabled={loading}>{loading?"…":"↻"}</button>
