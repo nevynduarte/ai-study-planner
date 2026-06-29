@@ -13,6 +13,9 @@ Live state lives separately so the curriculum file stays static:
 - D1 `skill_coverage` — each skill's status (`not-started` → `learning` → `built` → `interview-ready`), advanced nightly by the advisory from your study log.
 
 ## Architecture
+## Onboarding Guide
+
+See [ONBOARDING.md](./ONBOARDING.md) for detailed setup instructions.
 
 ```
 P620 (Claude Max, local)  → all intelligence: briefing, plan, frontier, advisory, tutor answers
