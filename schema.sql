@@ -70,6 +70,14 @@ CREATE TABLE IF NOT EXISTS tutor_qa (
 CREATE INDEX IF NOT EXISTS idx_daily_plan_date ON daily_plan(date);
 CREATE INDEX IF NOT EXISTS idx_frontier_date   ON frontier(date);
 CREATE INDEX IF NOT EXISTS idx_advisory_date   ON advisory(date);
+
+-- The Worker fetches the latest row from each content table with
+--   ORDER BY generated_at DESC LIMIT 1
+-- The date indexes above cover range queries; these cover that LIMIT 1 pattern,
+-- letting D1/SQLite satisfy the sort via index scan instead of a full table scan.
+CREATE INDEX IF NOT EXISTS idx_daily_plan_gen_desc ON daily_plan(generated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_frontier_gen_desc   ON frontier(generated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_advisory_gen_desc   ON advisory(generated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_study_log_date  ON study_log(date);
 CREATE INDEX IF NOT EXISTS idx_study_log_track ON study_log(track);
 CREATE INDEX IF NOT EXISTS idx_tutor_unanswered ON tutor_qa(answer);
