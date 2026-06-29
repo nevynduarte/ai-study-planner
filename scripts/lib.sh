@@ -39,7 +39,9 @@ send_push() {
     fs.writeFileSync(process.argv[2],JSON.stringify(payload));
     process.stdout.write(cfg.ntfy_server||"https://ntfy.sh");
   ' "$cfg" "$tmp")"
-  curl -fsS -H "Content-Type: application/json" --data-binary @"$tmp" "$server" >/dev/null
+  # --max-time caps total time per attempt; --retry handles transient failures.
+  curl -fsS --max-time 30 --retry 2 --retry-delay 5 \
+    -H "Content-Type: application/json" --data-binary @"$tmp" "$server" >/dev/null
   rc=$?
   rm -f "$tmp"
   return $rc
@@ -69,11 +71,49 @@ send_sms() {
 # Escape single quotes for inline SQL string literals.
 sql_escape() { printf "%s" "$1" | sed "s/'/''/g"; }
 
-# Run a SQL file against the remote D1.
-d1_file() { wrangler d1 execute "$DB_NAME" --remote --file="$1"; }
+# retry_with_backoff <max_attempts> <initial_delay_s> <cmd> [args...]
+# Re-runs <cmd> on non-zero exit with exponential backoff.
+# Writes warnings to stderr; returns 1 after all attempts are exhausted.
+retry_with_backoff() {
+  local max="$1" delay="$2"; shift 2
+  local attempt=1
+  while [ "$attempt" -le "$max" ]; do
+    "$@" && return 0
+    if [ "$attempt" -lt "$max" ]; then
+      echo "[$(date)] WARN: attempt $attempt/$max failed for '$1'; retrying in ${delay}s" >&2
+      sleep "$delay"
+      delay=$(( delay * 2 ))
+    fi
+    attempt=$(( attempt + 1 ))
+  done
+  echo "[$(date)] ERROR: all $max attempts failed for '$1'" >&2
+  return 1
+}
+
+# Run a SQL file against the remote D1 with up to 3 attempts (5 s, 10 s backoff).
+d1_file() { retry_with_backoff 3 5 wrangler d1 execute "$DB_NAME" --remote --file="$1"; }
 
 # Run a SQL command against the remote D1, return JSON to stdout.
-d1_json() { wrangler d1 execute "$DB_NAME" --remote --json --command "$1"; }
+# Captures output so partial/error output from failed attempts is not mixed in.
+d1_json() {
+  local cmd="$1" out rc delay=5 attempt=1
+  while [ "$attempt" -le 3 ]; do
+    out="$(wrangler d1 execute "$DB_NAME" --remote --json --command "$cmd")"
+    rc=$?
+    if [ "$rc" -eq 0 ]; then
+      printf "%s" "$out"
+      return 0
+    fi
+    if [ "$attempt" -lt 3 ]; then
+      echo "[$(date)] WARN: d1_json attempt $attempt/3 failed; retrying in ${delay}s" >&2
+      sleep "$delay"
+      delay=$(( delay * 2 ))
+    fi
+    attempt=$(( attempt + 1 ))
+  done
+  echo "[$(date)] ERROR: d1_json failed after 3 attempts" >&2
+  return 1
+}
 
 # d1_put_content <table> <date> <content>
 # One row per date (idempotent re-runs replace the day's row).
