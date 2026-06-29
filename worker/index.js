@@ -14,6 +14,24 @@
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), { status, headers: { "Content-Type": "application/json" } });
 
+// Constant-time string comparison to prevent password timing side-channel attacks.
+// An attacker making many timed requests could otherwise infer the password
+// character-by-character via === short-circuit evaluation.
+// Uses crypto.subtle.timingSafeEqual (Cloudflare Workers extension) when
+// available; falls back to a constant-time XOR accumulator in Node test runs.
+function timingSafeStringEqual(a, b) {
+  const enc = new TextEncoder();
+  const ba = enc.encode(a);
+  const bb = enc.encode(b);
+  if (ba.byteLength !== bb.byteLength) return false;
+  if (typeof crypto !== "undefined" && crypto.subtle?.timingSafeEqual) {
+    return crypto.subtle.timingSafeEqual(ba, bb);
+  }
+  let acc = 0;
+  for (let i = 0; i < ba.byteLength; i++) acc |= ba[i] ^ bb[i];
+  return acc === 0;
+}
+
 // Single-user HTTP Basic Auth gate. Set the password with:
 //   wrangler secret put APP_PASSWORD
 // Any username works; only the password is checked. If APP_PASSWORD is not
@@ -24,7 +42,11 @@ function authorized(request, env) {
   if (!header.startsWith("Basic ")) return false;
   let decoded = "";
   try { decoded = atob(header.slice(6)); } catch { return false; }
-  return decoded.slice(decoded.indexOf(":") + 1) === env.APP_PASSWORD;
+  // indexOf returns -1 when there is no colon; guard explicitly so a
+  // credential payload without a colon cannot bypass the check.
+  const colon = decoded.indexOf(":");
+  if (colon === -1) return false;
+  return timingSafeStringEqual(decoded.slice(colon + 1), env.APP_PASSWORD);
 }
 
 export default {
@@ -72,7 +94,8 @@ async function getData(env) {
       coverage: coverage.results || [],
     });
   } catch (e) {
-    return json({ error: e.message }, 500);
+    console.error("getData:", e);
+    return json({ error: "Internal server error" }, 500);
   }
 }
 
@@ -92,7 +115,8 @@ async function postLog(request, env) {
       .run();
     return json({ ok: true, id: res.meta?.last_row_id });
   } catch (e) {
-    return json({ error: e.message }, 500);
+    console.error("postLog:", e);
+    return json({ error: "Internal server error" }, 500);
   }
 }
 
@@ -110,6 +134,7 @@ async function postAsk(request, env) {
       .run();
     return json({ ok: true, id: res.meta?.last_row_id });
   } catch (e) {
-    return json({ error: e.message }, 500);
+    console.error("postAsk:", e);
+    return json({ error: "Internal server error" }, 500);
   }
 }
