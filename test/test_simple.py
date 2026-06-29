@@ -1,0 +1,1 @@
+"import unittest\n\nclass TestPipelineFunctions(unittest.TestCase):\n    def test_imports(self):\n        # Test that we can import both modules\n        import generate_data\n        import ingest\n        self.assertTrue(True)\n\nif __name__ == '__main__':\n    unittest.main()"  
