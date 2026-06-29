@@ -5,5 +5,9 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'dist'
-  }
+  },
+  test: {
+    environment: 'node',
+    include: ['worker/**/*.test.js'],
+  },
 })

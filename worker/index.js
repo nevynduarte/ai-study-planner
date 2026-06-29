@@ -18,13 +18,18 @@ const json = (obj, status = 200) =>
 //   wrangler secret put APP_PASSWORD
 // Any username works; only the password is checked. If APP_PASSWORD is not
 // configured the gate is disabled (fail-open) so a deploy can't lock you out.
-function authorized(request, env) {
+export function authorized(request, env) {
   if (!env.APP_PASSWORD) return true;
   const header = request.headers.get("Authorization") || "";
   if (!header.startsWith("Basic ")) return false;
   let decoded = "";
   try { decoded = atob(header.slice(6)); } catch { return false; }
-  return decoded.slice(decoded.indexOf(":") + 1) === env.APP_PASSWORD;
+  // indexOf returns -1 when there is no colon, making slice(-1+1) = slice(0)
+  // return the entire decoded string — so a password-only payload would pass.
+  // Guard explicitly: credentials without a colon are malformed Basic auth.
+  const colon = decoded.indexOf(":");
+  if (colon === -1) return false;
+  return decoded.slice(colon + 1) === env.APP_PASSWORD;
 }
 
 export default {
