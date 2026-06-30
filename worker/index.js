@@ -38,9 +38,10 @@ export default {
 
     const { pathname } = new URL(request.url);
 
-    if (pathname === "/api/data" && request.method === "GET")  return getData(env);
-    if (pathname === "/api/log"  && request.method === "POST") return postLog(request, env);
-    if (pathname === "/api/ask"  && request.method === "POST") return postAsk(request, env);
+    if (pathname === "/api/data"     && request.method === "GET")   return getData(env);
+    if (pathname === "/api/log"      && request.method === "POST")  return postLog(request, env);
+    if (pathname === "/api/ask"      && request.method === "POST")  return postAsk(request, env);
+    if (pathname === "/api/coverage" && request.method === "PATCH") return patchCoverage(request, env);
     if (pathname.startsWith("/api/")) return json({ error: "Not found" }, 404);
 
     // Non-API requests → static assets (React app)
@@ -109,6 +110,35 @@ async function postAsk(request, env) {
       .bind(date, String(question).trim(), now)
       .run();
     return json({ ok: true, id: res.meta?.last_row_id });
+  } catch (e) {
+    return json({ error: e.message }, 500);
+  }
+}
+
+const VALID_STATUSES = ["not-started", "learning", "built", "interview-ready"];
+
+async function patchCoverage(request, env) {
+  try {
+    const body = await request.json();
+    const track  = body.track  ? String(body.track).trim()  : "";
+    const skill  = body.skill  ? String(body.skill).trim()  : "";
+    const status = body.status ? String(body.status).trim() : "";
+
+    if (!track || track.length > 50)      return json({ error: "track required (max 50 chars)" }, 400);
+    if (!skill || skill.length > 200)     return json({ error: "skill required (max 200 chars)" }, 400);
+    if (!VALID_STATUSES.includes(status)) return json({ error: `status must be one of: ${VALID_STATUSES.join(", ")}` }, 400);
+
+    const now = new Date().toISOString();
+    await env.DB
+      .prepare(
+        `INSERT INTO skill_coverage (track, skill, status, updated_at)
+         VALUES (?, ?, ?, ?)
+         ON CONFLICT(track, skill) DO UPDATE
+           SET status = excluded.status, updated_at = excluded.updated_at`
+      )
+      .bind(track, skill, status, now)
+      .run();
+    return json({ ok: true });
   } catch (e) {
     return json({ error: e.message }, 500);
   }
