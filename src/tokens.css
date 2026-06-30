@@ -1,0 +1,94 @@
+/* ── Design token foundation: Open Props → semantic app tokens ─────────────
+   Layer 1 (structural primitives): Open Props MIT — spacing, radii, shadows,
+   type scales are sourced from tree-shaken Open Props bundles below.
+
+   Layer 2 (semantic aliases): the --asp-* custom properties map Open Props
+   structural values to the app's meaning — surface colours, accent hues,
+   spacing shortcuts, etc.  Components read --asp-* only; they never reach
+   into Open Props tokens directly.
+
+   Dark mode is handled here via @media so any future stylesheet that reads
+   --asp-* tokens automatically inherits the correct palette.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Layer 1: Open Props structural bundles (tree-shaken — only what we use). */
+@import "open-props/sizes.min.css";    /* --size-*, --size-px-*, --size-fluid-* */
+@import "open-props/borders.min.css";  /* --radius-*, --border-size-* */
+@import "open-props/shadows.min.css";  /* --shadow-*, dark-mode shadow override */
+@import "open-props/fonts.min.css";    /* --font-*, --font-weight-*, --font-lineheight-* */
+
+/* ── Layer 2: semantic tokens (light defaults) ────────────────────────── */
+:root {
+  /* ── Accent hues — fixed across light/dark ───────────────────────── */
+  --asp-color-green:  #1D9E75;  /* AI track, today plan, success */
+  --asp-color-blue:   #185FA5;  /* "built" coverage, links */
+  --asp-color-purple: #7F77DD;  /* Equi accent, selection ring */
+  --asp-color-amber:  #BA7517;  /* "learning" state, warnings */
+  --asp-color-red:    #A32D2D;  /* urgent, errors */
+  --asp-color-teal:   #0D9488;  /* crash-course sprint */
+
+  /* ── Surface / text / border palette (light) ─────────────────────── */
+  --asp-bg:        #f7f8fa;
+  --asp-surface:   #ffffff;
+  --asp-surface-2: #f8fafc;
+  --asp-bg-sub:    #f1f3f6;
+  --asp-txt:       #0f1115;
+  --asp-txt-s:     #49505e;
+  --asp-txt-t:     #8b94a3;
+  --asp-brd:       rgba(15, 17, 21, 0.08);
+  --asp-brd-s:     rgba(15, 17, 21, 0.14);
+
+  /* ── Shadows (Open Props scale; dark-mode overridden below) ──────── */
+  --asp-shadow-card: var(--shadow-2);
+  --asp-shadow-pop:  var(--shadow-5);
+
+  /* ── Radii (Open Props + app-specific steps) ─────────────────────── */
+  --asp-radius-xs:   var(--radius-1);    /* 2px  — tiny dots, indicators */
+  --asp-radius-sm:   5px;                /* 5px  — code inline chips */
+  --asp-radius-md:   8px;                /* 8px  — buttons, inputs */
+  --asp-radius-lg:   12px;               /* 12px — section containers */
+  --asp-radius-xl:   16px;               /* 16px — cards */
+  --asp-radius-pill: var(--radius-round);
+
+  /* ── Spacing shortcuts (Open Props px-scale) ─────────────────────── */
+  --asp-space-1: var(--size-px-1);  /* 4px  */
+  --asp-space-2: var(--size-px-2);  /* 8px  */
+  --asp-space-3: var(--size-px-3);  /* 16px */
+  --asp-space-4: var(--size-px-4);  /* 20px */
+  --asp-space-5: var(--size-px-5);  /* 24px */
+
+  /* ── Typography (Open Props stacks + weights) ────────────────────── */
+  /* Prefer Inter (loaded in index.html) then fall through to Open Props
+     neo-grotesque stack so the hierarchy remains even without the font. */
+  --asp-font:      'Inter', var(--font-neo-grotesque);
+  --asp-font-mono: var(--font-monospace-code);
+
+  --asp-fw-normal: var(--font-weight-4);  /* 400 */
+  --asp-fw-medium: var(--font-weight-5);  /* 500 */
+  --asp-fw-semi:   var(--font-weight-6);  /* 600 */
+  --asp-fw-bold:   var(--font-weight-7);  /* 700 */
+  --asp-fw-black:  var(--font-weight-8);  /* 800 */
+
+  --asp-lh-tight:  var(--font-lineheight-1);  /* 1.25 */
+  --asp-lh-normal: var(--font-lineheight-3);  /* 1.5  */
+  --asp-lh-loose:  var(--font-lineheight-4);  /* 1.75 */
+}
+
+/* ── Dark mode overrides ──────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --asp-surface:   #16181d;
+    --asp-surface-2: #1d2026;
+    --asp-bg-sub:    #22262d;
+    --asp-txt:       #e9ebf0;
+    --asp-txt-s:     #a6aebb;
+    --asp-txt-t:     #6a7280;
+    --asp-brd:       rgba(255, 255, 255, 0.08);
+    --asp-brd-s:     rgba(255, 255, 255, 0.16);
+
+    /* Open Props shadow tokens already switch in dark mode (shadows.min.css
+       contains its own @media override), but card/pop need boosting here. */
+    --asp-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.50);
+    --asp-shadow-pop:  0 18px 50px rgba(0, 0, 0, 0.62);
+  }
+}
