@@ -162,6 +162,22 @@ const COV = {
 };
 const covOf = (m, track, skill) => m[`${track}:::${skill}`] || "not-started";
 
+// Reactive dark-mode detection. Subscribes to the OS colour-scheme media query
+// so the UI re-renders immediately when the user switches system theme, instead
+// of only reading the preference once at mount.
+function useDarkMode() {
+  const [dark, setDark] = useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e) => setDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return dark;
+}
+
 // Single-user, client-side persisted UI state (localStorage). Used for toggles
 // the static curriculum + D1 don't model: crash-day completion, archived
 // interviews, papers marked read. Falls back to `initial` if storage is empty
@@ -352,19 +368,28 @@ export default function App() {
   }
 
   // ─── Design tokens ───────────────────────────────────────────────────────
-  const dark    = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const bg      = dark ? "#0a0b0e" : "#ffffff";   // app base / contrast reference
-  const surface = dark ? "#16181d" : "#ffffff";   // card surface
-  const surface2= dark ? "#1d2026" : "#f8fafc";   // raised / alt surface
-  const bgS     = dark ? "#22262d" : "#f1f3f6";   // subtle fill (chips, inputs bg)
-  const txt     = dark ? "#e9ebf0" : "#0f1115";
-  const txtS    = dark ? "#a6aebb" : "#49505e";
-  const txtT    = dark ? "#6a7280" : "#8b94a3";
-  const brd     = dark ? "rgba(255,255,255,0.08)" : "rgba(15,17,21,0.08)";
-  const brdS    = dark ? "rgba(255,255,255,0.16)" : "rgba(15,17,21,0.14)";
-  const shadowCard = dark ? "0 1px 2px rgba(0,0,0,0.5)" : "0 1px 2px rgba(16,24,40,0.05), 0 1px 3px rgba(16,24,40,0.04)";
-  const shadowPop  = dark ? "0 18px 50px rgba(0,0,0,0.62)" : "0 18px 46px rgba(16,24,40,0.14)";
-  const FONT = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif";
+  // Surface / text / border / shadow values are delegated to the CSS custom
+  // properties defined in src/tokens.css (Open Props-inspired token layer).
+  // React inline styles accept var() strings — the browser resolves them just
+  // like any other CSS value, including across light/dark mode switches.
+  //
+  // `dark` is still computed as a reactive boolean because hexA() needs a real
+  // alpha value at runtime and CSS color-mix() lacks broad enough Safari support
+  // to replace it. When that support improves this flag can be dropped.
+  const dark = useDarkMode();
+
+  const bg       = "var(--color-bg)";            // app base / contrast reference
+  const surface  = "var(--color-surface)";        // card surface
+  const surface2 = "var(--color-surface-raised)"; // raised / alt surface
+  const bgS      = "var(--color-surface-subtle)"; // subtle fill (chips, inputs bg)
+  const txt      = "var(--color-text)";
+  const txtS     = "var(--color-text-soft)";
+  const txtT     = "var(--color-text-faint)";
+  const brd      = "var(--color-border)";
+  const brdS     = "var(--color-border-strong)";
+  const shadowCard = "var(--shadow-card)";
+  const shadowPop  = "var(--shadow-overlay)";
+  const FONT     = "var(--font-sans)";
 
   const S = {
     card:   { background:surface, border:`1px solid ${brd}`, borderRadius:16, padding:"1.05rem 1.15rem", marginBottom:"0.8rem", boxShadow:shadowCard },
