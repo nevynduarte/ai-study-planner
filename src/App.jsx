@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -13,7 +14,15 @@ const READER_ACCENT = { aaru: "#1D9E75", equi: "#7F77DD" };
 // Full-screen "Word-doc" reader for a prep guide: a centered paper page with
 // serif document typography, a sticky table-of-contents rail built from the
 // markdown headings, and a top reading-progress bar. Opened from the
-// Interviews tab; Esc or the backdrop closes it.
+// Interviews tab.
+//
+// Accessibility (WAI-ARIA Dialog pattern via @radix-ui/react-dialog):
+//   • role="dialog" + aria-modal="true" on the panel (Radix sets these)
+//   • aria-labelledby wired to Dialog.Title (company + guide label)
+//   • Focus trap: keyboard users cannot Tab outside the open dialog
+//   • Escape key: Radix calls onOpenChange(false), which triggers onClose()
+//   • Body scroll lock: Radix sets overflow:hidden on <body> while open
+//   • Focus restoration: focus returns to the trigger element on close
 function DocReader({ iv, md, onClose }) {
   const accent = READER_ACCENT[iv.id] || "#185FA5";
   const bodyRef = useRef(null);
@@ -34,18 +43,12 @@ function DocReader({ iv, md, onClose }) {
   }, [md]);
 
   useEffect(() => {
-    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    // Radix Dialog handles Escape key and body scroll lock automatically.
+    // We only need to track viewport width for the responsive layout.
     const onResize = () => setVw(window.innerWidth);
-    window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onResize);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";           // lock background scroll
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      window.removeEventListener("resize", onResize);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [onClose]);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const onScroll = (e) => {
     const el = e.currentTarget;
@@ -61,7 +64,7 @@ function DocReader({ iv, md, onClose }) {
   const SER = 'Georgia, "Times New Roman", serif';
   const SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif";
   const paper = "#fbfbf8", ink = "#1d1d1b", inkSoft = "#56544f", rule = "rgba(0,0,0,0.11)";
-  const head = (size, mt) => ({ id: undefined, fontFamily: SER, color: ink, lineHeight: 1.25, margin: mt, fontWeight: 700, fontSize: size });
+  const head = (size, mt) => ({ fontFamily: SER, color: ink, lineHeight: 1.25, margin: mt, fontWeight: 700, fontSize: size });
 
   const D = {
     h1: ({ children }) => <h1 id={slugify(nodeText(children))} style={{ ...head(27, "4px 0 16px"), letterSpacing: -0.4, lineHeight: 1.2 }}>{children}</h1>,
@@ -83,43 +86,82 @@ function DocReader({ iv, md, onClose }) {
   };
 
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(20,20,22,0.62)", backdropFilter: "blur(3px)", display: "flex", justifyContent: "center", alignItems: "stretch", padding: wide ? 24 : 0, boxSizing: "border-box" }}>
-      <div style={{ position: "fixed", top: 0, left: 0, height: 3, width: `${progress}%`, background: accent, zIndex: 1002, transition: "width .1s linear" }} />
-      <div onClick={(e) => e.stopPropagation()} style={{ background: paper, color: ink, width: "100%", maxWidth: 1040, height: "100%", borderRadius: wide ? 12 : 0, overflow: "hidden", boxShadow: "0 12px 64px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", fontFamily: SER }}>
+    <Dialog.Root open onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        {/* Backdrop — Radix calls onOpenChange(false) when this is clicked,
+            which flows to onClose(). Styled to match the original overlay. */}
+        <Dialog.Overlay className="asp-dialog-overlay" />
 
-        {/* sticky header bar */}
-        <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 20px", borderBottom: `1px solid ${rule}`, background: "rgba(251,251,248,0.94)" }}>
-          <div style={{ minWidth: 0, fontFamily: SANS, display: "flex", alignItems: "center", gap: 9 }}>
-            <span style={{ width: 9, height: 9, borderRadius: 2, background: accent, display: "inline-block", flexShrink: 0 }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{iv.company} — Full prep guide</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, fontFamily: SANS }}>
-            <a href={iv.guide_md} download style={{ fontSize: 12, color: inkSoft, textDecoration: "none", border: `1px solid ${rule}`, borderRadius: 7, padding: "5px 10px" }}>⤓ .md</a>
-            <button onClick={onClose} style={{ fontSize: 12.5, cursor: "pointer", border: `1px solid ${rule}`, background: "#fff", color: ink, borderRadius: 7, padding: "5px 12px" }}>Close ✕</button>
-          </div>
-        </div>
+        {/* Reading-progress bar — fixed at the top of the viewport, above
+            the dialog panel (z-index 1002 > content z-index 1001). */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed", top: 0, left: 0, height: 3,
+            width: `${progress}%`, background: accent,
+            zIndex: 1002, transition: "width .1s linear", pointerEvents: "none",
+          }}
+        />
 
-        {/* scroll body: TOC rail + paper page */}
-        <div ref={bodyRef} onScroll={onScroll} style={{ flex: 1, overflowY: "auto", display: "flex", justifyContent: "center" }}>
-          {wide && toc.length > 0 && (
-            <nav style={{ width: 250, flexShrink: 0, alignSelf: "flex-start", position: "sticky", top: 0, maxHeight: "100%", overflowY: "auto", padding: "40px 16px 60px 24px", borderRight: `1px solid ${rule}`, fontFamily: SANS }}>
-              <div style={{ fontSize: 10.5, textTransform: "uppercase", letterSpacing: 0.7, color: inkSoft, marginBottom: 11, fontWeight: 700 }}>Contents</div>
-              {toc.map((t, i) => (
-                <button key={i} onClick={() => goTo(t.id)} title={t.text}
-                  style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", cursor: "pointer", padding: `3px 0 3px ${(t.level - 1) * 12}px`, fontSize: t.level === 1 ? 12.5 : 12, color: t.level === 1 ? ink : inkSoft, fontWeight: t.level === 1 ? 600 : 400, lineHeight: 1.45 }}>
-                  {t.text}
-                </button>
-              ))}
-            </nav>
-          )}
-          <article style={{ flex: 1, maxWidth: 760, minWidth: 0, padding: wide ? "48px 60px 100px" : "28px 20px 80px" }}>
-            {loading
-              ? <div style={{ fontFamily: SANS, color: inkSoft, fontSize: 14 }}>Loading guide…</div>
-              : <ReactMarkdown remarkPlugins={[remarkGfm]} components={D}>{md}</ReactMarkdown>}
-          </article>
-        </div>
-      </div>
-    </div>
+        {/* Paper panel — Radix sets role="dialog", aria-modal="true",
+            aria-labelledby (wired to Dialog.Title), and enforces focus trap. */}
+        <Dialog.Content
+          className="asp-dialog-content"
+          aria-describedby={undefined}
+          style={{
+            position: "fixed",
+            top: wide ? 24 : 0, bottom: wide ? 24 : 0,
+            left: "50%", transform: "translateX(-50%)",
+            width: wide ? "calc(100% - 48px)" : "100%",
+            maxWidth: 1040, zIndex: 1001,
+            background: paper, color: ink,
+            borderRadius: wide ? 12 : 0,
+            overflow: "hidden",
+            boxShadow: "0 12px 64px rgba(0,0,0,0.45)",
+            display: "flex", flexDirection: "column",
+            fontFamily: SER,
+          }}
+        >
+          {/* sticky header bar */}
+          <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 20px", borderBottom: `1px solid ${rule}`, background: "rgba(251,251,248,0.94)" }}>
+            <div style={{ minWidth: 0, fontFamily: SANS, display: "flex", alignItems: "center", gap: 9 }}>
+              <span aria-hidden="true" style={{ width: 9, height: 9, borderRadius: 2, background: accent, display: "inline-block", flexShrink: 0 }} />
+              {/* Dialog.Title links to Dialog.Content via aria-labelledby */}
+              <Dialog.Title style={{ margin: 0, fontSize: 13, fontWeight: 600, color: ink, fontFamily: SANS, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {iv.company} — Full prep guide
+              </Dialog.Title>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, fontFamily: SANS }}>
+              <a href={iv.guide_md} download style={{ fontSize: 12, color: inkSoft, textDecoration: "none", border: `1px solid ${rule}`, borderRadius: 7, padding: "5px 10px" }}>⤓ .md</a>
+              {/* Dialog.Close sets aria-label="Close" and calls onOpenChange(false) */}
+              <Dialog.Close asChild>
+                <button style={{ fontSize: 12.5, cursor: "pointer", border: `1px solid ${rule}`, background: "#fff", color: ink, borderRadius: 7, padding: "5px 12px" }}>Close ✕</button>
+              </Dialog.Close>
+            </div>
+          </div>
+
+          {/* scroll body: TOC rail + paper page */}
+          <div ref={bodyRef} onScroll={onScroll} style={{ flex: 1, overflowY: "auto", display: "flex", justifyContent: "center" }}>
+            {wide && toc.length > 0 && (
+              <nav aria-label="Table of contents" style={{ width: 250, flexShrink: 0, alignSelf: "flex-start", position: "sticky", top: 0, maxHeight: "100%", overflowY: "auto", padding: "40px 16px 60px 24px", borderRight: `1px solid ${rule}`, fontFamily: SANS }}>
+                <div style={{ fontSize: 10.5, textTransform: "uppercase", letterSpacing: 0.7, color: inkSoft, marginBottom: 11, fontWeight: 700 }}>Contents</div>
+                {toc.map((t, i) => (
+                  <button key={i} onClick={() => goTo(t.id)} title={t.text} className="asp-toc-btn"
+                    style={{ padding: `3px 0 3px ${(t.level - 1) * 12}px`, fontSize: t.level === 1 ? 12.5 : 12, color: t.level === 1 ? ink : inkSoft, fontWeight: t.level === 1 ? 600 : 400 }}>
+                    {t.text}
+                  </button>
+                ))}
+              </nav>
+            )}
+            <article style={{ flex: 1, maxWidth: 760, minWidth: 0, padding: wide ? "48px 60px 100px" : "28px 20px 80px" }}>
+              {loading
+                ? <div style={{ fontFamily: SANS, color: inkSoft, fontSize: 14 }}>Loading guide…</div>
+                : <ReactMarkdown remarkPlugins={[remarkGfm]} components={D}>{md}</ReactMarkdown>}
+            </article>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
 

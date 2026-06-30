@@ -1,0 +1,99 @@
+/* ── Design System Foundation ─────────────────────────────────────────────
+ * Layer 1 · Tokens  : Open Props (MIT) — CSS custom-property design tokens
+ * Layer 2 · Behavior: Radix UI Dialog (MIT) — accessible dialog/modal pattern
+ * Documented in docs/DESIGN-SYSTEM.md
+ * ─────────────────────────────────────────────────────────────────────── */
+
+/* Open Props token bundles: border radii, easing curves, font weights */
+@import 'open-props/borders.min.css';
+@import 'open-props/easings.min.css';
+@import 'open-props/fonts.min.css';
+
+/* ── Semantic design tokens — app palette mapped onto Open Props names ── */
+:root {
+  /* Brand accents */
+  --color-green:  #1D9E75;
+  --color-purple: #7F77DD;
+  --color-blue:   #185FA5;
+  --color-amber:  #BA7517;
+  --color-red:    #A32D2D;
+  --color-teal:   #0D9488;
+
+  /* Surface stack — light mode */
+  --color-bg:          #f7f8fa;
+  --color-surface:     #ffffff;
+  --color-surface-alt: #f8fafc;
+  --color-fill:        #f1f3f6;
+  --color-text:        #0f1115;
+  --color-text-soft:   #49505e;
+  --color-text-dim:    #8b94a3;
+  --color-border:      rgba(15, 17, 21, 0.08);
+  --color-border-soft: rgba(15, 17, 21, 0.14);
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.04);
+  --shadow-pop:  0 18px 46px rgba(16, 24, 40, 0.14);
+
+  /* Dialog tokens */
+  --dialog-overlay-bg:    rgba(20, 20, 22, 0.62);
+  --dialog-overlay-blur:  blur(3px);
+  --dialog-z-overlay:     1000;
+  --dialog-z-content:     1001;
+  --dialog-z-progress:    1002;
+  --dialog-transition:    all 0.15s var(--ease-2);  /* Open Props easing */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg:          #0a0b0e;
+    --color-surface:     #16181d;
+    --color-surface-alt: #1d2026;
+    --color-fill:        #22262d;
+    --color-text:        #e9ebf0;
+    --color-text-soft:   #a6aebb;
+    --color-text-dim:    #6a7280;
+    --color-border:      rgba(255, 255, 255, 0.08);
+    --color-border-soft: rgba(255, 255, 255, 0.16);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.50);
+    --shadow-pop:  0 18px 50px rgba(0, 0, 0, 0.62);
+  }
+}
+
+/* ── Dialog overlay (Radix Dialog.Overlay) ── */
+.asp-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--dialog-z-overlay);
+  background: var(--dialog-overlay-bg);
+  backdrop-filter: var(--dialog-overlay-blur);
+}
+
+/* ── Dialog content (Radix Dialog.Content = role="dialog" aria-modal) ── */
+/* Keyboard focus ring — only on keyboard navigation, not mouse clicks */
+.asp-dialog-content:focus-visible {
+  outline: 2px solid var(--color-purple);
+  outline-offset: -2px;
+  border-radius: var(--radius-2);   /* Open Props: 0.25rem */
+}
+
+.asp-dialog-content:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── TOC nav buttons inside DocReader — smooth hover via Open Props easing ── */
+.asp-toc-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1.45;
+  transition: color 0.12s var(--ease-2);   /* Open Props easing */
+}
+
+.asp-toc-btn:focus-visible {
+  outline: 2px solid var(--color-purple);
+  outline-offset: 2px;
+  border-radius: var(--radius-1);
+}
