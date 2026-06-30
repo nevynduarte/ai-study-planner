@@ -3,11 +3,11 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 // slug + text-extraction helpers shared by the document reader (TOC anchors).
-const slugify = (s) => String(s).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
-const nodeText = (c) => Array.isArray(c) ? c.map(nodeText).join("")
+const slugify = (s)  => String(s).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
+const nodeText = (c)  => Array.isArray(c) ? c.map(nodeText).join("")
   : (typeof c === "string" || typeof c === "number") ? String(c)
   : (c && c.props && c.props.children) ? nodeText(c.props.children) : "";
-const READER_ACCENT = { aaru: "#1D9E75", equi: "#7F77DD" };
+const READER_ACCENT  = { aaru: "#1D9E75", equi: "#7F77DD" };
 
 // ─── DocReader ─────────────────────────────────────────────────────────────
 // Full-screen "Word-doc" reader for a prep guide: a centered paper page with
@@ -15,9 +15,9 @@ const READER_ACCENT = { aaru: "#1D9E75", equi: "#7F77DD" };
 // markdown headings, and a top reading-progress bar. Opened from the
 // Interviews tab; Esc or the backdrop closes it.
 function DocReader({ iv, md, onClose }) {
-  const accent = READER_ACCENT[iv.id] || "#185FA5";
-  const bodyRef = useRef(null);
-  const [progress, setProgress] = useState(0);
+  const accent  = READER_ACCENT[iv.id] || "#185FA5";
+  const bodyRef  = useRef(null);
+  const [progress, setProgress]  = useState(0);
   const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth : 1024);
   const wide = vw >= 860;
   const loading = md === undefined;
