@@ -1,6 +1,24 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, useSyncExternalStore } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+
+// Reactive dark-mode detection — subscribes to the OS media query so the UI
+// re-renders automatically when the user switches system appearance, rather
+// than reading the value once at load time.
+const darkMQ = typeof window !== "undefined"
+  ? window.matchMedia("(prefers-color-scheme: dark)")
+  : null;
+function useDarkMode() {
+  return useSyncExternalStore(
+    (notify) => {
+      if (!darkMQ) return () => {};
+      darkMQ.addEventListener("change", notify);
+      return () => darkMQ.removeEventListener("change", notify);
+    },
+    () => darkMQ?.matches ?? false,
+    () => false,
+  );
+}
 
 // slug + text-extraction helpers shared by the document reader (TOC anchors).
 const slugify = (s) => String(s).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
@@ -352,7 +370,7 @@ export default function App() {
   }
 
   // ─── Design tokens ───────────────────────────────────────────────────────
-  const dark    = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const dark    = useDarkMode();
   const bg      = dark ? "#0a0b0e" : "#ffffff";   // app base / contrast reference
   const surface = dark ? "#16181d" : "#ffffff";   // card surface
   const surface2= dark ? "#1d2026" : "#f8fafc";   // raised / alt surface

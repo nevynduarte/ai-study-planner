@@ -1,0 +1,94 @@
+/*
+ * Design Token Foundation
+ *
+ * Layer 1 — Primitives: Open Props (MIT) supplies spacing, radii,
+ *   easing, and font-size scales as CSS custom properties.
+ * Layer 2 — Semantic aliases: app-specific names mapped to Open Props
+ *   values, plus color tokens with automatic dark-mode overrides via
+ *   prefers-color-scheme (no JS required).
+ *
+ * Combination in use:
+ *   Foundations  → Open Props  (this file)
+ *   Primitives   → Radix UI Primitives (planned next pass)
+ *   Component kit → shadcn/ui  (planned)
+ *
+ * See docs/DESIGN-SYSTEM.md for the full layering strategy.
+ */
+
+/* ── 1. Open Props primitive tokens ──────────────────────────────── */
+@import "open-props/open-props.min.css";
+
+/* ── 2. Semantic aliases (primitives → app vocabulary) ───────────── */
+:root {
+  /* Spacing — map Open Props px sizes to named steps */
+  --space-1:  var(--size-px-1);   /* 4px  */
+  --space-2:  var(--size-px-2);   /* 8px  */
+  --space-3:  var(--size-px-3);   /* 16px */
+  --space-4:  var(--size-px-4);   /* 20px */
+  --space-5:  var(--size-px-5);   /* 24px */
+  --space-6:  var(--size-px-6);   /* 28px */
+  --space-7:  var(--size-px-7);   /* 32px */
+
+  /* Border radius */
+  --radius-sm:   var(--radius-2);       /* 5px   */
+  --radius-md:   8px;                   /* pill-adjacent elements */
+  --radius-lg:   var(--radius-3);       /* 1rem / 16px — cards */
+  --radius-xl:   12px;                  /* large cards */
+  --radius-full: var(--radius-round);   /* 1e5px — pills */
+
+  /* Easing */
+  --ease-out:    var(--ease-2);
+  --ease-in-out: var(--ease-in-out-2);
+
+  /* Typography — font-size steps */
+  --text-xs:   10.5px;
+  --text-sm:   12px;
+  --text-base: 13px;
+  --text-md:   13.5px;
+  --text-lg:   14.5px;
+  --text-xl:   16px;
+  --text-2xl:  20px;
+  --text-3xl:  24px;
+
+  /* Accent palette — invariant across light / dark */
+  --color-green:    #1D9E75;
+  --color-blue:     #185FA5;
+  --color-purple:   #7F77DD;
+  --color-amber:    #BA7517;
+  --color-red:      #A32D2D;
+  --color-teal:     #0D9488;
+  --color-lime:     #3B6D11;
+}
+
+/* ── 3. Semantic color tokens — light mode (default) ─────────────── */
+:root {
+  --color-bg:              #f7f8fa;
+  --color-surface:         #ffffff;
+  --color-surface-raised:  #f8fafc;
+  --color-surface-subtle:  #f1f3f6;
+  --color-text:            #0f1115;
+  --color-text-secondary:  #49505e;
+  --color-text-tertiary:   #8b94a3;
+  --color-border:          rgba(15, 17, 21, 0.08);
+  --color-border-strong:   rgba(15, 17, 21, 0.14);
+  --shadow-card:           0 1px 2px rgba(16, 24, 40, 0.05),
+                           0 1px 3px rgba(16, 24, 40, 0.04);
+  --shadow-pop:            0 18px 46px rgba(16, 24, 40, 0.14);
+}
+
+/* ── 4. Dark-mode overrides ───────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg:              #0a0b0e;
+    --color-surface:         #16181d;
+    --color-surface-raised:  #1d2026;
+    --color-surface-subtle:  #22262d;
+    --color-text:            #e9ebf0;
+    --color-text-secondary:  #a6aebb;
+    --color-text-tertiary:   #6a7280;
+    --color-border:          rgba(255, 255, 255, 0.08);
+    --color-border-strong:   rgba(255, 255, 255, 0.16);
+    --shadow-card:           0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-pop:            0 18px 50px rgba(0, 0, 0, 0.62);
+  }
+}
