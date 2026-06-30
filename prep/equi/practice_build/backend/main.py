@@ -38,7 +38,7 @@ Then visit http://localhost:8000/docs for interactive API docs.
 """
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 import json
 import re
@@ -83,9 +83,17 @@ class Chunk(BaseModel):
 
 
 class AskRequest(BaseModel):
-    question: str
-    fund_name: Optional[str] = None  # optional metadata filter — scope before search
-    top_k: int = 3
+    question: str = Field(..., min_length=1, max_length=2_000)
+    fund_name: Optional[str] = Field(default=None, max_length=200)
+    top_k: int = Field(default=3, ge=1, le=50)
+
+    @field_validator("question", mode="before")
+    @classmethod
+    def strip_question(cls, v: str) -> str:
+        stripped = v.strip()
+        if not stripped:
+            raise ValueError("question must not be blank or whitespace-only")
+        return stripped
 
 
 class Citation(BaseModel):
@@ -233,7 +241,7 @@ def list_funds():
 
 
 @app.get("/api/documents", response_model=list[FundDocument])
-def list_documents(fund_name: Optional[str] = Query(default=None)):
+def list_documents(fund_name: Optional[str] = Query(default=None, max_length=200)):
     """List fund documents, optionally filtered by fund — the basic browse endpoint."""
     docs = ALL_DOCS
     if fund_name:
@@ -250,9 +258,6 @@ def ask(req: AskRequest):
     scoped to a fund, retrieves the most relevant chunks, and returns a
     grounded answer WITH citations — never a bare answer.
     """
-    if not req.question.strip():
-        raise HTTPException(status_code=400, detail="question must not be empty")
-
     retrieved = retrieve(req.question, req.fund_name, req.top_k)
     answer = generate_grounded_answer(req.question, retrieved)
 
