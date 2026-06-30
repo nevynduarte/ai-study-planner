@@ -254,8 +254,8 @@ export default function App() {
   const now = new Date();
   const monday = new Date(now); monday.setDate(now.getDate() - (now.getDay() || 7) + 1); monday.setHours(0,0,0,0);
   const weekLog = log.filter(e => new Date(e.date + "T12:00:00") >= monday);
-  const weekHrs = weekLog.reduce((s, e) => s + Number(e.hours), 0);
-  const weekHrsByTrack = (id) => weekLog.filter(e => e.track === id).reduce((s, e) => s + Number(e.hours), 0);
+  const weekHrs = weekLog.reduce((s, e) => s + (Number(e.hours) || 0), 0);
+  const weekHrsByTrack = (id) => weekLog.filter(e => e.track === id).reduce((s, e) => s + (Number(e.hours) || 0), 0);
   const weekColor = weekHrs >= WEEKLY_TARGET ? "#1D9E75" : weekHrs >= WEEKLY_TARGET*0.7 ? "#185FA5" : weekHrs >= WEEKLY_TARGET*0.4 ? "#BA7517" : "#A32D2D";
   const startDays = status.started_date ? Math.max(1, Math.round((now - new Date(status.started_date + "T12:00:00")) / 864e5) + 1) : null;
 

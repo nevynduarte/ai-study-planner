@@ -14,6 +14,16 @@
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), { status, headers: { "Content-Type": "application/json" } });
 
+// Parse and validate a hours value from untrusted input.
+// Returns a finite positive number, or null if the input is invalid.
+// Number(hours) <= 0 is NOT sufficient: NaN <= 0 is false in JS, so strings
+// like "NaN" or values like Infinity would silently pass that check and corrupt
+// the study_log table. Number.isFinite is the correct guard.
+export function parseHours(v) {
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
 // Single-user HTTP Basic Auth gate. Set the password with:
 //   wrangler secret put APP_PASSWORD
 // Any username works; only the password is checked. If APP_PASSWORD is not
@@ -79,7 +89,8 @@ async function getData(env) {
 async function postLog(request, env) {
   try {
     const { hours, topic, track, notes } = await request.json();
-    if (!topic || !hours || Number(hours) <= 0) {
+    const h = parseHours(hours);
+    if (!topic || h === null) {
       return json({ error: "topic and positive hours required" }, 400);
     }
     const VALID_TRACKS = ["ai-eng", "ml-eng", "data-sci", "quant"];
@@ -88,7 +99,7 @@ async function postLog(request, env) {
     const now = new Date().toISOString();
     const res = await env.DB
       .prepare("INSERT INTO study_log (date, hours, topic, track, notes, created_at) VALUES (?, ?, ?, ?, ?, ?)")
-      .bind(date, Number(hours), String(topic), trackVal, notes ? String(notes) : "", now)
+      .bind(date, h, String(topic), trackVal, notes ? String(notes) : "", now)
       .run();
     return json({ ok: true, id: res.meta?.last_row_id });
   } catch (e) {
