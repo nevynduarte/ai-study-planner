@@ -186,6 +186,19 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [err,     setErr]     = useState("");
 
+  // Reactive dark mode — re-renders whenever the OS colour scheme changes.
+  // Previously this was a non-reactive window.matchMedia().matches call that
+  // captured the theme once and never updated until a full page reload.
+  const [dark, setDark] = useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e) => setDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
   // Log-session form
   const [logH, setLogH] = useState(""); const [logT, setLogT] = useState("");
   const [logTr, setLogTr] = useState(""); const [logN, setLogN] = useState(""); const [logMsg, setLogMsg] = useState("");
@@ -352,7 +365,7 @@ export default function App() {
   }
 
   // ─── Design tokens ───────────────────────────────────────────────────────
-  const dark    = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  // `dark` is now reactive state (see useState + useEffect above).
   const bg      = dark ? "#0a0b0e" : "#ffffff";   // app base / contrast reference
   const surface = dark ? "#16181d" : "#ffffff";   // card surface
   const surface2= dark ? "#1d2026" : "#f8fafc";   // raised / alt surface
