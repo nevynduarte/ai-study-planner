@@ -1,0 +1,72 @@
+/* ─── Design token foundation ────────────────────────────────────────────────
+   Layer 1 — Open Props (MIT) provides the primitive scale: radius, shadow,
+             motion easing, and spacing constants as CSS custom properties.
+   Layer 2 — App semantic tokens map brand values onto those primitives.
+   Layer 3 — Radix UI Tabs structural CSS uses those tokens so the behaviour
+             layer (ARIA, keyboard nav) inherits the app's visual language.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* Import Open Props — all CSS custom properties in :where(html) */
+@import "open-props/open-props.min.css";
+
+/* ─── App brand + semantic tokens ──────────────────────────────────────────── */
+:root {
+  /* Brand palette (unchanged hex values, named for single-source-of-truth) */
+  --asp-green:  #1D9E75;
+  --asp-blue:   #185FA5;
+  --asp-purple: #7F77DD;
+  --asp-amber:  #BA7517;
+  --asp-red:    #A32D2D;
+  --asp-teal:   #0D9488;
+
+  /* Radius — pinned to Open Props scale */
+  --asp-radius-pill: var(--radius-round);    /* 1e5px  — tabs, chips */
+  --asp-radius-card: var(--radius-3);        /* 1rem   — cards */
+  --asp-radius-btn:  var(--radius-2);        /* 5px    — buttons/inputs */
+  --asp-radius-focus: 8px;                   /* keyboard focus ring rounding */
+
+  /* Elevation — Open Props shadow scale */
+  --asp-shadow-card: var(--shadow-1);
+  --asp-shadow-pop:  var(--shadow-4);
+
+  /* Motion — Open Props easing + a concrete duration */
+  --asp-ease:       var(--ease-2);
+  --asp-duration:   150ms;
+  --asp-transition: var(--asp-duration) var(--asp-ease);
+
+  /* Focus ring (keyboard only) */
+  --asp-focus-color:  var(--asp-purple);
+  --asp-focus-offset: var(--size-1);         /* 0.25rem = 4px */
+}
+
+/* ─── Radix Tabs structural CSS ─────────────────────────────────────────────
+   Radix UI Tabs (MIT, Apache-2.0) provides the behaviour layer:
+   role="tablist" / role="tab", aria-selected, and arrow-key navigation.
+   These rules supply the layout and motion that inline styles cannot
+   (scrollbar suppression, transition, keyboard focus ring).
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* Suppress scrollbar on the tab strip without losing scroll */
+[role="tablist"] {
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+[role="tablist"]::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth transition on state changes — uses Open Props ease + duration tokens */
+[role="tab"] {
+  transition:
+    background  var(--asp-transition),
+    color       var(--asp-transition),
+    box-shadow  var(--asp-transition);
+}
+
+/* Keyboard-only focus ring — uses brand purple + Open Props offset token.
+   :focus-visible fires on keyboard / AT navigation, not pointer clicks. */
+[role="tab"]:focus-visible {
+  outline:        2px solid var(--asp-focus-color);
+  outline-offset: var(--asp-focus-offset);
+  border-radius:  var(--asp-radius-focus);
+}
