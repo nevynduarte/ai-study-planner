@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import * as Tabs from "@radix-ui/react-tabs";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -533,13 +534,19 @@ export default function App() {
         </div>
       )}
 
-      {/* Tabs — segmented, horizontally scrollable */}
-      <div style={{ display:"flex", gap:2, marginBottom:"1.4rem", overflowX:"auto", padding:4, background:bgS, border:`1px solid ${brd}`, borderRadius:999 }}>
-        {TABS.map(t => <button key={t} style={S.tab(tab===t)} onClick={() => setTab(t)}>{TAB_LABELS[t] || (t.charAt(0).toUpperCase()+t.slice(1))}</button>)}
-      </div>
+      {/* Tabs — Radix UI accessible tab navigation (keyboard: Arrow/Home/End)
+            styled with Open Props tokens via .asp-tab-list / .asp-tab-trigger */}
+      <Tabs.Root value={tab} onValueChange={setTab}>
+      <Tabs.List className="asp-tab-list" style={{ marginBottom:"1.4rem" }} aria-label="Study planner sections">
+        {TABS.map(t => (
+          <Tabs.Trigger key={t} value={t} className="asp-tab-trigger">
+            {TAB_LABELS[t] || (t.charAt(0).toUpperCase()+t.slice(1))}
+          </Tabs.Trigger>
+        ))}
+      </Tabs.List>
 
       {/* ── INTERVIEWS ── */}
-      {tab==="interviews" && (() => {
+      <Tabs.Content value="interviews">{(() => {
         const allIvs = cur?.interviews || [];
         const activeIvs    = allIvs.filter(iv => !isArchived(iv));
         const archivedList = allIvs.filter(iv => isArchived(iv));
@@ -799,10 +806,10 @@ export default function App() {
           )}
         </div>
         );
-      })()}
+      })()}</Tabs.Content>
 
       {/* ── TODAY ── */}
-      {tab==="today" && (
+      <Tabs.Content value="today">
         <div>
           {/* Interview-focus mode — regular study deferred until interviews clear */}
           {focusMode && focusIv && (() => {
@@ -904,10 +911,10 @@ export default function App() {
             </div>
           </div>
         </div>
-      )}
+      </Tabs.Content>
 
       {/* ── CALENDAR (next 30 days) ── */}
-      {tab==="calendar" && (
+      <Tabs.Content value="calendar">
         <div>
           <div style={S.card}>
             <div style={{ fontSize:13, fontWeight:600, marginBottom:4 }}>Next 30 days</div>
@@ -966,10 +973,10 @@ export default function App() {
             );
           })()}
         </div>
-      )}
+      </Tabs.Content>
 
       {/* ── PLAN (progress · crash course · roadmap) ── */}
-      {tab==="plan" && (
+      <Tabs.Content value="plan">
         <div>
           {/* Progress overview */}
           <div style={{ ...S.lbl, margin:"0 0 8px 2px" }}>This week · {DAILY_HOURS}h/day target</div>
@@ -1136,10 +1143,10 @@ export default function App() {
             );
           })}
         </div>
-      )}
+      </Tabs.Content>
 
       {/* ── TUTOR ── */}
-      {tab==="tutor" && (
+      <Tabs.Content value="tutor">
         <div>
           <div style={{ ...S.card, borderLeft:`3px solid #185FA5`, background:`linear-gradient(125deg, ${hexA("#185FA5", dark?0.13:0.07)}, ${bg} 65%)` }}>
             <div style={{ fontSize:13.5, fontWeight:600, marginBottom:4, display:"flex", alignItems:"center", gap:7 }}>
@@ -1167,10 +1174,10 @@ export default function App() {
             </div>
           ))}
         </div>
-      )}
+      </Tabs.Content>
 
       {/* ── FRONTIER (read-only) ── */}
-      {tab==="frontier" && (
+      <Tabs.Content value="frontier">
         <div>
           <ContentCard
             title="Frontier digest"
@@ -1188,10 +1195,10 @@ export default function App() {
             </div>
           </div>
         </div>
-      )}
+      </Tabs.Content>
 
       {/* ── RESEARCH (curated reading list) ── */}
-      {tab==="research" && (() => {
+      <Tabs.Content value="research">{(() => {
         const papers = [...(cur?.research || [])].sort((a,b) => (a.year||0) - (b.year||0));
         const readCount = papers.filter(p => readPapers.includes(p.id)).length;
         const catColor = { Foundational:"#185FA5", LLMs:"#1D9E75", "RAG & Retrieval":"#7F77DD", Agents:"#BA7517", Evaluation:"#A35BBA", "Data Integration":"#0D9488", Efficiency:"#A32D2D", Vision:"#C2410C", "Sequence & Attention":"#185FA5", Generative:"#BE185D", "Representation Learning":"#0D9488", Optimization:"#3B6D11" };
@@ -1235,10 +1242,10 @@ export default function App() {
           })}
         </div>
         );
-      })()}
+      })()}</Tabs.Content>
 
       {/* ── PRACTICE (problem banks: DSA, SQL, DS/ML, system design, quant, behavioral) ── */}
-      {tab==="practice" && (() => {
+      <Tabs.Content value="practice">{(() => {
         const sections = cur?.practice?.sections || [];
         if (!sections.length) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No practice bank in curriculum.json yet.</div>;
         const sel = sections.find(s => s.id === practiceSec) || sections[0];
@@ -1321,10 +1328,10 @@ export default function App() {
           })}
         </div>
         );
-      })()}
+      })()}</Tabs.Content>
 
       {/* ── ADVISORY (read-only) ── */}
-      {tab==="advisory" && (
+      <Tabs.Content value="advisory">
         <div>
           <ContentCard
             title="Plan health advisory"
@@ -1344,10 +1351,10 @@ export default function App() {
             <div style={{ fontSize:12, color:txtT, marginTop:10, lineHeight:1.6 }}>Low-ROI / Tier 3-4 work should stay &lt;20% of weekly hours. The advisory flags imbalances.</div>
           </div>
         </div>
-      )}
+      </Tabs.Content>
 
       {/* ── COVERAGE (skill heatmap) ── */}
-      {tab==="coverage" && (
+      <Tabs.Content value="coverage">
         <div>
           <div style={S.card}>
             <div style={{ fontSize:13, fontWeight:600, marginBottom:10 }}>Coverage legend</div>
@@ -1396,10 +1403,10 @@ export default function App() {
             );
           })}
         </div>
-      )}
+      </Tabs.Content>
 
       {/* ── LOG ── */}
-      {tab==="log" && (
+      <Tabs.Content value="log">
         <div style={S.card}>
           <div style={{ fontSize:14, fontWeight:600, marginBottom:14 }}>Study log <span style={{ fontWeight:500, color:txtT }}>— {log.length} sessions · {totalHrs}h total</span></div>
           {log.length===0 && <div style={{ fontSize:13, color:txtT }}>No sessions yet. Log your first on the Today tab.</div>}
@@ -1421,7 +1428,8 @@ export default function App() {
             );
           })}
         </div>
-      )}
+      </Tabs.Content>
+      </Tabs.Root>
 
       {/* Full-screen document reader for a prep guide */}
       {readerIv && <DocReader iv={readerIv} md={guideMd[readerIv.id]} onClose={() => setReaderIv(null)} />}
