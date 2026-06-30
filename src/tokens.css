@@ -1,0 +1,104 @@
+/*
+ * Design token layer — grounded in Open Props (https://open-props.style, MIT)
+ *
+ * Layer 1 — Open Props primitives (grays, blues, greens, purples, shadows,
+ *            sizes, easing, fonts) available as `--gray-0` … `--shadow-6` etc.
+ * Layer 2 — App-semantic aliases defined below: components use `var(--color-*)`,
+ *            never the Open Props primitives directly, so theming is one-place.
+ *
+ * Dark mode is purely CSS via `prefers-color-scheme` — no JS needed for
+ * background and global tokens. The `useDarkMode` React hook mirrors this
+ * signal for inline-style logic that still needs a boolean.
+ */
+
+@import "open-props/open-props.min.css";
+
+/* ── Light ──────────────────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --color-bg:        #ffffff;
+  --color-surface:   #ffffff;
+  --color-surface2:  #f8fafc;
+  --color-bg-subtle: #f1f3f6;
+
+  /* Text */
+  --color-txt:   #0f1115;
+  --color-txt-s: #49505e;
+  --color-txt-t: #8b94a3;
+
+  /* Borders */
+  --color-brd:   rgba(15, 17, 21, 0.08);
+  --color-brd-s: rgba(15, 17, 21, 0.14);
+
+  /* Shadows — anchor to Open Props scale */
+  --shadow-card: var(--shadow-1);
+  --shadow-pop:  var(--shadow-6);
+
+  /* ── Brand / track palette ── */
+  --color-ai:    #1d9e75;   /* AI Engineering  track */
+  --color-ml:    #185fa5;   /* ML Engineering  track */
+  --color-ds:    #7f77dd;   /* Data Science    track */
+  --color-quant: #ba7517;   /* Quant / Alt-Data track */
+
+  /* Semantic status */
+  --color-success: #3b6d11;
+  --color-warn:    #ba7517;
+  --color-error:   #a32d2d;
+  --color-ready:   #639922;
+
+  /* Body gradient tints — lighter in light mode */
+  --body-grad-teal:   rgba(29, 158, 117, 0.10);
+  --body-grad-purple: rgba(127, 119, 221, 0.11);
+  --body-grad-blue:   rgba(24,  95,  165, 0.08);
+  --body-bg-base:     #f7f8fa;
+
+  /* Focus ring */
+  --focus-ring-color: var(--color-ds);
+
+  /* Typography — lean on Open Props scale */
+  --font-sans: 'Inter', var(--font-sans, system-ui, sans-serif);
+  --font-mono: var(--font-mono, ui-monospace, 'Menlo', monospace);
+}
+
+/* ── Dark ───────────────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg:        #0a0b0e;
+    --color-surface:   #16181d;
+    --color-surface2:  #1d2026;
+    --color-bg-subtle: #22262d;
+
+    --color-txt:   #e9ebf0;
+    --color-txt-s: #a6aebb;
+    --color-txt-t: #6a7280;
+
+    --color-brd:   rgba(255, 255, 255, 0.08);
+    --color-brd-s: rgba(255, 255, 255, 0.16);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-pop:  0 18px 50px rgba(0, 0, 0, 0.62);
+
+    --body-grad-teal:   rgba(29, 158, 117, 0.16);
+    --body-grad-purple: rgba(127, 119, 221, 0.17);
+    --body-grad-blue:   rgba(24,  95,  165, 0.14);
+    --body-bg-base:     #0a0b0e;
+  }
+}
+
+/* ── Global body background — uses CSS tokens so the gradient responds to
+   the OS colour scheme without any JS involvement. ─────────────────────── */
+body {
+  background:
+    radial-gradient(900px 480px at 8%   -10%, var(--body-grad-teal),   transparent 55%),
+    radial-gradient(900px 480px at 100%  -5%, var(--body-grad-purple), transparent 55%),
+    radial-gradient(800px 560px at 50%  120%, var(--body-grad-blue),   transparent 60%),
+    var(--body-bg-base);
+  background-attachment: fixed;
+}
+
+/* ── Focus ring — consistent, token-driven, visible only on keyboard nav ── */
+:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: 2px;
+  border-radius: var(--radius-2, 8px);
+}
