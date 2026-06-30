@@ -12,10 +12,10 @@
       :root { color-scheme: light dark; }
       html { -webkit-text-size-adjust: 100%; }
       body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        font-family: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        color: #0f1115;
+        color: var(--color-text, #0f1115);
         min-height: 100vh;
         background:
           radial-gradient(900px 480px at 8% -10%, rgba(29,158,117,0.10), transparent 55%),
@@ -36,12 +36,13 @@
       *::-webkit-scrollbar-track { background: transparent; }
       @media (prefers-color-scheme: dark) {
         body {
-          color: #e9ebf0;
+          /* color + font already follow CSS vars from tokens.css; only the
+             gradient intensities change in dark mode (base is var(--color-bg)) */
           background:
             radial-gradient(900px 480px at 8% -10%, rgba(29,158,117,0.16), transparent 55%),
             radial-gradient(900px 480px at 100% -5%, rgba(127,119,221,0.17), transparent 55%),
             radial-gradient(800px 560px at 50% 120%, rgba(24,95,165,0.14), transparent 60%),
-            #0a0b0e;
+            var(--color-bg, #0a0b0e);
         }
       }
       @media (max-width: 560px) { #root { padding: 1.1rem 0.85rem 4rem; } }
