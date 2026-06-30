@@ -1,0 +1,120 @@
+/* ── Design System Foundation ─────────────────────────────────────────────
+ * Layer 1 · Tokens  : Open Props (MIT) — CSS custom-property design tokens
+ * Layer 2 · Behavior: Radix UI Tabs (MIT) — accessible keyboard navigation
+ * Documented in docs/DESIGN-SYSTEM.md
+ * ─────────────────────────────────────────────────────────────────────── */
+
+/* Open Props token bundles: borders (radius), easings, fonts (weights) */
+@import 'open-props/borders.min.css';
+@import 'open-props/easings.min.css';
+@import 'open-props/fonts.min.css';
+
+/* ── Semantic design tokens — app palette mapped onto Open Props names ── */
+:root {
+  /* Brand accents */
+  --color-green:  #1D9E75;
+  --color-purple: #7F77DD;
+  --color-blue:   #185FA5;
+  --color-amber:  #BA7517;
+  --color-red:    #A32D2D;
+  --color-teal:   #0D9488;
+
+  /* Surface stack — light */
+  --color-bg:          #f7f8fa;
+  --color-surface:     #ffffff;
+  --color-surface-alt: #f8fafc;
+  --color-fill:        #f1f3f6;
+  --color-text:        #0f1115;
+  --color-text-soft:   #49505e;
+  --color-text-dim:    #8b94a3;
+  --color-border:      rgba(15, 17, 21, 0.08);
+  --color-border-soft: rgba(15, 17, 21, 0.14);
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.04);
+  --shadow-pop:  0 18px 46px rgba(16, 24, 40, 0.14);
+
+  /* Tab component tokens — composed from semantic + Open Props tokens */
+  --tab-radius:     var(--radius-round);   /* Open Props: pill-shaped 1e5px */
+  --tab-gap:        4px;
+  --tab-font-size:  0.8125rem;             /* 13px */
+  --tab-pad-v:      7px;
+  --tab-pad-h:      14px;
+  --tab-transition: all 0.15s var(--ease-2);  /* Open Props easing */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg:          #0a0b0e;
+    --color-surface:     #16181d;
+    --color-surface-alt: #1d2026;
+    --color-fill:        #22262d;
+    --color-text:        #e9ebf0;
+    --color-text-soft:   #a6aebb;
+    --color-text-dim:    #6a7280;
+    --color-border:      rgba(255, 255, 255, 0.08);
+    --color-border-soft: rgba(255, 255, 255, 0.16);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.50);
+    --shadow-pop:  0 18px 50px rgba(0, 0, 0, 0.62);
+  }
+}
+
+/* ── Tab list (Radix UI Tabs.List) ── */
+.asp-tab-list {
+  display: flex;
+  gap: var(--tab-gap);
+  overflow-x: auto;
+  padding: var(--tab-gap);
+  background: var(--color-fill);
+  border: 1px solid var(--color-border);
+  border-radius: var(--tab-radius);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(140, 145, 155, 0.4) transparent;
+}
+
+/* ── Tab trigger (Radix UI Tabs.Trigger) ── */
+.asp-tab-trigger {
+  flex-shrink: 0;
+  font-size: var(--tab-font-size);
+  font-weight: var(--font-weight-5);   /* Open Props: 500 */
+  font-family: inherit;
+  padding: var(--tab-pad-v) var(--tab-pad-h);
+  border-radius: var(--tab-radius);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+  line-height: 1;
+  transition: var(--tab-transition);
+  /* Radix sets data-state="active" | "inactive" */
+}
+
+.asp-tab-trigger[data-state="active"] {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: var(--font-weight-6);   /* Open Props: 600 */
+  box-shadow: var(--shadow-card);
+}
+
+.asp-tab-trigger:hover:not([data-state="active"]) {
+  color: var(--color-text-soft);
+}
+
+/* keyboard focus ring — only on keyboard nav, not mouse */
+.asp-tab-trigger:focus-visible {
+  outline: 2px solid var(--color-purple);
+  outline-offset: 2px;
+}
+
+/* ── Tab panel (Radix UI Tabs.Content = role="tabpanel") ── */
+[role="tabpanel"]:focus-visible {
+  /* subtle inset ring so scrollable panels stay accessible to keyboard */
+  outline: 2px solid var(--color-purple);
+  outline-offset: -2px;
+  border-radius: var(--radius-2);
+}
+
+[role="tabpanel"]:focus:not(:focus-visible) {
+  outline: none;
+}
