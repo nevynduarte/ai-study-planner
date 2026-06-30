@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import * as Tabs from "@radix-ui/react-tabs";
 
 // slug + text-extraction helpers shared by the document reader (TOC anchors).
 const slugify = (s) => String(s).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
@@ -533,10 +534,14 @@ export default function App() {
         </div>
       )}
 
-      {/* Tabs — segmented, horizontally scrollable */}
-      <div style={{ display:"flex", gap:2, marginBottom:"1.4rem", overflowX:"auto", padding:4, background:bgS, border:`1px solid ${brd}`, borderRadius:999 }}>
-        {TABS.map(t => <button key={t} style={S.tab(tab===t)} onClick={() => setTab(t)}>{TAB_LABELS[t] || (t.charAt(0).toUpperCase()+t.slice(1))}</button>)}
-      </div>
+      {/* Tabs — Radix UI Tabs (accessible tablist + arrow-key nav) wrapped in
+           Open Props–backed tokens from src/tokens.css. Content stays as
+           conditional renders driven by the shared `tab` state so this PR
+           is a contained, reviewable increment; Tabs.Content migration is next. */}
+      <Tabs.Root value={tab} onValueChange={setTab}>
+      <Tabs.List aria-label="App sections" style={{ display:"flex", gap:2, marginBottom:"1.4rem", overflowX:"auto", padding:4, background:bgS, border:`1px solid ${brd}`, borderRadius:999 }}>
+        {TABS.map(t => <Tabs.Trigger key={t} value={t} style={S.tab(tab===t)}>{TAB_LABELS[t] || (t.charAt(0).toUpperCase()+t.slice(1))}</Tabs.Trigger>)}
+      </Tabs.List>
 
       {/* ── INTERVIEWS ── */}
       {tab==="interviews" && (() => {
@@ -1423,7 +1428,9 @@ export default function App() {
         </div>
       )}
 
-      {/* Full-screen document reader for a prep guide */}
+      </Tabs.Root>
+
+      {/* Full-screen document reader — fixed overlay, lives outside Tabs.Root */}
       {readerIv && <DocReader iv={readerIv} md={guideMd[readerIv.id]} onClose={() => setReaderIv(null)} />}
     </div>
   );
