@@ -2,6 +2,21 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+// Reactive dark-mode hook — mirrors the CSS `prefers-color-scheme` media query
+// so inline-style logic stays in sync with the OS colour scheme. The previous
+// approach (`window.matchMedia(...).matches`) was a one-shot snapshot that
+// required a full page reload to pick up a system light/dark change.
+function useDarkMode() {
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const [dark, setDark] = useState(mq.matches);
+  useEffect(() => {
+    const handler = (e) => setDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  return dark;
+}
+
 // slug + text-extraction helpers shared by the document reader (TOC anchors).
 const slugify = (s) => String(s).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
 const nodeText = (c) => Array.isArray(c) ? c.map(nodeText).join("")
@@ -352,7 +367,8 @@ export default function App() {
   }
 
   // ─── Design tokens ───────────────────────────────────────────────────────
-  const dark    = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  // `dark` is reactive via useDarkMode() — updates live when the OS switches.
+  const dark    = useDarkMode();
   const bg      = dark ? "#0a0b0e" : "#ffffff";   // app base / contrast reference
   const surface = dark ? "#16181d" : "#ffffff";   // card surface
   const surface2= dark ? "#1d2026" : "#f8fafc";   // raised / alt surface
