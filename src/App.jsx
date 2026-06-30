@@ -204,6 +204,7 @@ export default function App() {
   const [planChecked,   setPlanChecked]   = usePersisted("asp.plan.checked", {});    // { [planDate]: [checked item labels] }
   const [solvedProblems,setSolvedProblems]= usePersisted("asp.practice.solved", []); // practice problem ids solved
   const [practiceSec,   setPracticeSec]   = useState(null);                          // selected practice section id
+  const [covOverrides,  setCovOverrides]  = useState({});                             // optimistic coverage edits pending D1 sync
   const toggleCrashDay = (n) => setCompletedDays(prev => prev.includes(n) ? prev.filter(x => x !== n) : [...prev, n]);
   const toggleSolved   = (id) => setSolvedProblems(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   const archiveIv      = (id) => { setArchivedIvs(prev => prev.includes(id) ? prev : [...prev, id]); setActivatedIvs(prev => prev.filter(x => x !== id)); };
@@ -225,6 +226,7 @@ export default function App() {
         getJSON("/curriculum.json").catch(() => null),
       ]);
       setData(d);
+      setCovOverrides({});   // D1 is now authoritative; drop any optimistic overrides
       if (c) setCur(c);
     } catch (e) { setErr(e.message); }
     finally { setLoading(false); }
@@ -246,9 +248,10 @@ export default function App() {
   const monthOf = (id) => Number(trackPos[id]?.current_month) || 1;
   const monthData = (id) => (tracks[id]?.months || []).find(m => m.n === monthOf(id)) || (tracks[id]?.months || [])[0] || {};
 
-  // Coverage lookup map.
+  // Coverage lookup map (server state) + effective lookup that layers optimistic overrides on top.
   const covMap = {};
   for (const r of data?.coverage || []) covMap[`${r.track}:::${r.skill}`] = r.status;
+  const covEff = (track, skill) => covOverrides[`${track}:::${skill}`] ?? covOf(covMap, track, skill);
 
   const totalHrs = log.reduce((s, e) => s + (Number(e.hours) || 0), 0);
   const now = new Date();
@@ -349,6 +352,16 @@ export default function App() {
       load();
     } catch (e) { setAskMsg("Error: " + e.message); }
     finally { setAsking(false); }
+  }
+
+  // Optimistically advance a skill's coverage status and persist to D1.
+  // The override is cleared when load() completes and D1 data takes over.
+  const COV_CYCLE = ["not-started", "learning", "built", "interview-ready"];
+  async function updateCoverage(track, skill, newStatus) {
+    const key = `${track}:::${skill}`;
+    setCovOverrides(prev => ({ ...prev, [key]: newStatus }));
+    try { await postJSON("/api/coverage", { track, skill, status: newStatus }); load(); }
+    catch { setCovOverrides(prev => { const n = { ...prev }; delete n[key]; return n; }); }
   }
 
   // ─── Design tokens ───────────────────────────────────────────────────────
@@ -1358,13 +1371,13 @@ export default function App() {
                 </span>
               ))}
             </div>
-            <div style={{ fontSize:12, color:txtT, marginTop:12 }}>The nightly advisory advances these from your study log. This is your map of ground covered vs. remaining.</div>
+            <div style={{ fontSize:12, color:txtT, marginTop:12 }}>The nightly advisory advances these from your study log. You can also click any skill chip to cycle its status manually.</div>
           </div>
 
           {trackIds.map(id => {
             const t = tracks[id]; const ac = t.color?.border || brdS;
             const skills = t.skills || [];
-            const tally = skills.reduce((a, sk) => { a[covOf(covMap, id, sk)]++; return a; }, { "not-started":0,"learning":0,"built":0,"interview-ready":0 });
+            const tally = skills.reduce((a, sk) => { a[covEff(id, sk)]++; return a; }, { "not-started":0,"learning":0,"built":0,"interview-ready":0 });
             const done = tally.built + tally["interview-ready"];
             const segs = [["interview-ready",tally["interview-ready"]],["built",tally.built],["learning",tally.learning],["not-started",tally["not-started"]]];
             return (
@@ -1383,11 +1396,17 @@ export default function App() {
                   </div>
                   <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
                     {skills.map(sk => {
-                      const c = COV[covOf(covMap, id, sk)];
+                      const status = covEff(id, sk);
+                      const c    = COV[status];
+                      const next = COV_CYCLE[(COV_CYCLE.indexOf(status) + 1) % COV_CYCLE.length];
                       return (
-                        <span key={sk} style={{ fontSize:12, padding:"4px 9px", borderRadius:8, background:hexA(c.dot, dark?0.2:0.12), color:dark?c.dot:c.text, border:`1px solid ${hexA(c.dot, dark?0.34:0.26)}` }}>
-                          {sk}
-                        </span>
+                        <button key={sk} onClick={() => updateCoverage(id, sk, next)}
+                          title={`${status} — click to advance to ${next}`}
+                          style={{ fontSize:12, padding:"4px 9px", borderRadius:8, cursor:"pointer", fontFamily:"inherit",
+                            background:hexA(c.dot, dark?0.2:0.12), color:dark?c.dot:c.text,
+                            border:`1px solid ${hexA(c.dot, dark?0.34:0.26)}`, transition:"opacity .12s" }}>
+                          {c.label} {sk}
+                        </button>
                       );
                     })}
                   </div>
