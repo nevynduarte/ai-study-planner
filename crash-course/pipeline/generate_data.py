@@ -249,9 +249,13 @@ def build_admin():
 # words, occasionally inflated AUM)
 # ──────────────────────────────────────────────────────────────────────────
 def _aum_string(musd):
-    if musd >= 1000:
-        return f"${musd/1000:.1f}B"
-    return f"${musd:.0f}M"
+    # Round first so the branch and the display use the same value; without this
+    # a float like 999.7 passes the < 1000 guard but :.0f rounds it to "1000",
+    # producing the invalid "$1000M" instead of "$1.0B".
+    rounded_musd = round(musd)
+    if rounded_musd >= 1000:
+        return f"${musd / 1000:.1f}B"
+    return f"${rounded_musd}M"
 
 
 def build_manager_report():
