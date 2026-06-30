@@ -1,0 +1,112 @@
+/*
+ * Design system foundation for ai-study-planner
+ *
+ * Stack:
+ *   Primitive layer  — Open Props (MIT) CSS custom properties
+ *   Semantic layer   — app-specific --asp-* tokens defined here
+ *   Component layer  — inline styles in App.jsx (future: migrate to CSS classes)
+ *
+ * Open Props provides a complete set of opinionated, scale-consistent
+ * primitives: color palettes, size scale, typographic scale, radius scale,
+ * shadow scale, easing curves, and more.  We reference them by name in the
+ * semantic layer below so the design vocabulary stays coherent even if we
+ * swap individual primitives later.
+ */
+
+/* ── 1. Primitive layer: all Open Props custom properties ──────────────── */
+@import "open-props/style";
+
+/* ── 2. Brand tokens ────────────────────────────────────────────────────── */
+/*
+ * These are identity colors that must match exactly, so we keep them as
+ * hex literals rather than aliasing an Open Props swatch.  RGB triplets
+ * are exposed alongside each hex so gradients can compose them with
+ * rgba(var(--asp-*-rgb), alpha).
+ */
+:root {
+  --asp-brand-aaru:        #1D9E75;   /* Aaru track — teal-green */
+  --asp-brand-aaru-rgb:    29, 158, 117;
+  --asp-brand-equi:        #7F77DD;   /* Equi track — soft violet */
+  --asp-brand-equi-rgb:    127, 119, 221;
+  --asp-brand-primary:     #185FA5;   /* default accent — steel blue */
+  --asp-brand-primary-rgb: 24, 95, 165;
+  --asp-brand-warning:     #BA7517;   /* amber / in-progress */
+  --asp-brand-warning-rgb: 186, 117, 23;
+  --asp-brand-error:       #A32D2D;   /* red / urgent */
+  --asp-brand-error-rgb:   163, 45, 45;
+  --asp-brand-crash:       #0D9488;   /* crash-course sprint — teal */
+  --asp-brand-crash-rgb:   13, 148, 136;
+  --asp-brand-success:     #3B6D11;   /* built / ready */
+  --asp-brand-success-rgb: 59, 109, 17;
+}
+
+/* ── 3. Semantic tokens: light mode (default) ───────────────────────────── */
+:root {
+  /* surfaces */
+  --asp-bg:        #ffffff;
+  --asp-surface:   #ffffff;
+  --asp-surface-2: #f8fafc;           /* raised / alt surface */
+  --asp-surface-s: #f1f3f6;           /* subtle fill — chips, input bg */
+
+  /* text */
+  --asp-text:      #0f1115;
+  --asp-text-soft: #49505e;
+  --asp-text-t:    #8b94a3;           /* tertiary / timestamps */
+
+  /* borders */
+  --asp-border:    rgba(15, 17, 21, 0.08);
+  --asp-border-s:  rgba(15, 17, 21, 0.14);
+
+  /* shadows — shadow-color/strength feed the Open Props shadow-* formulas */
+  --shadow-color:    220 3% 15%;
+  --shadow-strength: 1%;
+  --asp-shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.04);
+  --asp-shadow-pop:  0 18px 46px rgba(16, 24, 40, 0.14);
+
+  /* typography — reference Open Props scale */
+  --asp-font-body: 'Inter', var(--font-neo-grotesque);
+  --asp-font-mono: var(--font-mono);
+
+  /* radius shortcuts */
+  --asp-radius-sm:   var(--radius-2);    /* 5px  — tags, badges */
+  --asp-radius-md:   10px;               /* 10px — inputs, chips */
+  --asp-radius-lg:   16px;               /* 16px — cards */
+  --asp-radius-xl:   var(--radius-3);    /* 1rem — modals */
+  --asp-radius-pill: var(--radius-round);
+
+  /* spacing shortcuts (thin aliases over Open Props size scale) */
+  --asp-space-1: var(--size-1);   /* 0.25rem */
+  --asp-space-2: var(--size-2);   /* 0.5rem  */
+  --asp-space-3: var(--size-3);   /* 1rem    */
+  --asp-space-4: var(--size-4);   /* 1.25rem */
+  --asp-space-5: var(--size-5);   /* 1.5rem  */
+  --asp-space-6: var(--size-6);   /* 1.75rem */
+  --asp-space-7: var(--size-7);   /* 2rem    */
+  --asp-space-8: var(--size-8);   /* 3rem    */
+}
+
+/* ── 4. Semantic tokens: dark mode overrides ────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* surfaces */
+    --asp-bg:        #0a0b0e;
+    --asp-surface:   #16181d;
+    --asp-surface-2: #1d2026;
+    --asp-surface-s: #22262d;
+
+    /* text */
+    --asp-text:      #e9ebf0;
+    --asp-text-soft: #a6aebb;
+    --asp-text-t:    #6a7280;
+
+    /* borders */
+    --asp-border:    rgba(255, 255, 255, 0.08);
+    --asp-border-s:  rgba(255, 255, 255, 0.16);
+
+    /* shadows — darker base for dark surfaces */
+    --shadow-color:    220 10% 2%;
+    --shadow-strength: 2%;
+    --asp-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --asp-shadow-pop:  0 18px 50px rgba(0, 0, 0, 0.62);
+  }
+}
