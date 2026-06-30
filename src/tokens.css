@@ -1,0 +1,122 @@
+/*
+ * Design token foundation for AI Study Planner.
+ *
+ * Layer 1 – Open Props primitives (imported via main.jsx):
+ *   open-props/borders.min.css  → --radius-*, --border-size-*
+ *   open-props/sizes.min.css    → --size-*, --size-px-*
+ *   open-props/fonts.min.css    → --font-*, --font-size-*, --font-weight-*
+ *
+ * Layer 2 – App semantic tokens (this file).
+ *   All component styles should consume these tokens rather than
+ *   hardcoded hex/pixel values. Future passes will progressively
+ *   migrate inline React styles to CSS modules that reference var().
+ *
+ * Naming convention: --asp-<category>[-<variant>]
+ * (asp = AI Study Planner)
+ */
+
+/* ─── Light mode (default) ──────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --asp-bg:         #ffffff;
+  --asp-surface:    #ffffff;
+  --asp-surface-2:  #f8fafc;
+  --asp-bg-subtle:  #f1f3f6;
+
+  /* Text */
+  --asp-text:       #0f1115;
+  --asp-text-2:     #49505e;
+  --asp-text-3:     #8b94a3;
+
+  /* Borders */
+  --asp-border:       rgba(15, 17, 21, 0.08);
+  --asp-border-strong: rgba(15, 17, 21, 0.14);
+
+  /* Shadows */
+  --asp-shadow-card:
+    0 1px 2px rgba(16, 24, 40, 0.05),
+    0 1px 3px rgba(16, 24, 40, 0.04);
+  --asp-shadow-popup: 0 18px 46px rgba(16, 24, 40, 0.14);
+
+  /* Ambient page-background glow (three radial gradients in index.html) */
+  --asp-glow-ai:   rgba(29,  158, 117, 0.10);
+  --asp-glow-ds:   rgba(127, 119, 221, 0.11);
+  --asp-glow-ml:   rgba(24,   95, 165, 0.08);
+
+  /* ── Track accent palette ── */
+  --asp-accent-ai:    #1D9E75;   /* AI Engineering   (40 %) */
+  --asp-accent-ml:    #185FA5;   /* ML Engineering   (25 %) */
+  --asp-accent-ds:    #7F77DD;   /* Data Science      (20 %) */
+  --asp-accent-quant: #BA7517;   /* Quant / Alt-Data  (15 %) */
+  --asp-accent-crash: #0D9488;   /* Crash-course sprint */
+
+  /* Status / semantic accents */
+  --asp-color-danger:  #A32D2D;
+  --asp-color-warning: #BA7517;
+  --asp-color-success: #3B6D11;
+
+  /* ── Component geometry (built on Open Props primitives) ── */
+  --asp-radius-sm:   5px;                 /* pill inner, badges     */
+  --asp-radius-md:   10px;                /* inputs, buttons        */
+  --asp-radius-card: 1rem;                /* cards = --radius-3     */
+  --asp-radius-pill: var(--radius-round); /* tab bar, status pills  */
+
+  /* ── Typography (references Open Props font stacks) ── */
+  --asp-font-sans:
+    'Inter', var(--font-neo-grotesque, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', system-ui, sans-serif);
+  --asp-font-mono:
+    ui-monospace, var(--font-mono, SFMono-Regular, Menlo, monospace);
+
+  /* Text-size aliases (aligns with Open Props --font-size-* scale) */
+  --asp-text-xs:   11px;   /* stamps, labels           */
+  --asp-text-sm:   12px;   /* secondary content        */
+  --asp-text-base: 13px;   /* body / card text         */
+  --asp-text-md:   13.5px; /* slight emphasis          */
+  --asp-text-lg:   14.5px; /* section heads            */
+  --asp-text-xl:   16px;   /* card titles              */
+  --asp-text-2xl:  20px;   /* interview company name   */
+  --asp-text-3xl:  24px;   /* header greeting          */
+
+  /* Line-height aliases (from Open Props --font-lineheight-*) */
+  --asp-leading-tight:  var(--font-lineheight-1, 1.25);
+  --asp-leading-snug:   var(--font-lineheight-2, 1.375);
+  --asp-leading-normal: var(--font-lineheight-3, 1.5);
+  --asp-leading-relaxed: var(--font-lineheight-4, 1.75);
+
+  /* Spacing shorthands (from Open Props --size-px-*) */
+  --asp-space-1: var(--size-px-1, 4px);
+  --asp-space-2: var(--size-px-2, 8px);
+  --asp-space-3: var(--size-px-3, 16px);
+  --asp-space-4: var(--size-px-4, 20px);
+  --asp-space-5: var(--size-px-5, 24px);
+}
+
+/* ─── Dark mode ─────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Surfaces */
+    --asp-bg:        #0a0b0e;
+    --asp-surface:   #16181d;
+    --asp-surface-2: #1d2026;
+    --asp-bg-subtle: #22262d;
+
+    /* Text */
+    --asp-text:   #e9ebf0;
+    --asp-text-2: #a6aebb;
+    --asp-text-3: #6a7280;
+
+    /* Borders */
+    --asp-border:        rgba(255, 255, 255, 0.08);
+    --asp-border-strong: rgba(255, 255, 255, 0.16);
+
+    /* Shadows */
+    --asp-shadow-card:  0 1px 2px rgba(0, 0, 0, 0.5);
+    --asp-shadow-popup: 0 18px 50px rgba(0, 0, 0, 0.62);
+
+    /* Page glow — brighter at low contrast dark backgrounds */
+    --asp-glow-ai: rgba(29,  158, 117, 0.16);
+    --asp-glow-ds: rgba(127, 119, 221, 0.17);
+    --asp-glow-ml: rgba(24,   95, 165, 0.14);
+  }
+}

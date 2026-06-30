@@ -174,6 +174,22 @@ function usePersisted(key, initial) {
   return [val, setVal];
 }
 
+// Reacts to OS-level dark-mode changes without requiring a page reload.
+// Previously `window.matchMedia(...).matches` was called directly in the render
+// body, which only captured the preference at mount time.
+function useDarkMode() {
+  const [dark, setDark] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e) => setDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return dark;
+}
+
 // Daily study commitment. 3 focused hours/day (21h/week) — a realistic pace.
 // Per-track hours derive from each track's weight, so this is the only knob.
 const DAILY_HOURS   = 3;
@@ -352,7 +368,7 @@ export default function App() {
   }
 
   // ─── Design tokens ───────────────────────────────────────────────────────
-  const dark    = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const dark    = useDarkMode();
   const bg      = dark ? "#0a0b0e" : "#ffffff";   // app base / contrast reference
   const surface = dark ? "#16181d" : "#ffffff";   // card surface
   const surface2= dark ? "#1d2026" : "#f8fafc";   // raised / alt surface
