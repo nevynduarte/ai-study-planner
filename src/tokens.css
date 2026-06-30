@@ -1,0 +1,72 @@
+/* ── Design token foundation ──────────────────────────────────────────────────
+   Layer 1 — Open Props (MIT): base size, font, radius, easing, shadow scales
+   Layer 2 — App semantic tokens: color, surface, typography, shadow aliases
+   See docs/DESIGN-SYSTEM.md for the full token inventory and design decisions.
+   ─────────────────────────────────────────────────────────────────────────── */
+@import 'open-props/sizes.min.css';
+@import 'open-props/fonts.min.css';
+@import 'open-props/borders.min.css';
+@import 'open-props/easings.min.css';
+
+/* ── Light mode (default) semantic tokens ──────────────────────────────────── */
+:root {
+  /* Background layers — three-level elevation model */
+  --color-bg:         #ffffff;  /* page base */
+  --color-surface:    #ffffff;  /* card surface */
+  --color-surface-2:  #f8fafc;  /* raised / alt surface (table headers, inputs) */
+  --color-bg-subtle:  #f1f3f6;  /* chips, input fills, code blocks */
+
+  /* Text — three tones */
+  --color-text:       #0f1115;
+  --color-text-soft:  #49505e;
+  --color-text-faint: #8b94a3;
+
+  /* Borders */
+  --color-border:        rgba(15, 17, 21, 0.08);
+  --color-border-strong: rgba(15, 17, 21, 0.14);
+
+  /* Brand accents */
+  --color-brand-blue:   #185FA5;
+  --color-brand-teal:   #1D9E75;
+  --color-brand-violet: #7F77DD;
+  --color-crash:        #0D9488;
+
+  /* Status palette */
+  --color-status-success: #3B6D11;
+  --color-status-warn:    #BA7517;
+  --color-status-danger:  #A32D2D;
+
+  /* Shadows */
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.04);
+  --shadow-pop:  0 18px 46px rgba(16, 24, 40, 0.14);
+
+  /* Typography stacks */
+  --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-mono:  ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Interactive link color */
+  --color-link: #1f5fc4;
+}
+
+/* ── Dark mode overrides ───────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg:         #0a0b0e;
+    --color-surface:    #16181d;
+    --color-surface-2:  #1d2026;
+    --color-bg-subtle:  #22262d;
+
+    --color-text:       #e9ebf0;
+    --color-text-soft:  #a6aebb;
+    --color-text-faint: #6a7280;
+
+    --color-border:        rgba(255, 255, 255, 0.08);
+    --color-border-strong: rgba(255, 255, 255, 0.16);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-pop:  0 18px 50px rgba(0, 0, 0, 0.62);
+
+    --color-link: #9DBEFF;
+  }
+}

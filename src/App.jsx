@@ -352,19 +352,32 @@ export default function App() {
   }
 
   // ─── Design tokens ───────────────────────────────────────────────────────
-  const dark    = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const bg      = dark ? "#0a0b0e" : "#ffffff";   // app base / contrast reference
-  const surface = dark ? "#16181d" : "#ffffff";   // card surface
-  const surface2= dark ? "#1d2026" : "#f8fafc";   // raised / alt surface
-  const bgS     = dark ? "#22262d" : "#f1f3f6";   // subtle fill (chips, inputs bg)
-  const txt     = dark ? "#e9ebf0" : "#0f1115";
-  const txtS    = dark ? "#a6aebb" : "#49505e";
-  const txtT    = dark ? "#6a7280" : "#8b94a3";
-  const brd     = dark ? "rgba(255,255,255,0.08)" : "rgba(15,17,21,0.08)";
-  const brdS    = dark ? "rgba(255,255,255,0.16)" : "rgba(15,17,21,0.14)";
-  const shadowCard = dark ? "0 1px 2px rgba(0,0,0,0.5)" : "0 1px 2px rgba(16,24,40,0.05), 0 1px 3px rgba(16,24,40,0.04)";
-  const shadowPop  = dark ? "0 18px 50px rgba(0,0,0,0.62)" : "0 18px 46px rgba(16,24,40,0.14)";
-  const FONT = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif";
+  // Static semantic tokens come from CSS custom properties (src/tokens.css),
+  // so light/dark switching for those is handled entirely by CSS @media.
+  // We keep a reactive `dark` flag in state only for the dynamic alpha
+  // computations in hexA() (accent color tints for pills, card gradients, etc.).
+  const [dark, setDark] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e) => setDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  // CSS custom property aliases — referenced as inline-style strings so
+  // existing JSX needs no changes while the values now live in CSS.
+  const bg       = "var(--color-bg)";
+  const surface  = "var(--color-surface)";
+  const surface2 = "var(--color-surface-2)";
+  const bgS      = "var(--color-bg-subtle)";
+  const txt      = "var(--color-text)";
+  const txtS     = "var(--color-text-soft)";
+  const txtT     = "var(--color-text-faint)";
+  const brd      = "var(--color-border)";
+  const brdS     = "var(--color-border-strong)";
+  const shadowCard = "var(--shadow-card)";
+  const shadowPop  = "var(--shadow-pop)";
+  const FONT       = "var(--font-sans)";
 
   const S = {
     card:   { background:surface, border:`1px solid ${brd}`, borderRadius:16, padding:"1.05rem 1.15rem", marginBottom:"0.8rem", boxShadow:shadowCard },
@@ -414,7 +427,7 @@ export default function App() {
   // Markdown renderer for P620-generated content (briefings, frontier,
   // advisory, tutor answers). Styled to match the app's typography instead
   // of dumping raw markdown source into a <pre>.
-  const linkC = dark ? "#9DBEFF" : "#1f5fc4";
+  const linkC = "var(--color-link)";
   const mdComponents = {
     h1: (p) => <div style={{ fontSize:17, fontWeight:700, letterSpacing:-0.2, margin:"18px 0 8px", color:txt }} {...p} />,
     h2: (p) => <div style={{ fontSize:14.5, fontWeight:700, margin:"16px 0 6px", color:txt }} {...p} />,
