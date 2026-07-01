@@ -1,0 +1,109 @@
+/* ai-study-planner — design system: foundations layer
+   Combination: Tailwind CSS v4 (utility) + CSS custom-property tokens (foundations)
+   Dark mode: prefers-color-scheme (system, no JS required)                         */
+
+@import "tailwindcss";
+
+/* ─── Dark variant ────────────────────────────────────────────────────────────── */
+/* Tells Tailwind that `dark:` utilities fire on prefers-color-scheme, not a class */
+@variant dark (@media (prefers-color-scheme: dark));
+
+/* ─── Design tokens — light mode ─────────────────────────────────────────────── */
+/* Named --ds-* to keep our namespace separate from Tailwind's --color-* space.
+   These are the single source of truth for every color, shadow, and shape value
+   in the app. New components should reference these vars; inline-style legacy
+   components may continue using computed JS values until they're migrated.        */
+:root {
+  /* Surfaces */
+  --ds-bg:              #ffffff;
+  --ds-surface:         #ffffff;
+  --ds-surface-2:       #f8fafc;
+  --ds-surface-subtle:  #f1f3f6;
+
+  /* Text */
+  --ds-text:            #0f1115;
+  --ds-text-soft:       #49505e;
+  --ds-text-muted:      #8b94a3;
+
+  /* Borders */
+  --ds-border:          rgba(15, 17, 21, 0.08);
+  --ds-border-strong:   rgba(15, 17, 21, 0.14);
+
+  /* Accent palette */
+  --ds-accent-blue:     #185FA5;
+  --ds-accent-green:    #1D9E75;
+  --ds-accent-amber:    #BA7517;
+  --ds-accent-red:      #A32D2D;
+  --ds-accent-violet:   #7F77DD;
+  --ds-accent-teal:     #0D9488;
+
+  /* Shadows */
+  --ds-shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.04);
+  --ds-shadow-pop:  0 18px 46px rgba(16, 24, 40, 0.14);
+
+  /* Shape */
+  --ds-radius-sm:   8px;
+  --ds-radius-md:   10px;
+  --ds-radius-lg:   16px;
+  --ds-radius-pill: 9999px;
+
+  /* Typography */
+  --ds-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --ds-font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+
+/* ─── Design tokens — dark mode ──────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ds-bg:              #0a0b0e;
+    --ds-surface:         #16181d;
+    --ds-surface-2:       #1d2026;
+    --ds-surface-subtle:  #22262d;
+
+    --ds-text:            #e9ebf0;
+    --ds-text-soft:       #a6aebb;
+    --ds-text-muted:      #6a7280;
+
+    --ds-border:          rgba(255, 255, 255, 0.08);
+    --ds-border-strong:   rgba(255, 255, 255, 0.16);
+
+    --ds-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --ds-shadow-pop:  0 18px 50px rgba(0, 0, 0, 0.62);
+  }
+}
+
+/* ─── Tailwind theme extensions ──────────────────────────────────────────────── */
+/* `inline` tells Tailwind to emit var() references rather than resolved values,
+   so CSS-variable dark-mode overrides cascade correctly at runtime.
+   Generated utilities: bg-surface, text-fg, border-ds-border, shadow-card, etc.  */
+@theme inline {
+  --color-surface:         var(--ds-surface);
+  --color-surface-2:       var(--ds-surface-2);
+  --color-surface-subtle:  var(--ds-surface-subtle);
+  --color-fg:              var(--ds-text);
+  --color-fg-soft:         var(--ds-text-soft);
+  --color-fg-muted:        var(--ds-text-muted);
+  --color-ds-border:       var(--ds-border);
+  --color-ds-border-strong: var(--ds-border-strong);
+  --color-accent-blue:     var(--ds-accent-blue);
+  --color-accent-green:    var(--ds-accent-green);
+  --color-accent-amber:    var(--ds-accent-amber);
+  --color-accent-red:      var(--ds-accent-red);
+  --color-accent-violet:   var(--ds-accent-violet);
+  --color-accent-teal:     var(--ds-accent-teal);
+
+  --shadow-card: var(--ds-shadow-card);
+  --shadow-pop:  var(--ds-shadow-pop);
+
+  --font-sans: var(--ds-font-sans);
+  --font-mono: var(--ds-font-mono);
+}
+
+/* ─── Base resets ─────────────────────────────────────────────────────────────── */
+/* index.html already provides box-sizing, font, and the gradient background;
+   we only add what Tailwind needs that isn't already there.                       */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
