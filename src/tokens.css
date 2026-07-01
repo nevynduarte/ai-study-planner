@@ -1,0 +1,73 @@
+/* ─── AI Study Planner — design tokens ──────────────────────────────────────
+   Foundation layer:  Open Props (MIT) provides size, radius, and border-size
+                      primitive tokens (--size-*, --radius-*, --border-size-*).
+   Semantic layer:    --asp-* properties map those primitives and plain values
+                      into roles (surface, text, border, shadow, link).
+   Dark mode:         :root defines light defaults; the prefers-color-scheme
+                      block overrides to dark. CSS takes over — no JS needed.
+   Usage:             App.jsx reads "var(--asp-*)" in inline-style objects;
+                      the browser resolves them after this sheet is applied.
+────────────────────────────────────────────────────────────────────────────── */
+
+/* Open Props — spacing scale, radius scale, border-size scale */
+@import "open-props/sizes.min.css";
+@import "open-props/borders.min.css";
+
+/* ── Light-mode defaults ── */
+:root {
+  /* surfaces */
+  --asp-bg:         #ffffff;       /* page content background & primary-button text */
+  --asp-surface:    #ffffff;       /* card face */
+  --asp-surface2:   #f8fafc;       /* raised / alternate surface */
+  --asp-bg-subtle:  #f1f3f6;       /* chip fills, input backgrounds */
+
+  /* text */
+  --asp-text:           #0f1115;
+  --asp-text-soft:      #49505e;
+  --asp-text-tertiary:  #8b94a3;
+
+  /* borders */
+  --asp-border:         rgba(15, 17, 21, 0.08);
+  --asp-border-strong:  rgba(15, 17, 21, 0.14);
+
+  /* elevation */
+  --asp-shadow-card:
+    0 1px 2px rgba(16, 24, 40, 0.05),
+    0 1px 3px rgba(16, 24, 40, 0.04);
+  --asp-shadow-pop: 0 18px 46px rgba(16, 24, 40, 0.14);
+
+  /* link */
+  --asp-link: #1f5fc4;
+
+  /* radius aliases — built on Open Props primitives */
+  --asp-radius-sm:   var(--radius-2);      /* 5px  — small elements, inputs */
+  --asp-radius-card: var(--radius-3);      /* 1rem — cards */
+  --asp-radius-pill: var(--radius-round);  /* 1e5px — pill badges */
+}
+
+/* ── Dark-mode overrides ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* surfaces */
+    --asp-bg:         #0a0b0e;
+    --asp-surface:    #16181d;
+    --asp-surface2:   #1d2026;
+    --asp-bg-subtle:  #22262d;
+
+    /* text */
+    --asp-text:           #e9ebf0;
+    --asp-text-soft:      #a6aebb;
+    --asp-text-tertiary:  #6a7280;
+
+    /* borders */
+    --asp-border:         rgba(255, 255, 255, 0.08);
+    --asp-border-strong:  rgba(255, 255, 255, 0.16);
+
+    /* elevation */
+    --asp-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --asp-shadow-pop:  0 18px 50px rgba(0, 0, 0, 0.62);
+
+    /* link */
+    --asp-link: #9dbeff;
+  }
+}

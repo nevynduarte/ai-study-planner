@@ -2,6 +2,20 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+// Reactive dark-mode hook — subscribes to OS theme changes so the UI updates
+// without a page reload. The boolean is still needed in App for hexA() alphas
+// and linkC; CSS custom properties handle everything else.
+function useDark() {
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const [dark, setDark] = useState(mq.matches);
+  useEffect(() => {
+    const handler = (e) => setDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return dark;
+}
+
 // slug + text-extraction helpers shared by the document reader (TOC anchors).
 const slugify = (s) => String(s).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
 const nodeText = (c) => Array.isArray(c) ? c.map(nodeText).join("")
@@ -351,19 +365,22 @@ export default function App() {
     finally { setAsking(false); }
   }
 
-  // ─── Design tokens ───────────────────────────────────────────────────────
-  const dark    = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const bg      = dark ? "#0a0b0e" : "#ffffff";   // app base / contrast reference
-  const surface = dark ? "#16181d" : "#ffffff";   // card surface
-  const surface2= dark ? "#1d2026" : "#f8fafc";   // raised / alt surface
-  const bgS     = dark ? "#22262d" : "#f1f3f6";   // subtle fill (chips, inputs bg)
-  const txt     = dark ? "#e9ebf0" : "#0f1115";
-  const txtS    = dark ? "#a6aebb" : "#49505e";
-  const txtT    = dark ? "#6a7280" : "#8b94a3";
-  const brd     = dark ? "rgba(255,255,255,0.08)" : "rgba(15,17,21,0.08)";
-  const brdS    = dark ? "rgba(255,255,255,0.16)" : "rgba(15,17,21,0.14)";
-  const shadowCard = dark ? "0 1px 2px rgba(0,0,0,0.5)" : "0 1px 2px rgba(16,24,40,0.05), 0 1px 3px rgba(16,24,40,0.04)";
-  const shadowPop  = dark ? "0 18px 50px rgba(0,0,0,0.62)" : "0 18px 46px rgba(16,24,40,0.14)";
+  // ─── Design tokens — CSS custom properties from src/tokens.css ──────────────
+  // Surface/text/border/shadow values are CSS vars; the browser resolves them
+  // from the :root declarations in tokens.css (light) and its dark-mode block.
+  // `dark` stays as a JS boolean for hexA() alphas and linkC (which needs hex).
+  const dark       = useDark();
+  const bg         = "var(--asp-bg)";
+  const surface    = "var(--asp-surface)";
+  const surface2   = "var(--asp-surface2)";
+  const bgS        = "var(--asp-bg-subtle)";
+  const txt        = "var(--asp-text)";
+  const txtS       = "var(--asp-text-soft)";
+  const txtT       = "var(--asp-text-tertiary)";
+  const brd        = "var(--asp-border)";
+  const brdS       = "var(--asp-border-strong)";
+  const shadowCard = "var(--asp-shadow-card)";
+  const shadowPop  = "var(--asp-shadow-pop)";
   const FONT = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif";
 
   const S = {
