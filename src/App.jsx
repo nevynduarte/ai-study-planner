@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { TabNav, TABS } from "./components/TabNav.jsx";
 
 // slug + text-extraction helpers shared by the document reader (TOC anchors).
 const slugify = (s) => String(s).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
@@ -485,8 +486,6 @@ export default function App() {
     },
   };
 
-  const TAB_LABELS = {};
-  const TABS = ["today","interviews","plan","calendar","tutor","research","practice","frontier","advisory","coverage","log"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
@@ -534,9 +533,7 @@ export default function App() {
       )}
 
       {/* Tabs — segmented, horizontally scrollable */}
-      <div style={{ display:"flex", gap:2, marginBottom:"1.4rem", overflowX:"auto", padding:4, background:bgS, border:`1px solid ${brd}`, borderRadius:999 }}>
-        {TABS.map(t => <button key={t} style={S.tab(tab===t)} onClick={() => setTab(t)}>{TAB_LABELS[t] || (t.charAt(0).toUpperCase()+t.slice(1))}</button>)}
-      </div>
+      <TabNav activeTab={tab} onTabChange={setTab} />
 
       {/* ── INTERVIEWS ── */}
       {tab==="interviews" && (() => {
