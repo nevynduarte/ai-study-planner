@@ -15,7 +15,9 @@
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        color: #0f1115;
+        /* --asp-text is defined by src/tokens.css (loaded via JS); the hex
+           fallback keeps the page readable before the token sheet arrives. */
+        color: var(--asp-text, #0f1115);
         min-height: 100vh;
         background:
           radial-gradient(900px 480px at 8% -10%, rgba(29,158,117,0.10), transparent 55%),
@@ -36,7 +38,8 @@
       *::-webkit-scrollbar-track { background: transparent; }
       @media (prefers-color-scheme: dark) {
         body {
-          color: #e9ebf0;
+          /* Fallback for the pre-JS window; tokens.css overrides via --asp-text */
+          color: var(--asp-text, #e9ebf0);
           background:
             radial-gradient(900px 480px at 8% -10%, rgba(29,158,117,0.16), transparent 55%),
             radial-gradient(900px 480px at 100% -5%, rgba(127,119,221,0.17), transparent 55%),
