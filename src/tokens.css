@@ -1,0 +1,94 @@
+/* ── Open Props foundation (MIT) ──────────────────────────────────────────────
+   Imports a curated subset of Open Props CSS custom properties:
+   border-radii, spacing sizes, and font-weight / font-size scales.
+   These land on :where(html) so they don't raise specificity.
+   Reference: https://open-props.style/
+   ────────────────────────────────────────────────────────────────────────── */
+@import "open-props/borders";
+@import "open-props/sizes";
+@import "open-props/fonts";
+
+/* ── App semantic token layer (sp-* namespace) ────────────────────────────────
+   The sp-* tokens are the single source of truth for the app's visual identity.
+
+   LAYER STACK:
+     1. Open Props base     —  --radius-*, --size-*, --font-weight-* etc.
+     2. App semantic tokens —  --sp-* (this file; reference OP where it fits)
+     3. React inline styles —  import CSS vars via 'var(--sp-*)' strings
+
+   Light defaults live in :root; dark overrides use a CSS media query so
+   the UI reacts to OS theme changes without a JS re-render.
+
+   COLOR TOKENS     (--sp-bg, --sp-surface, --sp-txt*, --sp-brd*)
+   SHADOW TOKENS    (--sp-shadow-card, --sp-shadow-pop)
+   RADIUS TOKENS    (--sp-radius-card, --sp-radius-inner, --sp-radius-chip)
+   FONT-WEIGHT      (--sp-fw-*)
+   ACCENT PALETTE   (--sp-teal, --sp-blue, --sp-purple, --sp-amber, --sp-red)
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Light-mode defaults */
+:root {
+  /* ── Surfaces ─────────────────────────────────────────── */
+  --sp-bg:       #ffffff;   /* page canvas */
+  --sp-surface:  #ffffff;   /* card surface */
+  --sp-surface2: #f8fafc;   /* raised / alt surface (e.g. practice items) */
+  --sp-bg-s:     #f1f3f6;   /* subtle fill — chip inputs, code blocks */
+
+  /* ── Text ─────────────────────────────────────────────── */
+  --sp-txt:   #0f1115;      /* primary text */
+  --sp-txt-s: #49505e;      /* secondary text */
+  --sp-txt-t: #8b94a3;      /* tertiary / muted text */
+
+  /* ── Borders ──────────────────────────────────────────── */
+  --sp-brd:   rgba(15, 17, 21, 0.08);  /* default stroke */
+  --sp-brd-s: rgba(15, 17, 21, 0.14);  /* strong stroke (inputs, active) */
+
+  /* ── Elevation ────────────────────────────────────────── */
+  --sp-shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.04);
+  --sp-shadow-pop:  0 18px 46px rgba(16, 24, 40, 0.14);
+
+  /* ── Radii — references Open Props --radius-* scale ─────
+     --radius-2 = 0.5rem / 8px   (Open Props)
+     --radius-3 = 1rem   / 16px  (Open Props)
+     --radius-round = 1e5px      (Open Props)
+     Fallbacks ensure correctness if the OP import is stripped. */
+  --sp-radius-card:  var(--radius-3, 1rem);         /* 16px — cards */
+  --sp-radius-inner: var(--radius-2, 0.5rem);       /* 8px  — inner elements, inputs */
+  --sp-radius-chip:  var(--radius-round, 9999px);   /* pill shape — badges, tabs */
+
+  /* ── Font weights — references Open Props --font-weight-* */
+  --sp-fw-normal:   var(--font-weight-4, 400);
+  --sp-fw-medium:   var(--font-weight-5, 500);
+  --sp-fw-semibold: var(--font-weight-6, 600);
+  --sp-fw-bold:     var(--font-weight-7, 700);
+  --sp-fw-heavy:    var(--font-weight-8, 800);
+
+  /* ── App accent palette ───────────────────────────────── */
+  --sp-teal:   #1D9E75;
+  --sp-blue:   #185FA5;
+  --sp-purple: #7F77DD;
+  --sp-amber:  #BA7517;
+  --sp-red:    #A32D2D;
+}
+
+/* Dark-mode overrides — purely CSS, reactive to OS theme with no JS involved */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sp-bg:       #0a0b0e;
+    --sp-surface:  #16181d;
+    --sp-surface2: #1d2026;
+    --sp-bg-s:     #22262d;
+
+    --sp-txt:   #e9ebf0;
+    --sp-txt-s: #a6aebb;
+    --sp-txt-t: #6a7280;
+
+    --sp-brd:   rgba(255, 255, 255, 0.08);
+    --sp-brd-s: rgba(255, 255, 255, 0.16);
+
+    --sp-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --sp-shadow-pop:  0 18px 50px rgba(0, 0, 0, 0.62);
+
+    /* Radii and font weights are theme-invariant — no overrides needed. */
+  }
+}

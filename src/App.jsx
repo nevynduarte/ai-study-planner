@@ -179,6 +179,21 @@ function usePersisted(key, initial) {
 const DAILY_HOURS   = 3;
 const WEEKLY_TARGET = DAILY_HOURS * 7;
 
+// Reactive dark-mode hook: subscribes to the OS preference change event so
+// the UI responds instantly when the system theme toggles, without a page reload.
+function useDarkMode() {
+  const [dark, setDark] = useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e) => setDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return dark;
+}
+
 export default function App() {
   const [tab,     setTab]     = useState("today");
   const [data,    setData]    = useState(null);
@@ -351,24 +366,32 @@ export default function App() {
     finally { setAsking(false); }
   }
 
-  // ─── Design tokens ───────────────────────────────────────────────────────
-  const dark    = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const bg      = dark ? "#0a0b0e" : "#ffffff";   // app base / contrast reference
-  const surface = dark ? "#16181d" : "#ffffff";   // card surface
-  const surface2= dark ? "#1d2026" : "#f8fafc";   // raised / alt surface
-  const bgS     = dark ? "#22262d" : "#f1f3f6";   // subtle fill (chips, inputs bg)
-  const txt     = dark ? "#e9ebf0" : "#0f1115";
-  const txtS    = dark ? "#a6aebb" : "#49505e";
-  const txtT    = dark ? "#6a7280" : "#8b94a3";
-  const brd     = dark ? "rgba(255,255,255,0.08)" : "rgba(15,17,21,0.08)";
-  const brdS    = dark ? "rgba(255,255,255,0.16)" : "rgba(15,17,21,0.14)";
-  const shadowCard = dark ? "0 1px 2px rgba(0,0,0,0.5)" : "0 1px 2px rgba(16,24,40,0.05), 0 1px 3px rgba(16,24,40,0.04)";
-  const shadowPop  = dark ? "0 18px 50px rgba(0,0,0,0.62)" : "0 18px 46px rgba(16,24,40,0.14)";
+  // ─── Dark-mode preference (reactive via useDarkMode hook) ───────────────
+  // `dark` is still needed for the hexA() alpha calculations on accent colors.
+  // Structural palette tokens below are CSS variables so the page theme-switches
+  // without a React re-render; hexA()-based accent tints update via re-render.
+  const dark = useDarkMode();
+
+  // ─── Design tokens — CSS custom properties (defined in src/tokens.css) ───
+  // Assigning CSS var() strings to local names keeps every existing inline-style
+  // reference working unchanged: `background: surface` → `background: var(--sp-surface)`.
+  const bg      = 'var(--sp-bg)';
+  const surface = 'var(--sp-surface)';
+  const surface2= 'var(--sp-surface2)';
+  const bgS     = 'var(--sp-bg-s)';
+  const txt     = 'var(--sp-txt)';
+  const txtS    = 'var(--sp-txt-s)';
+  const txtT    = 'var(--sp-txt-t)';
+  const brd     = 'var(--sp-brd)';
+  const brdS    = 'var(--sp-brd-s)';
+  const shadowCard = 'var(--sp-shadow-card)';
   const FONT = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif";
 
   const S = {
-    card:   { background:surface, border:`1px solid ${brd}`, borderRadius:16, padding:"1.05rem 1.15rem", marginBottom:"0.8rem", boxShadow:shadowCard },
-    tab:    (a) => ({ fontSize:13, fontWeight:a?600:500, padding:"7px 14px", borderRadius:999, background:a?surface:"transparent", border:"none", cursor:"pointer", color:a?txt:txtT, whiteSpace:"nowrap", transition:"all .15s", boxShadow:a?shadowCard:"none" }),
+    // borderRadius pulls from Open Props via --sp-radius-card (--radius-3 / 1rem / 16px).
+    card:   { background:surface, border:`1px solid ${brd}`, borderRadius:'var(--sp-radius-card, 1rem)', padding:"1.05rem 1.15rem", marginBottom:"0.8rem", boxShadow:shadowCard },
+    // Pill-shaped tabs via --sp-radius-chip (--radius-round / 1e5px).
+    tab:    (a) => ({ fontSize:13, fontWeight:a?600:500, padding:"7px 14px", borderRadius:'var(--sp-radius-chip, 9999px)', background:a?surface:"transparent", border:"none", cursor:"pointer", color:a?txt:txtT, whiteSpace:"nowrap", transition:"all .15s", boxShadow:a?shadowCard:"none" }),
     btn:    (p, dis) => ({ fontSize:13, fontWeight:p?600:500, padding:"8px 15px", borderRadius:10, cursor:dis?"not-allowed":"pointer", border:p?"1px solid transparent":`1px solid ${brdS}`, opacity:dis?0.5:1, background:p?txt:"transparent", color:p?bg:txt, transition:"all .15s" }),
     inp:    { fontSize:13, padding:"9px 12px", borderRadius:10, border:`1px solid ${brdS}`, background:surface, color:txt, width:"100%", boxSizing:"border-box", fontFamily:"inherit" },
     lbl:    { fontSize:10.5, color:txtT, marginBottom:6, display:"block", textTransform:"uppercase", letterSpacing:0.6, fontWeight:600 },
@@ -379,7 +402,7 @@ export default function App() {
   // A muted accent pill: a low-opacity tint of the accent color rather than a
   // saturated pastel fill, so it reads softly in both light and dark mode.
   const pill = (accent, extra) => ({
-    fontSize:11, padding:"3px 9px", borderRadius:999, fontWeight:600, whiteSpace:"nowrap", letterSpacing:0.1,
+    fontSize:11, padding:"3px 9px", borderRadius:'var(--sp-radius-chip, 9999px)', fontWeight:600, whiteSpace:"nowrap", letterSpacing:0.1,
     background:hexA(accent, dark ? 0.18 : 0.10),
     color:accent,
     border:`1px solid ${hexA(accent, dark ? 0.32 : 0.22)}`,
@@ -388,7 +411,7 @@ export default function App() {
   // Vibrant filled track chip — solid track color, white label. Used wherever
   // a track needs to read at a glance.
   const trackBadge = (id) => ({
-    fontSize:11, fontWeight:600, letterSpacing:0.2, padding:"3px 11px", borderRadius:999,
+    fontSize:11, fontWeight:600, letterSpacing:0.2, padding:"3px 11px", borderRadius:'var(--sp-radius-chip, 9999px)',
     color:"#fff", background:tracks[id]?.color?.border || brdS, whiteSpace:"nowrap", display:"inline-block",
   });
 
