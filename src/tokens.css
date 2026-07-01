@@ -1,0 +1,120 @@
+/* ─── Design Token Foundation ──────────────────────────────────────────────
+   Layer 1 (Foundations) of the ai-study-planner design system.
+   Chosen stack: Open Props tokens (this file) → Radix UI Primitives
+   (future, accessibility) → component migration (future).
+   See docs/DESIGN-SYSTEM.md for the full rationale.
+
+   Open Props (MIT, Adam Argyle) provides a curated library of CSS custom
+   properties for color, spacing, typography, shadows, and motion. We import
+   the full bundle here and map its primitives onto app-semantic --asp-*
+   tokens that index.html and future component classes can consume directly.
+   ──────────────────────────────────────────────────────────────────────── */
+
+@import "open-props/open-props.min.css";
+
+/* ── Semantic tokens — light mode defaults ──────────────────────────────── */
+:root {
+  /* Surfaces */
+  --asp-bg:             #ffffff;
+  --asp-surface:        #ffffff;
+  --asp-surface-2:      #f8fafc;
+  --asp-surface-subtle: #f1f3f6;
+
+  /* Text */
+  --asp-text-primary:   #0f1115;
+  --asp-text-secondary: #49505e;
+  --asp-text-tertiary:  #8b94a3;
+
+  /* Borders */
+  --asp-border:         rgba(15, 17, 21, 0.08);
+  --asp-border-strong:  rgba(15, 17, 21, 0.14);
+
+  /* ── Brand accent palette (stable across themes) ─────────────────────── */
+  --asp-green:   #1d9e75;   /* Aaru / plan / success    */
+  --asp-purple:  #7f77dd;   /* Equi / frontier / select */
+  --asp-blue:    #185fa5;   /* AI Engineering / tutor   */
+  --asp-amber:   #ba7517;   /* advisory / warning       */
+  --asp-teal:    #0d9488;   /* crash course             */
+  --asp-red:     #a32d2d;   /* interview day / danger   */
+
+  /* ── Shadows (Open Props shadow-* primitives) ────────────────────────── */
+  /* Open Props auto-adjusts --shadow-color and --shadow-strength for dark
+     mode inside open-props.min.css, so shadow-1/shadow-5 work in both. */
+  --asp-shadow-card: var(--shadow-1);
+  --asp-shadow-pop:  var(--shadow-5);
+
+  /* ── Border radii ──────────────────────────────────────────────────────
+     Open Props --radius-* uses rem/rem-multiples that don't match the app's
+     pixel scale, so we define explicit pixel values and only reference OP
+     for the pill (--radius-round = 1e5px). */
+  --asp-radius-xs:   4px;
+  --asp-radius-sm:   8px;
+  --asp-radius-md:   10px;
+  --asp-radius-lg:   12px;
+  --asp-radius-xl:   16px;
+  --asp-radius-pill: var(--radius-round);   /* 1e5px — Open Props */
+
+  /* ── Space (Open Props --size-px-* scale) ──────────────────────────── */
+  --asp-space-1: var(--size-px-1);   /*  4px */
+  --asp-space-2: var(--size-px-2);   /*  8px */
+  --asp-space-3: 12px;               /* 12px — not in OP scale */
+  --asp-space-4: var(--size-px-3);   /* 16px */
+  --asp-space-5: var(--size-px-4);   /* 20px */
+  --asp-space-6: var(--size-px-5);   /* 24px */
+  --asp-space-8: var(--size-px-7);   /* 32px */
+
+  /* ── Typography (Open Props font-* stacks and weights) ─────────────── */
+  /* --font-neo-grotesque leads with Inter; --font-antique includes Georgia. */
+  --asp-font-sans:  'Inter', var(--font-neo-grotesque);
+  --asp-font-mono:  var(--font-mono);
+  --asp-font-serif: Georgia, 'Times New Roman', var(--font-antique);
+
+  --asp-weight-normal:   var(--font-weight-4);   /* 400 */
+  --asp-weight-medium:   var(--font-weight-5);   /* 500 */
+  --asp-weight-semibold: var(--font-weight-6);   /* 600 */
+  --asp-weight-bold:     var(--font-weight-7);   /* 700 */
+  --asp-weight-extrabold: var(--font-weight-8);  /* 800 */
+
+  /* Text sizes — app-precise values; Open Props sizes start at .75rem (12px)
+     so we define finer granularity explicitly for the sub-12px range. */
+  --asp-text-xs:   10.5px;
+  --asp-text-sm:   var(--font-size-0);   /* .75rem ≈ 12px */
+  --asp-text-base: 13.5px;
+  --asp-text-md:   14.5px;
+  --asp-text-lg:   var(--font-size-1);   /* 1rem = 16px */
+  --asp-text-xl:   var(--font-size-3);   /* 1.25rem = 20px */
+  --asp-text-2xl:  var(--font-size-4);   /* 1.5rem = 24px */
+
+  /* ── Motion (Open Props easing primitives + app durations) ─────────── */
+  --asp-ease:        var(--ease-3);           /* gentle decelerate */
+  --asp-ease-in:     var(--ease-in-3);
+  --asp-ease-out:    var(--ease-out-3);
+  --asp-ease-spring: var(--ease-elastic-out-1);
+
+  --asp-duration-fast:   150ms;
+  --asp-duration-normal: 250ms;
+  --asp-duration-slow:   400ms;
+}
+
+/* ── Dark mode overrides ────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --asp-bg:             #0a0b0e;
+    --asp-surface:        #16181d;
+    --asp-surface-2:      #1d2026;
+    --asp-surface-subtle: #22262d;
+
+    --asp-text-primary:   #e9ebf0;
+    --asp-text-secondary: #a6aebb;
+    --asp-text-tertiary:  #6a7280;
+
+    --asp-border:        rgba(255, 255, 255, 0.08);
+    --asp-border-strong: rgba(255, 255, 255, 0.16);
+
+    /* Dark-mode shadows: Open Props auto-strengthens --shadow-* tokens
+       (--shadow-color darkens, --shadow-strength → 25%), but the app's
+       original values are more opaque, so we keep the hand-tuned values. */
+    --asp-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.50);
+    --asp-shadow-pop:  0 18px 50px rgba(0, 0, 0, 0.62);
+  }
+}
