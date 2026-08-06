@@ -27,6 +27,10 @@ const rows = [
   ["total_hours",   s.total_hours_logged ?? 0],
   ["started_date",  s.started_date ?? ""],
   ["notes",         s.notes ?? ""],
+  ["plan_version",           s.plan_version ?? ""],
+  ["weekly_target_hours",    s.weekly_target_hours ?? 10],
+  ["applications_open_date", s.applications_open_date ?? ""],
+  ["gate_date",              s.gate_date ?? ""],
 ];
 for (const [k, v] of rows) {
   console.log(

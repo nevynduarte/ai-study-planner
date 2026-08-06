@@ -174,10 +174,10 @@ function usePersisted(key, initial) {
   return [val, setVal];
 }
 
-// Daily study commitment. 3 focused hours/day (21h/week) — a realistic pace.
+// Daily study commitment. 2 focused hours/day (10h/week) alongside consulting.
 // Per-track hours derive from each track's weight, so this is the only knob.
-const DAILY_HOURS   = 3;
-const WEEKLY_TARGET = DAILY_HOURS * 7;
+const DAILY_HOURS   = 2;
+const WEEKLY_TARGET = 10;
 
 export default function App() {
   const [tab,     setTab]     = useState("today");

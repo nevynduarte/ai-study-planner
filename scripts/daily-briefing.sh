@@ -2,7 +2,7 @@
 # ─────────────────────────────────────────────────────────────
 # Daily 6am run on P620 (cron). Uses local Claude Max (no API key).
 #   1. SMS briefing  → T-Mobile email-to-SMS
-#   2. 3-hour plan   → D1 daily_plan
+#   2. 2-hour plan   → D1 daily_plan
 #   3. Frontier digest (web search) → D1 frontier
 #
 # Usage:
@@ -48,7 +48,7 @@ $(cat "$CTX")" 2>>"$LOG")"
   fi
 fi
 
-# 2) Today's 3-hour plan → D1
+# 2) Today's 2-hour plan → D1
 PLAN="$(claude -p "$(cat "$DIR/plan-prompt.txt")
 
 $(cat "$CTX")" 2>>"$LOG")"

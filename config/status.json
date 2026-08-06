@@ -1,11 +1,15 @@
 {
-  "started_date": "2026-06-14",
+  "started_date": "2026-08-06",
+  "plan_version": "v2-mle-200-300k",
+  "weekly_target_hours": 10,
+  "applications_open_date": "2026-11-01",
+  "gate_date": "2026-10-31",
   "total_hours_logged": 0,
   "notes": "",
   "tracks": {
-    "ai-eng":   { "current_month": 1 },
-    "ml-eng":   { "current_month": 1 },
-    "data-sci": { "current_month": 1 },
-    "quant":    { "current_month": 1 }
+    "dsa":        { "current_month": 1 },
+    "ml-recall":  { "current_month": 1 },
+    "sys-design": { "current_month": 1 },
+    "search":     { "current_month": 1 }
   }
 }

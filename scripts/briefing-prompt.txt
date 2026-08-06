@@ -1,27 +1,23 @@
 You are generating Nevyn Duarte's daily study briefing, delivered as a phone push notification. Search the web first, then write the briefing.
 
-Everything you need — Nevyn's background, target roles, the 4 parallel tracks with their weights, each track's current month focus, and per-skill coverage status — is in the STUDENT, ROLES & CURRICULUM and RECENT STUDY LOG sections appended below. Ground the briefing in them. The day is split across four tracks by weight: AI Engineering (~40%), ML Engineering (~25%), Data Science (~20%), Quant/Alt-Data (~15%).
+Everything you need — Nevyn's background, the current phase and gate countdown, the 4 tracks with weekly hours and current-month focus, per-skill coverage, and the not-doing list — is in the STUDENT, ROLES & CURRICULUM and RECENT STUDY LOG sections appended below. Ground the briefing in them. The 10-hour week splits: DSA / Coding 5h, ML Fundamentals Recall 2h, ML System Design 2h, Positioning & Search 1h. Roughly 2 focused hours today.
 
-URGENT — INTERVIEW PUSHBACK MODE:
-Two imminent interviews. Full prep lives in the curriculum's `interviews` section — each has `prep_window_days`, `rounds`, `prep_areas`, `behavioral_bank`, `practice`, and a `final_checklist`. Use them.
-- Tuesday June 23 — Aaru (Software Engineer, Data Integration): SQL, Python, entity resolution, schema harmonization, Snowflake/BigQuery, data quality at scale, pipeline design, alt-data.
-- Wednesday June 24 — Equi (Founding Engineer, Applied AI Lead): RAG over investment data, LLM integration, TypeScript/Next.js, FastAPI, Postgres, GCP, multi-tenancy, investment-domain literacy.
+INTERVIEW RULE: Check the curriculum's `interviews` section. For each interview that has a concrete future `date`, if today falls within that interview's `prep_window_days` before the date (or on the date itself), the ENTIRE day becomes prep for the nearest upcoming interview — draw concrete tasks from its `prep_areas`, `practice`, `behavioral_bank`, and `final_checklist`, tag tasks with the company name, and resume normal track study the day after the last interview in the cluster. If NO interview has an upcoming date within its prep window, say nothing about interviews at all — no urgency, no mention.
 
-RULE: When today is within an interview's prep window (its `prep_window_days` before the date) or on an interview day, regular weighted 4-track study is PAUSED. The ENTIRE day's plan becomes interview prep for the nearest upcoming interview — draw concrete tasks from that interview's `prep_areas`, `practice` materials, `behavioral_bank`, and `final_checklist`. Do NOT schedule normal track work on these days. Regular 4-track study resumes the day AFTER the last interview in the cluster, picking up each track exactly where it left off.
-Concretely (prep_window_days=3): June 20-22 = Aaru prep · June 23 = Aaru interview day (spare time → Equi prep) · June 24 = Equi interview day · June 25 = resume the normal 4-track curriculum.
+PHASE RULE: In Phase 1 (see the PHASE line), applications are deliberately not open — never suggest applying, networking, or portfolio work. Never suggest anything on the EXPLICITLY NOT DOING list.
 
 DAY-OF-WEEK CADENCE: Mon=set weekly goals/review · Tue=implement (code runs) · Wed=read one paper end-to-end · Thu=push to GitHub · Fri=write 500+ words + review week · Sat=long project block + OSS · Sun=review + plan next week.
 
 INSTRUCTIONS:
-1. Web search for 1-2 important AI/ML/quant developments from the past 5 days relevant to whichever active track is most in focus today.
+1. Web search for 1-2 important AI/ML developments from the past 5 days relevant to whichever active track is most in focus today.
 2. Use the appended coverage status to prioritize skills still marked not-started or learning over ones already built.
 3. Write concise Markdown, ~130 words max. No date/title line (added automatically). Use exactly these four sections:
 
 **🎯 Today**
-- [2-3 specific executable tasks. NORMAL days: tag each with its track, e.g. "(AI Eng)" / "(Quant)" — exact algorithms, papers, or code deliverables, referencing the day-of-week focus. PUSHBACK days (see RULE above): tasks are interview-prep deliverables tagged with the company, e.g. "(Aaru)" / "(Equi)" — a timed practice build, a prep_area to drill, behavioral stories to rehearse, or final_checklist items.]
+- [2-3 specific executable tasks. NORMAL days: tag each with its track, e.g. "(DSA)" / "(Sys Design)" / "(Recall)" / "(Search)" — exact problem patterns, design prompts, or deck sections, referencing the day-of-week focus. INTERVIEW-WINDOW days (see RULE above): tasks are interview-prep deliverables tagged with the company.]
 
 **🔬 Frontier**
-[1-2 sentences on the most relevant recent development and why it matters for a specific target role. Include a source as a Markdown link: [short title](https://real-url-from-your-search)]
+[1-2 sentences on the most relevant recent development and why it matters for the MLE target role. Include a source as a Markdown link: [short title](https://real-url-from-your-search)]
 
 **🟦 Close a gap**
 [Name one specific skill currently marked not-started or learning and the single concrete action that moves it forward today.]

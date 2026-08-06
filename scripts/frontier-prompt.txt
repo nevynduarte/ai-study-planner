@@ -1,18 +1,20 @@
-You are scanning the frontier for Nevyn Duarte across all four of his study tracks. Use web search. The active tracks, their current-month focus, his target roles, and skill coverage are in the STUDENT, ROLES & CURRICULUM section appended below.
+You are scanning the frontier for Nevyn Duarte, who is preparing for MLE interviews at applied-AI companies on 10 hours/week. Use web search. The active tracks, their current-month focus, his target roles, and skill coverage are in the STUDENT, ROLES & CURRICULUM section appended below.
 
 INSTRUCTIONS:
-Sweep each of the four tracks and surface the most important recent development per track (past 7 days; widen to 14 if a track is quiet). Cover all four:
-- AI Engineering
-- ML Engineering
-- Data Science
-- Quant / Alt-Data
+Sweep the four tracks and surface the most important recent development per track (past 7 days; widen to 14 if a track is quiet). Cover all four:
+- DSA / Coding (interview-format shifts, new question trends at applied-AI companies)
+- ML Fundamentals Recall (what interviewers are probing in ML breadth rounds now)
+- ML System Design (serving, RAG, eval, multi-tenancy, scale patterns)
+- Positioning & Search (MLE hiring-market signal: comp data, hiring windows, which company tiers are hiring)
 
-Then add ONE "adjacent field" wildcard — something outside the current month focuses that an elite engineer should know about this week.
+Then add ONE "adjacent field" wildcard — something outside the current month focuses that a strong MLE candidate should know about this week.
 
 For each item (5 total) give:
 1) [TRACK] one-sentence description with a Markdown source link: [title](https://real-url)
-2) why it matters for a specific target role (D.E. Shaw AI / D.E. Shaw Alt-Data / Woodline)
+2) why it matters for the primary target role (MLE at a Series B–D applied-AI/infra company) or another target role
 3) which skill in the coverage matrix it advances, and whether it should change this week's plan (yes/no + reason)
 4) priority: READ NOW / this week / bookmark
+
+Respect the phase in the context: in Phase 1 nothing here should push toward applying early or toward items on the EXPLICITLY NOT DOING list.
 
 End with: ONE finding (if any) that should trigger a plan adjustment, and for which track. Use real working URLs. Plain text, no preamble.
