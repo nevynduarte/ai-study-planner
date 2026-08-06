@@ -146,6 +146,61 @@ async function postJSON(path, body) {
   if (!r.ok || d.error) throw new Error(d.error || "Request failed");
   return d;
 }
+async function patchJSON(path, body) {
+  const r = await fetch(path, { method:"PATCH", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(body) });
+  const d = await r.json();
+  if (!r.ok || d.error) throw new Error(d.error || "Request failed");
+  return d;
+}
+
+// ─── Daily-plan parser ────────────────────────────────────────────────────
+// P620 emits checklist lines shaped `**HH:MM–HH:MM** [Track] [MODE] — task
+// · done when: signal`, plus a "### Wrap" section of three named items.
+// Parse them into structured blocks; anything unrecognized falls back to a
+// plain checklist item so a malformed plan still renders.
+const TRACK_GUESS = [
+  [/\bdsa\b|coding|leetcode|neetcode/i, "dsa"],
+  [/recall|fundamental|anki|breadth/i, "ml-recall"],
+  [/sys|design/i, "sys-design"],
+  [/search|position|resume/i, "search"],
+];
+const guessTrack = (s) => { for (const [re, id] of TRACK_GUESS) if (re.test(s)) return id; return null; };
+function parsePlan(md) {
+  const blocks = [], wrap = [];
+  let inWrap = false;
+  for (const raw of (md || "").split("\n")) {
+    const line = raw.trim();
+    if (/^#{1,4}\s*wrap/i.test(line)) { inWrap = true; continue; }
+    const m = /^([-*+]|\d+[.)])\s+(.*)$/.exec(line);
+    if (!m) continue;
+    // The persistence key: identical stripping to planItemLabels below, so
+    // checked state keeps working across renderer versions.
+    const label = m[2].replace(/^\[[ xX]\]\s*/, "").replace(/[*`]/g, "").trim();
+    if (!label) continue;
+    if (inWrap) {
+      const km = /^(DO NOT SKIP|GATE MOVE|COVERAGE MOVE|SHIP TODAY)\s*:?\s*(.*)$/i.exec(label);
+      wrap.push({ label, kind: km ? km[1].toUpperCase() : null, text: km ? km[2] : label });
+      continue;
+    }
+    let rest = label, time = null, track = null, mode = null;
+    const tm = /^(\d{1,2}:\d{2})\s*[–—-]\s*(\d{1,2}:\d{2})\s*/.exec(rest);
+    if (tm) { time = `${tm[1]}–${tm[2]}`; rest = rest.slice(tm[0].length); }
+    let bm;
+    while ((bm = /^\[([^\]]+)\]\s*/.exec(rest))) {
+      const tag = bm[1].trim();
+      if (/^(THEORY|IMPLEMENTATION)$/i.test(tag)) mode = tag.toUpperCase();
+      else track = guessTrack(tag) || track;
+      rest = rest.slice(bm[0].length);
+    }
+    rest = rest.replace(/^[—–-]\s*/, "");
+    if (!track) track = guessTrack(rest);
+    let task = rest, doneWhen = null;
+    const dw = /(?:·\s*)?done when\s*:\s*/i.exec(rest);
+    if (dw) { task = rest.slice(0, dw.index).replace(/[·\s]+$/, "").trim(); doneWhen = rest.slice(dw.index + dw[0].length).trim(); }
+    blocks.push({ label, time, track, mode, task, doneWhen });
+  }
+  return { blocks, wrap };
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────
 const todayFmt = () => new Date().toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric" });
@@ -395,7 +450,6 @@ export default function App() {
   // Time-aware greeting for the header.
   const hr = new Date().getHours();
   const greeting = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
-  const greetIcon = hr < 12 ? "☀️" : hr < 18 ? "🌤️" : "🌙";
 
   // SVG progress ring — used for per-track weekly balance and overall pace.
   const Ring = ({ pct, color, size = 46, stroke = 5, label }) => {
@@ -485,8 +539,87 @@ export default function App() {
     },
   };
 
+  // ── Parsed plan blocks (structured renderer for the Today tab) ──────────
+  const parsedPlan = useMemo(() => parsePlan(plan?.content || ""), [plan?.content]);
+
+  // ── Motion: one micro-interaction (the checkbox pop); everything else is
+  // still. Off entirely under prefers-reduced-motion. ─────────────────────
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ── Streak: consecutive days with any logged session, ending today or
+  // yesterday (today unlogged doesn't break a live streak until midnight). ──
+  const isoDay = (d) => { const x = new Date(d); const p = (n) => String(n).padStart(2, "0"); return `${x.getFullYear()}-${p(x.getMonth()+1)}-${p(x.getDate())}`; };
+  const loggedDays = new Set(log.map(e => e.date));
+  let streak = 0;
+  { const d = new Date(today0);
+    if (!loggedDays.has(isoDay(d))) d.setDate(d.getDate() - 1);
+    while (loggedDays.has(isoDay(d))) { streak++; d.setDate(d.getDate() - 1); } }
+
+  // ── Gate: curriculum criteria × D1 gate_check rows ──────────────────────
+  const gateDef = cur?.gate || null;
+  const gateRows = {};
+  for (const r of data?.gate || []) gateRows[r.criterion] = r;
+  const gateDate = gateDef?.target_date || status.gate_date || "2026-10-31";
+  const gateDaysLeft = Math.ceil((new Date(gateDate + "T00:00:00") - today0) / 864e5);
+  const gatePassedCount = (gateDef?.criteria || []).filter(c => gateRows[c.id]?.passed).length;
+  const gateAllPassed = (gateDef?.criteria || []).length > 0 && gatePassedCount === gateDef.criteria.length;
+  // The deadline heats up as it approaches: neutral → amber inside 6 weeks →
+  // red inside 2. Overdue stays red.
+  const gateHeat = gateDaysLeft <= 14 ? "#C43333" : gateDaysLeft <= 42 ? "#BA7517" : txtS;
+  // Each criterion drills a track — reuse that track's color as its identity.
+  const GATE_TRACK = { dsa:"dsa", sysdesign:"sys-design", recall:"ml-recall", assets:"search" };
+  const gateColor = (cid) => tracks[GATE_TRACK[cid]]?.color?.border || "#185FA5";
+  const [gateOpenIds, setGateOpenIds] = useState(new Set());
+  const [gateEvidence, setGateEvidence] = useState({});
+  const [gateBusy, setGateBusy] = useState("");
+  const [gateErr, setGateErr] = useState("");
+  const toggleGateOpen = (id) => setGateOpenIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const [covOpen, setCovOpen] = useState(new Set());
+  const toggleCovOpen = (id) => setCovOpen(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  async function setGatePassed(cid, passed) {
+    setGateBusy(cid); setGateErr("");
+    try {
+      const evidence = (gateEvidence[cid] || "").trim();
+      await patchJSON("/api/gate", { criterion: cid, passed, ...(evidence ? { evidence } : {}) });
+      await load();
+    } catch (e) { setGateErr(e.message); }
+    finally { setGateBusy(""); }
+  }
+
+  // ── The tally: hours as discrete strokes, one per target hour, grouped in
+  // fives. The app's signature mark — progress you can count, not a percent. ─
+  const Tally = ({ total, value, color, h = 16 }) => {
+    const strokes = Math.max(1, Math.round(total));
+    return (
+      <span style={{ display:"inline-flex", alignItems:"flex-end", gap:0 }} aria-label={`${value} of ${total} hours`}>
+        {Array.from({ length: strokes }).map((_, i) => {
+          const fill = Math.max(0, Math.min(1, value - i));   // 0..1 of this stroke
+          return (
+            <span key={i} style={{ width:5, height:h, borderRadius:2, marginLeft: i === 0 ? 0 : (i % 5 === 0 ? 8 : 3), position:"relative", overflow:"hidden",
+                background: hexA(color, dark ? 0.16 : 0.13) }}>
+              {fill > 0 && <span style={{ position:"absolute", left:0, right:0, bottom:0, height:`${fill*100}%`, background:color, borderRadius:2,
+                transition: reduceMotion ? "none" : "height .3s ease" }} />}
+            </span>
+          );
+        })}
+      </span>
+    );
+  };
+
+  // ── The checkbox: the core interaction. One pop, then still. ────────────
+  const CheckBox = ({ checked, onToggle, color = "#1D9E75", size = 24, label }) => (
+    <button onClick={onToggle} role="checkbox" aria-checked={checked} aria-label={label}
+      className={checked && !reduceMotion ? "asp-pop" : undefined}
+      style={{ flexShrink:0, width:size, height:size, borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+        fontSize:size*0.55, fontWeight:800, lineHeight:1, padding:0,
+        border:`2px solid ${checked ? color : brdS}`, background:checked ? color : surface, color:checked ? "#fff" : "transparent",
+        transition: reduceMotion ? "none" : "background .15s, border-color .15s" }}>
+      ✓
+    </button>
+  );
+
   const TAB_LABELS = {};
-  const TABS = ["today","interviews","plan","calendar","tutor","research","practice","frontier","advisory","coverage","log"];
+  const TABS = ["today","gate","interviews","plan","calendar","tutor","research","practice","frontier","advisory","coverage","log"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
@@ -509,14 +642,19 @@ export default function App() {
 
   return (
     <div style={{ fontFamily:FONT, color:txt }}>
+      {/* The one animation in the app: the checkbox pop. Gated by
+          prefers-reduced-motion at the media-query level too. */}
+      <style>{`
+        @media (prefers-reduced-motion: no-preference) {
+          @keyframes asp-pop { 0% { transform: scale(0.7); } 55% { transform: scale(1.14); } 100% { transform: scale(1); } }
+          .asp-pop { animation: asp-pop 0.18s ease-out; }
+        }
+      `}</style>
 
       {/* Header */}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, marginBottom:"1.4rem" }}>
         <div style={{ minWidth:0 }}>
-          <div style={{ fontSize:24, fontWeight:700, letterSpacing:-0.6, lineHeight:1.1, display:"flex", alignItems:"center", gap:9 }}>
-            <span style={{ fontSize:20 }}>{greetIcon}</span>
-            <span>{greeting}, Nevyn</span>
-          </div>
+          <div style={{ fontSize:24, fontWeight:700, letterSpacing:-0.6, lineHeight:1.1 }}>{greeting}, Nevyn</div>
           <div style={{ fontSize:12.5, color:txtT, marginTop:6, display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
             <span>{todayFmt()}</span>
             <span style={{ width:3, height:3, borderRadius:2, background:txtT, display:"inline-block" }} />
@@ -878,14 +1016,99 @@ export default function App() {
             </div>
           )}
 
-          <ContentCard
-            title="Today's plan"
-            sub={planTotal > 0 ? `Checklist · ${planDone}/${planTotal} done · tap to check off` : `Weighted across your tracks · ${DAILY_HOURS}h/day · generated 6am ET`}
-            item={plan}
-            accent="#1D9E75"
-            components={planMd}
-            empty={`P620 writes a focused, track-weighted ${DAILY_HOURS}-hour plan here every morning at 6am ET.`}
-          />
+          {/* ── The week's ledger — hours as tally strokes, per track ── */}
+          {(() => {
+            const dow = (now.getDay() || 7);                 // 1 Mon … 7 Sun
+            const weekFrac = dow / 7;
+            return (
+              <div style={{ ...S.card, marginBottom:"0.875rem" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:10 }}>
+                  <div style={S.lbl}>This week</div>
+                  <div style={{ fontSize:11.5, color:txtT, fontVariantNumeric:"tabular-nums" }}>
+                    {streak > 1 ? `${streak}-day streak` : streak === 1 ? "1 day logged" : "no streak yet"}
+                  </div>
+                </div>
+                <div style={{ display:"flex", alignItems:"baseline", gap:6, margin:"2px 0 12px" }}>
+                  <span style={{ fontSize:38, fontWeight:800, letterSpacing:-1.5, lineHeight:1, fontVariantNumeric:"tabular-nums" }}>{weekHrs % 1 ? weekHrs.toFixed(1) : weekHrs}</span>
+                  <span style={{ fontSize:14, fontWeight:600, color:txtT }}>/ {WEEKLY_TARGET}h</span>
+                  {weekHrs === 0 && <span style={{ fontSize:12, color:txtS, marginLeft:6 }}>the first hour goes on the ledger below ↓</span>}
+                </div>
+                {trackIds.map(id => {
+                  const t = tracks[id];
+                  const target = t.weekly_hours ?? (t.weight || 0) * WEEKLY_TARGET;
+                  const got = weekHrsByTrack(id);
+                  const ac = t.color?.border || brdS;
+                  const behind = dow >= 3 && got < target * weekFrac - 0.9;   // ≥1h off pace, mid-week on
+                  const alarm = behind && id === "dsa";
+                  const shortName = ({ "dsa":"DSA", "ml-recall":"Recall", "sys-design":"Sys design", "search":"Search" })[id] || t.name;
+                  return (
+                    <div key={id} style={{ display:"flex", alignItems:"center", gap:10, padding:"7px 0", borderTop:`1px solid ${brd}` }}>
+                      <span style={{ width:74, flexShrink:0, fontSize:11.5, fontWeight:700, color:ac, whiteSpace:"nowrap" }}>{shortName}</span>
+                      <Tally total={target} value={got} color={ac} />
+                      <span style={{ marginLeft:"auto", fontSize:11.5, color:txtT, fontVariantNumeric:"tabular-nums", flexShrink:0 }}>{got % 1 ? got.toFixed(1) : got}/{target}h</span>
+                      {behind && <span style={{ fontSize:10, fontWeight:800, letterSpacing:0.4, color: alarm ? "#C43333" : "#BA7517", flexShrink:0 }}>{alarm ? "FALLING BEHIND" : "behind"}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+
+          {/* ── Today's plan — parsed into tickable blocks ── */}
+          <div style={{ ...S.card, marginBottom:"0.875rem" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:10, marginBottom: plan?.content ? 12 : 4 }}>
+              <div style={S.lbl}>Today's plan{plan?.date ? ` · ${fmtDate(plan.date)}` : ""}</div>
+              {planTotal > 0 && <div style={{ fontSize:11.5, color: planDone === planTotal ? "#1D9E75" : txtT, fontWeight: planDone === planTotal ? 700 : 400, fontVariantNumeric:"tabular-nums" }}>{planDone}/{planTotal} done</div>}
+            </div>
+            {!plan?.content && (
+              <div style={{ fontSize:13, color:txtS, lineHeight:1.65 }}>
+                No plan yet — P620 writes one every morning at 6am ET.<br />
+                Until it lands: an hour of DSA is never the wrong answer. Log it below when it's done.
+              </div>
+            )}
+            {plan?.content && parsedPlan.blocks.map((b, i) => {
+              const checked = planCheckedSet.has(b.label);
+              const ac = (b.track && tracks[b.track]?.color?.border) || txtT;
+              return (
+                <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start", padding:"11px 0 11px 12px", borderTop: i>0 ? `1px solid ${brd}` : "none",
+                    borderLeft:`3px solid ${checked ? hexA(ac,0.35) : ac}`, marginLeft:-2, opacity: checked ? 0.62 : 1 }}>
+                  <CheckBox checked={checked} onToggle={() => togglePlanItem(b.label)} color={ac} label={b.task || b.label} />
+                  <div style={{ minWidth:0, flex:1 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", marginBottom:3 }}>
+                      {b.time && <span style={{ fontSize:11.5, fontWeight:700, color:txtT, fontVariantNumeric:"tabular-nums" }}>{b.time}</span>}
+                      {b.track && tracks[b.track] && <span style={{ fontSize:10.5, fontWeight:800, letterSpacing:0.4, color:ac }}>{tracks[b.track].name.toUpperCase()}</span>}
+                      {b.mode && <span style={{ fontSize:10, color:txtT, letterSpacing:0.5 }}>{b.mode}</span>}
+                    </div>
+                    <div style={{ fontSize:13.5, lineHeight:1.55, color: checked ? txtT : txt, textDecoration: checked ? "line-through" : "none", textDecorationColor: hexA(ac, 0.6) }}>{b.task}</div>
+                    {b.doneWhen && (
+                      <div style={{ fontSize:12, color: checked ? txtT : txtS, lineHeight:1.5, marginTop:5, paddingTop:5, borderTop:`1px dashed ${brd}` }}>
+                        <span style={{ fontWeight:700, color: checked ? txtT : ac }}>done when</span> — {b.doneWhen}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            {plan?.content && parsedPlan.wrap.length > 0 && (
+              <div style={{ marginTop:10, paddingTop:10, borderTop:`1px solid ${brdS}` }}>
+                {parsedPlan.wrap.map((w, i) => {
+                  const checked = planCheckedSet.has(w.label);
+                  return (
+                    <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start", padding:"6px 0", opacity: checked ? 0.62 : 1 }}>
+                      <CheckBox checked={checked} onToggle={() => togglePlanItem(w.label)} size={20} label={w.label} />
+                      <div style={{ fontSize:12.5, lineHeight:1.55, color: checked ? txtT : txtS, textDecoration: checked ? "line-through" : "none" }}>
+                        {w.kind && <span style={{ fontWeight:800, letterSpacing:0.4, fontSize:10.5, color:txt, marginRight:6 }}>{w.kind}</span>}
+                        {w.text}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {plan?.content && parsedPlan.blocks.length === 0 && parsedPlan.wrap.length === 0 && (
+              <Md components={planMd}>{plan.content}</Md>
+            )}
+          </div>
 
           <div style={S.card}>
             <div style={{ fontSize:13, fontWeight:500, marginBottom:10 }}>Log a study session</div>
@@ -903,6 +1126,103 @@ export default function App() {
               {logMsg && <span style={{ fontSize:12, color:"#3B6D11" }}>{logMsg}</span>}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ── GATE — the Month 3 checkpoint. Four criteria, one deadline. ── */}
+      {tab==="gate" && (
+        <div>
+          {!gateDef && <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No gate in curriculum.json — run the v2 migration first.</div>}
+          {gateDef && (() => {
+            const startIso = status.started_date || "2026-08-06";
+            const start0 = new Date(startIso + "T00:00:00");
+            const totalDays = Math.max(1, Math.round((new Date(gateDate + "T00:00:00") - start0) / 864e5));
+            const elapsed = Math.max(0, Math.min(totalDays, Math.round((today0 - start0) / 864e5)));
+            const overdue = gateDaysLeft < 0;
+            return (
+              <div>
+                {/* Countdown + the ink-the-days grid */}
+                <div style={{ ...S.card, marginBottom:"0.875rem" }}>
+                  <div style={S.lbl}>{gateDef.name}</div>
+                  <div style={{ display:"flex", alignItems:"baseline", gap:8, margin:"2px 0 4px", flexWrap:"wrap" }}>
+                    <span style={{ fontSize:44, fontWeight:800, letterSpacing:-2, lineHeight:1, color:gateHeat, fontVariantNumeric:"tabular-nums" }}>{Math.abs(gateDaysLeft)}</span>
+                    <span style={{ fontSize:14, fontWeight:600, color:txtS }}>{overdue ? "days past the gate" : `days to ${fmtDate(gateDate)}`}</span>
+                  </div>
+                  <div style={{ fontSize:12, color:txtT, marginBottom:12, fontVariantNumeric:"tabular-nums" }}>
+                    {gatePassedCount}/{gateDef.criteria.length} criteria passed · day {elapsed + 1} of {totalDays}
+                  </div>
+                  {/* one cell per day of Phase 1: inked = spent, ring = today, hollow = remaining */}
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:3 }} aria-label={`${elapsed} of ${totalDays} days elapsed`}>
+                    {Array.from({ length: totalDays }).map((_, i) => {
+                      const spent = i < elapsed;
+                      const isToday = i === elapsed && !overdue;
+                      return <span key={i} style={{ width:9, height:9, borderRadius:2.5, boxSizing:"border-box",
+                        background: spent ? txtS : "transparent",
+                        border: isToday ? `2px solid ${gateHeat}` : `1px solid ${spent ? txtS : brdS}` }} />;
+                    })}
+                  </div>
+                  <div style={{ fontSize:11.5, color:txtT, marginTop:12, lineHeight:1.55 }}>
+                    Applications open {fmtDate(status.applications_open_date || "2026-11-01")} — but only through this gate. A missed criterion triggers its own named response, not a quiet extension.
+                  </div>
+                </div>
+
+                {/* All four passed — the plan turns over */}
+                {gateAllPassed && (
+                  <div style={{ ...S.card, marginBottom:"0.875rem", border:`2px solid #1D9E75`, background:hexA("#1D9E75", dark?0.12:0.06) }}>
+                    <div style={{ fontSize:16, fontWeight:800, color:"#1D9E75", letterSpacing:-0.3 }}>The gate is open.</div>
+                    <div style={{ fontSize:13, color:txtS, lineHeight:1.65, marginTop:6 }}>
+                      All four criteria passed. Phase 1 is done — the floor is built, on evidence, not feel.
+                      From {fmtDate(status.applications_open_date || "2026-11-01")} the plan turns over: 15–20 applications a week, and Positioning &amp; Search owns the schedule.
+                    </div>
+                  </div>
+                )}
+
+                {gateErr && <div style={{ fontSize:12.5, color:"#C43333", marginBottom:10 }}>{gateErr}</div>}
+
+                {/* The four criteria */}
+                {gateDef.criteria.map(c => {
+                  const row = gateRows[c.id] || {};
+                  const passed = !!row.passed;
+                  const ac = gateColor(c.id);
+                  const open = gateOpenIds.has(c.id);
+                  return (
+                    <div key={c.id} style={{ ...S.card, marginBottom:"0.6rem", padding:0, overflow:"hidden", borderLeft:`3px solid ${passed ? "#1D9E75" : ac}` }}>
+                      <div style={{ display:"flex", gap:12, alignItems:"flex-start", padding:"0.9rem 1rem" }}>
+                        <CheckBox checked={passed} onToggle={() => gateBusy !== c.id && setGatePassed(c.id, !passed)} color="#1D9E75" size={26} label={c.text} />
+                        <div style={{ minWidth:0, flex:1 }}>
+                          <div style={{ fontSize:10.5, fontWeight:800, letterSpacing:0.5, color:ac, marginBottom:3 }}>
+                            {tracks[GATE_TRACK[c.id]]?.name?.toUpperCase() || c.id.toUpperCase()}
+                          </div>
+                          <div style={{ fontSize:13.5, fontWeight:600, lineHeight:1.5, color: passed ? txtS : txt }}>{c.text}</div>
+                          <div style={{ fontSize:11.5, color:txtT, marginTop:4, fontVariantNumeric:"tabular-nums" }}>
+                            {gateBusy === c.id ? "Saving…"
+                              : passed ? `Passed ${row.checked_at ? fmtTs(row.checked_at) : ""}${row.evidence ? ` · ${row.evidence}` : ""}`
+                              : row.checked_at ? `Last checked ${fmtTs(row.checked_at)} — not passed` : "Not checked yet"}
+                          </div>
+                          {open && (
+                            <div style={{ marginTop:10 }}>
+                              <div style={{ fontSize:12.5, color:txtS, lineHeight:1.6, padding:"9px 12px", borderRadius:10, background:hexA(ac, dark?0.1:0.06), border:`1px solid ${hexA(ac, dark?0.24:0.16)}` }}>
+                                <span style={{ fontWeight:800, fontSize:10.5, letterSpacing:0.4, color:ac }}>IF THIS ONE MISSES</span><br />{c.fail_response}
+                              </div>
+                              <input type="text" value={gateEvidence[c.id] ?? row.evidence ?? ""} placeholder="Evidence — what proves it (optional, saved on tick)"
+                                onChange={e => setGateEvidence(p => ({ ...p, [c.id]: e.target.value }))}
+                                style={{ ...S.inp, marginTop:8, fontSize:12.5 }} />
+                            </div>
+                          )}
+                        </div>
+                        <button onClick={() => toggleGateOpen(c.id)} aria-label={open ? "Collapse" : "Expand"}
+                          style={{ flexShrink:0, background:"none", border:"none", cursor:"pointer", fontSize:12, color:txtT, padding:4, transform:open ? "rotate(180deg)" : "none" }}>▾</button>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <div style={{ fontSize:11.5, color:txtT, lineHeight:1.6, padding:"0.25rem 0.25rem" }}>
+                  If all four miss: {gateDef.all_fail_response}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
 
@@ -1346,57 +1666,93 @@ export default function App() {
         </div>
       )}
 
-      {/* ── COVERAGE (skill heatmap) ── */}
-      {tab==="coverage" && (
+      {/* ── COVERAGE — strata of skills filling in over months ── */}
+      {tab==="coverage" && (() => {
+        const STATUSES = ["not-started","learning","built","interview-ready"];
+        // A skill cell: hollow → half amber → full blue → starred green.
+        const cell = (st, size = 13) => ({
+          width:size, height:size, borderRadius:3.5, boxSizing:"border-box", flexShrink:0, position:"relative", overflow:"hidden",
+          background: st === "not-started" ? "transparent" : st === "learning" ? "transparent" : COV[st].dot,
+          border: st === "not-started" ? `1.5px solid ${brdS}` : `1.5px solid ${COV[st].dot}`,
+        });
+        const halfFill = (st, size = 13) => st === "learning"
+          ? <span style={{ position:"absolute", left:0, right:0, bottom:0, height:"50%", background:COV.learning.dot }} />
+          : null;
+        const allSkills = trackIds.flatMap(id => (tracks[id].skills || []).map(sk => covOf(covMap, id, sk)));
+        const tot = allSkills.length;
+        const totBy = STATUSES.reduce((a, s) => { a[s] = allSkills.filter(x => x === s).length; return a; }, {});
+        const advanced = tot - totBy["not-started"];
+        return (
         <div>
-          <div style={S.card}>
-            <div style={{ fontSize:13, fontWeight:600, marginBottom:10 }}>Coverage legend</div>
-            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
-              {Object.entries(COV).map(([k,v]) => (
-                <span key={k} style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, padding:"4px 10px", borderRadius:20, color:dark?v.dot:v.text, background:hexA(v.dot, dark?0.18:0.11), border:`1px solid ${hexA(v.dot, dark?0.32:0.24)}` }}>
-                  <span style={{ fontSize:11 }}>{v.label}</span>{k}
+          {/* Aggregate — one glance */}
+          <div style={{ ...S.card, marginBottom:"0.875rem" }}>
+            <div style={S.lbl}>Ground covered</div>
+            <div style={{ display:"flex", alignItems:"baseline", gap:6, margin:"2px 0 12px" }}>
+              <span style={{ fontSize:38, fontWeight:800, letterSpacing:-1.5, lineHeight:1, fontVariantNumeric:"tabular-nums" }}>{advanced}</span>
+              <span style={{ fontSize:14, fontWeight:600, color:txtT }}>/ {tot} skills advanced</span>
+            </div>
+            {/* strata bar: the whole curriculum as one layered band */}
+            <div style={{ display:"flex", height:12, borderRadius:6, overflow:"hidden", background:bgS }}>
+              {["interview-ready","built","learning"].map(k => totBy[k] > 0 &&
+                <div key={k} style={{ width:`${totBy[k]/tot*100}%`, background:COV[k].dot }} />)}
+            </div>
+            <div style={{ display:"flex", gap:14, flexWrap:"wrap", marginTop:10 }}>
+              {STATUSES.map(k => (
+                <span key={k} style={{ display:"flex", alignItems:"center", gap:6, fontSize:11.5, color:txtS, fontVariantNumeric:"tabular-nums" }}>
+                  <span style={cell(k, 11)}>{halfFill(k, 11)}</span>{k} · {totBy[k]}
                 </span>
               ))}
             </div>
-            <div style={{ fontSize:12, color:txtT, marginTop:12 }}>The nightly advisory advances these from your study log. This is your map of ground covered vs. remaining.</div>
+            <div style={{ fontSize:11.5, color:txtT, marginTop:10, lineHeight:1.55 }}>
+              {advanced === 0
+                ? "Every cell starts hollow. The nightly advisory inks them in from your study log — the first session starts the fill."
+                : "The nightly advisory advances these from your study log. Watch the strata fill."}
+            </div>
           </div>
 
+          {/* Per track — cell strip, expandable to named skills */}
           {trackIds.map(id => {
             const t = tracks[id]; const ac = t.color?.border || brdS;
             const skills = t.skills || [];
-            const tally = skills.reduce((a, sk) => { a[covOf(covMap, id, sk)]++; return a; }, { "not-started":0,"learning":0,"built":0,"interview-ready":0 });
-            const done = tally.built + tally["interview-ready"];
-            const segs = [["interview-ready",tally["interview-ready"]],["built",tally.built],["learning",tally.learning],["not-started",tally["not-started"]]];
+            const adv = skills.filter(sk => covOf(covMap, id, sk) !== "not-started").length;
+            const open = covOpen.has(id);
             return (
-              <div key={id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
-                <div style={{ padding:"0.875rem 1rem", background:`linear-gradient(120deg, ${hexA(ac, dark?0.16:0.09)}, transparent 75%)` }}>
-                  <div style={{ display:"flex", gap:14, alignItems:"center", marginBottom:12 }}>
-                    <Ring pct={skills.length?done/skills.length*100:0} color={ac} size={48} stroke={5} />
-                    <div style={{ flex:1, minWidth:0 }}>
-                      <span style={trackBadge(id)}>{t.name}</span>
-                      <div style={{ fontSize:11, color:txtT, marginTop:6 }}>{done}/{skills.length} built or interview-ready · {tally.learning} learning</div>
-                      {/* Segmented coverage bar */}
-                      <div style={{ display:"flex", height:6, borderRadius:4, overflow:"hidden", marginTop:7, background:bgS }}>
-                        {segs.map(([k,n]) => n>0 && <div key={k} style={{ width:`${n/skills.length*100}%`, background:COV[k].dot }} />)}
-                      </div>
-                    </div>
+              <div key={id} style={{ ...S.card, marginBottom:"0.6rem", padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
+                <button onClick={() => toggleCovOpen(id)} style={{ width:"100%", textAlign:"left", background:"none", border:"none", cursor:"pointer", padding:"0.9rem 1rem", color:txt }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:10, marginBottom:9 }}>
+                    <span style={{ fontSize:12.5, fontWeight:800, letterSpacing:0.3, color:ac }}>{t.name.toUpperCase()}</span>
+                    <span style={{ fontSize:11.5, color:txtT, fontVariantNumeric:"tabular-nums", display:"flex", alignItems:"center", gap:8 }}>
+                      {adv}/{skills.length}
+                      <span style={{ transform:open ? "rotate(180deg)" : "none", display:"inline-block" }}>▾</span>
+                    </span>
                   </div>
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
                     {skills.map(sk => {
-                      const c = COV[covOf(covMap, id, sk)];
+                      const st = covOf(covMap, id, sk);
+                      return <span key={sk} title={`${sk} — ${st}`} style={cell(st)}>{halfFill(st)}</span>;
+                    })}
+                  </div>
+                </button>
+                {open && (
+                  <div style={{ padding:"0 1rem 0.9rem" }}>
+                    {skills.map((sk, i) => {
+                      const st = covOf(covMap, id, sk);
                       return (
-                        <span key={sk} style={{ fontSize:12, padding:"4px 9px", borderRadius:8, background:hexA(c.dot, dark?0.2:0.12), color:dark?c.dot:c.text, border:`1px solid ${hexA(c.dot, dark?0.34:0.26)}` }}>
-                          {sk}
-                        </span>
+                        <div key={sk} style={{ display:"flex", alignItems:"center", gap:10, padding:"6px 0", borderTop:`1px solid ${brd}` }}>
+                          <span style={cell(st, 12)}>{halfFill(st, 12)}</span>
+                          <span style={{ flex:1, fontSize:12.5, color: st === "not-started" ? txtS : txt }}>{sk}</span>
+                          <span style={{ fontSize:10.5, fontWeight:700, letterSpacing:0.3, color: st === "not-started" ? txtT : COV[st].dot }}>{st}</span>
+                        </div>
                       );
                     })}
                   </div>
-                </div>
+                )}
               </div>
             );
           })}
         </div>
-      )}
+        );
+      })()}
 
       {/* ── LOG ── */}
       {tab==="log" && (
