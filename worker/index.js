@@ -5,7 +5,7 @@
  *
  * Routes:
  *   GET   /api/data        → latest plan/frontier/advisory + log + status + tutor Q&A
- *                            + applications + artifacts + gate + funnel
+ *                            + applications + artifacts + gate + funnel + funnel_by_tier
  *   POST  /api/log         → insert a study_log row
  *   POST  /api/ask         → insert a tutor_qa question (answered later by P620)
  *   POST  /api/application → create an application row
@@ -43,6 +43,7 @@ function authorized(request, env) {
 
 const VALID_TRACKS = ["dsa", "ml-recall", "sys-design", "search"];
 const VALID_STAGES = ["applied", "screen", "onsite", "offer", "closed"];
+const VALID_TIERS = ["series-bd", "midsize", "quant-eng", "hyperscaler", "frontier-lab"];
 const VALID_OUTCOMES = ["active", "rejected", "withdrawn", "accepted", "declined"];
 const VALID_KINDS = ["reproduction", "oss-pr", "blog-post", "system", "resume"];
 const VALID_ARTIFACT_STATUS = ["planned", "in-progress", "shipped"];
@@ -83,7 +84,7 @@ async function getData(env) {
   try {
     const db = env.DB;
     const [plan, frontier, advisory, log, statusRows, questions, coverage,
-           applications, artifacts, gate, funnel] = await Promise.all([
+           applications, artifacts, gate, funnel, funnelByTier] = await Promise.all([
       db.prepare("SELECT date, content, generated_at FROM daily_plan ORDER BY generated_at DESC LIMIT 1").first(),
       db.prepare("SELECT date, content, generated_at FROM frontier ORDER BY generated_at DESC LIMIT 1").first(),
       db.prepare("SELECT date, content, generated_at FROM advisory ORDER BY generated_at DESC LIMIT 1").first(),
@@ -95,6 +96,7 @@ async function getData(env) {
       db.prepare("SELECT * FROM artifacts ORDER BY id").all().catch(() => ({ results: [] })),
       db.prepare("SELECT criterion, passed, checked_at, evidence, notes FROM gate_check").all().catch(() => ({ results: [] })),
       db.prepare("SELECT * FROM v_funnel").first().catch(() => null),
+      db.prepare("SELECT * FROM v_funnel_by_tier").all().catch(() => ({ results: [] })),
     ]);
     const status = {};
     for (const r of statusRows.results || []) status[r.key] = r.value;
@@ -110,6 +112,7 @@ async function getData(env) {
       artifacts: artifacts.results || [],
       gate: gate.results || [],
       funnel: funnel || null,
+      funnel_by_tier: funnelByTier.results || [],
     });
   } catch (e) {
     return json({ error: e.message }, 500);
@@ -159,6 +162,9 @@ async function postApplication(request, env) {
     if (!b.company || !b.role) return json({ error: "company and role required" }, 400);
     const stage = b.stage || "applied";
     if (!VALID_STAGES.includes(stage)) return json({ error: `stage must be one of ${VALID_STAGES.join("/")}` }, 400);
+    if (b.tier && !VALID_TIERS.includes(b.tier)) {
+      return json({ error: `tier must be one of ${VALID_TIERS.join("/")}` }, 400);
+    }
     if (b.outcome && !VALID_OUTCOMES.includes(b.outcome)) {
       return json({ error: `outcome must be one of ${VALID_OUTCOMES.join("/")}` }, 400);
     }
