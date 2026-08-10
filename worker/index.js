@@ -84,7 +84,7 @@ async function getData(env) {
   try {
     const db = env.DB;
     const [plan, frontier, advisory, log, statusRows, questions, coverage,
-           applications, artifacts, gate, funnel, funnelByTier] = await Promise.all([
+           applications, artifacts, gate, funnel, funnelByTier, jobMarket] = await Promise.all([
       db.prepare("SELECT date, content, generated_at FROM daily_plan ORDER BY generated_at DESC LIMIT 1").first(),
       db.prepare("SELECT date, content, generated_at FROM frontier ORDER BY generated_at DESC LIMIT 1").first(),
       db.prepare("SELECT date, content, generated_at FROM advisory ORDER BY generated_at DESC LIMIT 1").first(),
@@ -97,6 +97,7 @@ async function getData(env) {
       db.prepare("SELECT criterion, passed, checked_at, evidence, notes FROM gate_check").all().catch(() => ({ results: [] })),
       db.prepare("SELECT * FROM v_funnel").first().catch(() => null),
       db.prepare("SELECT * FROM v_funnel_by_tier").all().catch(() => ({ results: [] })),
+      db.prepare("SELECT date, content, generated_at FROM job_market ORDER BY generated_at DESC LIMIT 1").first().catch(() => null),
     ]);
     const status = {};
     for (const r of statusRows.results || []) status[r.key] = r.value;
@@ -113,6 +114,7 @@ async function getData(env) {
       gate: gate.results || [],
       funnel: funnel || null,
       funnel_by_tier: funnelByTier.results || [],
+      job_market: jobMarket || null,
     });
   } catch (e) {
     return json({ error: e.message }, 500);

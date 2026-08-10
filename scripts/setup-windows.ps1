@@ -42,6 +42,10 @@ Register-Job "AIStudyPlanner-Tutor" "answer-questions.sh" $tHourly "Hourly: answ
 $tAdv = New-ScheduledTaskTrigger -Daily -At 11:00pm
 Register-Job "AIStudyPlanner-Advisory" "advisory.sh" $tAdv "Nightly 11pm: plan health advisory -> D1"
 
+# Sunday 9pm — weekly job-market skill-demand scan (JobSpy)
+$tMarket = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Sunday -At 9:00pm
+Register-Job "AIStudyPlanner-JobMarket" "job-market.sh" $tMarket "Weekly Sun 9pm: job-market skill demand -> D1"
+
 Write-Host ""
 Write-Host "Done. Manage in Task Scheduler -> Task Scheduler Library -> AIStudyPlanner-*"
 Write-Host "Test now:  bash scripts/daily-briefing.sh"

@@ -84,10 +84,11 @@ MAILTO=""
 0 6 * * *  $PROJECT/scripts/daily-briefing.sh    # 6am ET  — briefing + plan + frontier
 0 * * * *  $PROJECT/scripts/answer-questions.sh  # hourly  — answer tutor questions
 0 23 * * * $PROJECT/scripts/advisory.sh          # 11pm ET — plan health advisory
+0 21 * * 0 $PROJECT/scripts/job-market.sh        # Sun 9pm ET — job-market skill demand (JobSpy)
 EOF
 crontab "$CRON_TMP"
 rm -f "$CRON_TMP"
-ok "cron installed (CRON_TZ=$TZ_ET): 6am briefing · hourly tutor · 11pm advisory"
+ok "cron installed (CRON_TZ=$TZ_ET): 6am briefing · hourly tutor · 11pm advisory · Sun 9pm job market"
 
 # 8. Seed D1 from current status.json (non-fatal if D1 isn't reachable yet).
 say "Syncing status.json → D1..."

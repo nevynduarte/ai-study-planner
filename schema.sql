@@ -67,6 +67,17 @@ CREATE TABLE IF NOT EXISTS tutor_qa (
   answered_at TEXT
 );
 
+-- Job-market skill-demand scan: weekly JobSpy scrape of target-role
+-- postings, written by scripts/job-market.sh. Grounds every prompt in
+-- what the market is actually asking for.
+CREATE TABLE IF NOT EXISTS job_market (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  date         TEXT NOT NULL,
+  content      TEXT NOT NULL,
+  generated_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_job_market_date ON job_market(date);
 CREATE INDEX IF NOT EXISTS idx_daily_plan_date ON daily_plan(date);
 CREATE INDEX IF NOT EXISTS idx_frontier_date   ON frontier(date);
 CREATE INDEX IF NOT EXISTS idx_advisory_date   ON advisory(date);

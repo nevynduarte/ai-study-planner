@@ -8,6 +8,8 @@ Elite engineering study planner across **4 parallel, daily-weighted tracks** —
 
 `public/curriculum.json` is the **single source of truth**: student profile, target roles → tracks mapping, the 4 tracks (each with weight, 12 months, and a skills list), ROI priorities, and day-of-week cadence. Both the P620 scripts and the web app read it (the scripts at `public/curriculum.json`, the browser at `/curriculum.json`), so there is exactly one place to edit the plan.
 
+**Job-market feedback loop:** `scripts/job-market.sh` (weekly, Sun 9pm) scrapes live postings for the target roles with [JobSpy](https://github.com/speedyapply/JobSpy) — same engine as bracketlens — measures skill demand (% of postings asking for each skill, per role), and flags in-demand skills the curriculum doesn't cover. The report lands in D1 `job_market` and is included in every prompt's context, so the briefing/plan/advisory continuously steer toward what the market actually wants. One-time setup on the runner: `pip install "python-jobspy>=1.1.82"`; apply `migrations/004_job_market.sql` to D1.
+
 Live state lives separately so the curriculum file stays static:
 - `config/status.json` — per-track current month, hours, notes.
 - D1 `skill_coverage` — each skill's status (`not-started` → `learning` → `built` → `interview-ready`), advanced nightly by the advisory from your study log.
