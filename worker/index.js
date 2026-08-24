@@ -41,7 +41,7 @@ function authorized(request, env) {
   return decoded.slice(decoded.indexOf(":") + 1) === env.APP_PASSWORD;
 }
 
-const VALID_TRACKS = ["dsa", "ml-recall", "sys-design", "search"];
+const VALID_TRACKS = ["dsa", "ml-recall", "sys-design", "search", "foundations", "flagship"];
 const VALID_STAGES = ["applied", "screen", "onsite", "offer", "closed"];
 const VALID_TIERS = ["series-bd", "midsize", "quant-eng", "hyperscaler", "frontier-lab"];
 const VALID_OUTCOMES = ["active", "rejected", "withdrawn", "accepted", "declined"];

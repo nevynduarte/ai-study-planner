@@ -103,13 +103,15 @@ for (const role of cur.roles || []) {
 }
 out.push("");
 
-out.push("ACTIVE TRACKS (parallel, weighted across the 10h week). For each: weekly hours, current month focus, and per-skill coverage [status]:");
+const weekTotal = Object.values(cur.tracks || {})
+  .reduce((sum, t) => sum + (Number(t.weekly_hours) || 0), 0);
+out.push(`ACTIVE TRACKS (parallel, weighted across the ${weekTotal}h week). For each: weekly hours, current month focus, and per-skill coverage [status]:`);
 const trackPos = status.tracks || {};
 for (const [id, t] of Object.entries(cur.tracks || {})) {
   const pos = trackPos[id] || {};
   const monthN = Number(pos.current_month) || 1;
   const month = (t.months || []).find(m => m.n === monthN) || (t.months || [])[0] || {};
-  const pct = Math.round((t.weight || 0) * 100);
+  const pct = weekTotal ? Math.round(((Number(t.weekly_hours) || 0) / weekTotal) * 100) : 0;
   out.push(`\n### ${t.name} [${id}] — ${pct}% of the week (${t.weekly_hours}h/week, ~${t.daily_hours}h/day)`);
   out.push(`  Now: Month ${monthN}/12 — ${month.title || ""}: ${month.focus || ""}`);
   const skills = (t.skills || []).map(sk => {

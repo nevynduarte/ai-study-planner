@@ -231,8 +231,8 @@ function usePersisted(key, initial) {
 
 // Daily study commitment. 2 focused hours/day (10h/week) alongside consulting.
 // Per-track hours derive from each track's weight, so this is the only knob.
-const DAILY_HOURS   = 2;
-const WEEKLY_TARGET = 10;
+const DAILY_HOURS   = 4;
+const WEEKLY_TARGET = 20;
 
 export default function App() {
   const [tab,     setTab]     = useState("today");
@@ -1035,7 +1035,7 @@ export default function App() {
                 </div>
                 {trackIds.map(id => {
                   const t = tracks[id];
-                  const target = t.weekly_hours ?? (t.weight || 0) * WEEKLY_TARGET;
+                  const target = t.weekly_hours ?? 0;
                   const got = weekHrsByTrack(id);
                   const ac = t.color?.border || brdS;
                   const behind = dow >= 3 && got < target * weekFrac - 0.9;   // ≥1h off pace, mid-week on
@@ -1326,7 +1326,7 @@ export default function App() {
           </div>
           {trackIds.map(id => {
             const t = tracks[id]; const md = monthData(id);
-            const target = (t.weight || 0) * WEEKLY_TARGET; const got = weekHrsByTrack(id);
+            const target = t.weekly_hours ?? 0; const got = weekHrsByTrack(id);
             const pct = target ? Math.min(100, got/target*100) : 0;
             const ac = t.color?.border || brdS;
             return (
@@ -1336,7 +1336,7 @@ export default function App() {
                     <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, flexWrap:"wrap" }}>
                       <span style={trackBadge(id)}>{t.name}</span>
                       {tracksPaused && <span style={pill("#888888", { padding:"1px 7px" })}>⏸ paused</span>}
-                      <span style={{ fontSize:11, color:txtT }}>{Math.round((t.weight||0)*100)}% · ~{((t.weight||0)*DAILY_HOURS).toFixed(1)}h/day</span>
+                      <span style={{ fontSize:11, color:txtT }}>{Math.round(((t.weekly_hours||0)/WEEKLY_TARGET)*100)}% · ~{(t.daily_hours ?? (t.weekly_hours||0)/5).toFixed(1)}h/day</span>
                       <span style={{ ...S.roiBadge(md.roi||75), marginLeft:"auto" }}>ROI {md.roi||"—"}</span>
                     </div>
                     <div style={{ fontSize:13.5, fontWeight:600, marginBottom:2 }}>Month {monthOf(id)} — {md.title}</div>
@@ -1427,7 +1427,7 @@ export default function App() {
               <div key={id} style={{ marginBottom:"1.25rem" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:10, margin:"0 0 8px 2px", flexWrap:"wrap" }}>
                   <span style={trackBadge(id)}>{t.name}</span>
-                  <span style={{ fontSize:12, color:txtT }}>{Math.round((t.weight||0)*100)}% of day · {t.summary}</span>
+                  <span style={{ fontSize:12, color:txtT }}>{t.weekly_hours ?? 0}h/week{t.weekly_hours_phase2 != null && t.weekly_hours_phase2 !== t.weekly_hours ? ` → ${t.weekly_hours_phase2}h once applications open` : ""}</span>
                 </div>
                 {(t.months||[]).map(mo => {
                   const ac = t.color?.border || brdS;

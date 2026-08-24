@@ -1,15 +1,32 @@
 {
   "started_date": "2026-08-06",
-  "plan_version": "v2-mle-200-300k",
-  "weekly_target_hours": 10,
+  "plan_version": "v3-senior-staff-20h",
+  "weekly_target_hours": 20,
   "applications_open_date": "2026-11-01",
   "gate_date": "2026-10-31",
   "total_hours_logged": 0,
-  "notes": "",
+  "notes": "v3: senior L5/E5 target at 20h/week, 520h budget. Senior applications Nov 1, staff gated on Gate 2 (Feb 1). v2 preserved in curriculum archive.v2_*.",
   "tracks": {
-    "dsa":        { "current_month": 1 },
-    "ml-recall":  { "current_month": 1 },
-    "sys-design": { "current_month": 1 },
-    "search":     { "current_month": 1 }
-  }
+    "dsa": {
+      "current_month": 1
+    },
+    "ml-recall": {
+      "current_month": 1
+    },
+    "sys-design": {
+      "current_month": 1
+    },
+    "search": {
+      "current_month": 1
+    },
+    "foundations": {
+      "current_month": 1
+    },
+    "flagship": {
+      "current_month": 1
+    }
+  },
+  "v3_started_date": "2026-08-24",
+  "staff_applications_open_date": "2027-02-01",
+  "gate_2_date": "2027-02-01"
 }

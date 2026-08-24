@@ -3,15 +3,19 @@
   "student": {
     "name": "Nevyn Duarte",
     "background": "BS Mathematics (UT Austin), MS Data Science CU Boulder (GPA 3.84). Co-Founder/CTO Bridges AI. Ex-quantitative equity researcher (M Science / Jefferies). Strong Python, RAG systems, LLM workflows, agentic systems.",
-    "commitment": "10 focused hours/week alongside Bridges AI client work (~2h/day, 5 days)",
-    "income_target": "$200K-$300K TC",
-    "thesis": "Not under-skilled for this band — under-legible and under-drilled. The production systems already clear the technical bar for tier-two AI companies. Missing: a coherent public story, DSA sharpness for the coding screen, and a systematic pipeline instead of reactive recruiter outreach.",
-    "dominant_risk": "Time-to-first-offer, not skill. Every month consulting is a month not compounding inside a company with a comp ladder."
+    "commitment": "20 focused hours/week (~4h/day x 5, or 3h weekdays + a long weekend block)",
+    "income_target": "$300K-$450K TC (Senior L5/E5), staff as stretch",
+    "target_level": "Senior ML/AI Engineer (L5/E5). Staff (L6/E6) applied from Feb 2027 only if Gate 2 passes.",
+    "budget": "26 weeks, 2026-08-24 to 2027-02-22, at 20h/week = 520 hours. Every hour is allocated below. Hours are the scarce resource, not ambition.",
+    "thesis": "The v2 thesis still holds and is the reason this plan works: not under-skilled, under-legible. What changes at senior/staff is WHAT must be legible. A tier-two MLE seat needs a clean resume and a passed coding screen. A senior seat needs one system you owned end to end, with real scale numbers, real failure modes, and the judgment to defend every tradeoff in it. That is built, not studied.",
+    "dominant_risk": "Substituting a curriculum for a system. Deep mathematics is the most satisfying thing to study and the least likely thing to be tested. Senior loops probe production judgment; staff loops probe scope. Neither is closed by more theory.",
+    "what_actually_gates_senior": "Ranked by how often it decides the loop: (1) ML system design under scale constraints - can you take a design from 1K to 10M users and name what breaks at each step; (2) a deep-dive on a system YOU owned, where follow-up questions go straight to operational detail; (3) the coding screen, which is pass/fail and nothing more; (4) ML fundamentals at conversational speed, not derivation speed; (5) from-scratch implementation of one core algorithm, occasionally. Mathematics sits underneath 4 and 5 and is already covered by a BS Math and an MS DS.",
+    "scale_honesty": "You will not have millions of real users in six months. You can design for and load-test to that scale, and say exactly that: 'designed for and load-tested to 5M docs/day at p99 180ms; currently serving N real users.' That is defensible and it lands. Claiming user scale you do not have fails the loop the moment follow-ups reach operational detail - which for senior candidates is question two."
   },
   "roles": [
     {
       "id": "deshaw-ai",
-      "name": "D.E. Shaw — Applied AI Engineer",
+      "name": "D.E. Shaw \u2014 Applied AI Engineer",
       "primary_tracks": [
         "sys-design"
       ],
@@ -19,7 +23,7 @@
     },
     {
       "id": "deshaw-alt",
-      "name": "D.E. Shaw — Alternative Data Analyst",
+      "name": "D.E. Shaw \u2014 Alternative Data Analyst",
       "primary_tracks": [
         "ml-recall"
       ],
@@ -27,39 +31,32 @@
     },
     {
       "id": "woodline",
-      "name": "Woodline Partners — Sector Data Analyst",
+      "name": "Woodline Partners \u2014 Sector Data Analyst",
       "primary_tracks": [
         "ml-recall"
       ],
       "note": "Sector/fundamental modeling, data analysis, communication."
     },
     {
-      "id": "aaru",
-      "name": "Aaru — Software Engineer, Data Integration",
-      "primary_tracks": [
-        "ml-recall",
-        "sys-design"
-      ],
-      "note": "Data pipelines, entity resolution, large-scale ingestion, alt-data. Interview Wed Jun 24."
-    },
-    {
-      "id": "equi",
-      "name": "Equi — Founding Engineer, Applied AI Lead",
-      "primary_tracks": [
-        "sys-design"
-      ],
-      "note": "Full-stack AI (RAG, LLM workflows), TypeScript/Next.js, investment domain. Interview Tue Jun 23."
-    },
-    {
       "id": "mle-general",
-      "name": "MLE - Series B-D applied AI / infra (primary target)",
+      "name": "Senior ML/AI Engineer - Series B-D applied AI / infra (primary target)",
       "primary_tracks": [
         "dsa",
         "ml-recall",
         "sys-design",
         "search"
       ],
-      "note": "$200-300K TC, weakest degree screening, five rounds (coding, ML system design, ML breadth, applied coding, behavioral) — uniformly non-failing beats excellent-at-one."
+      "note": "$300-450K TC, weakest degree screening, five rounds (coding, ML system design, ML breadth, applied coding, behavioral) \u2014 uniformly non-failing beats excellent-at-one."
+    },
+    {
+      "name": "Staff ML/AI Engineer - frontier labs & larger infra orgs (stretch, opens Feb 2027)",
+      "primary_tracks": [
+        "flagship",
+        "sys-design",
+        "foundations",
+        "search"
+      ],
+      "notes": "$450K+. Gated on Gate 2: load-test numbers and the published writeup must exist first. Applied at lower volume than the senior lane, in tandem, never instead."
     }
   ],
   "interviews": [
@@ -70,8 +67,8 @@
       "date": "2026-06-24",
       "day": "Wednesday",
       "location": "NYC (in-person, 5 days/week)",
-      "salary": "$250K–$450K + equity",
-      "about": "Predictive intelligence platform — AI agents simulate entire human populations at scale for geopolitical strategy, product innovation, and marketing. Data Integration is the foundation that powers all simulations.",
+      "salary": "$250K\u2013$450K + equity",
+      "about": "Predictive intelligence platform \u2014 AI agents simulate entire human populations at scale for geopolitical strategy, product innovation, and marketing. Data Integration is the foundation that powers all simulations.",
       "stack": [
         "Python",
         "SQL",
@@ -81,16 +78,16 @@
         "dbt / Airflow"
       ],
       "your_strengths": [
-        "M Science / Jefferies: processed large-scale alt-data for quant equity signals — entity resolution across fragmented vendor identifiers was core to the job",
+        "M Science / Jefferies: processed large-scale alt-data for quant equity signals \u2014 entity resolution across fragmented vendor identifiers was core to the job",
         "Bridges AI CTO: built production data pipelines end-to-end with quality monitoring, docs, and ownership",
-        "MS Data Science (GPA 3.84): statistical rigor — sampling biases, imputation, anomaly detection, validation logic",
+        "MS Data Science (GPA 3.84): statistical rigor \u2014 sampling biases, imputation, anomaly detection, validation logic",
         "Strong Python: transformation code, custom parsers, schema harmonization scripts all in your wheelhouse"
       ],
       "prep_areas": [
         {
           "area": "Entity Resolution & Deduplication",
           "items": [
-            "Blocking strategies: sorted neighborhood, LSH (MinHash / SimHash), canopy clustering — why blocking is necessary before pairwise comparison",
+            "Blocking strategies: sorted neighborhood, LSH (MinHash / SimHash), canopy clustering \u2014 why blocking is necessary before pairwise comparison",
             "Similarity metrics: Jaro-Winkler, token-sort ratio, phonetic (Soundex/Metaphone), embedding cosine similarity",
             "ML-based ER: Splink (probabilistic, Fellegi-Sunter) vs. Dedupe (active-learning); know when to use each",
             "Scalable ER at 100M+ record scale: push blocking to Snowflake/Spark, pull candidate pairs for scoring",
@@ -100,7 +97,7 @@
         {
           "area": "Pipeline Design at Scale (>100 TB)",
           "items": [
-            "Medallion architecture: Bronze (raw) → Silver (cleaned/deduped) → Gold (aggregated/linked) — articulate trade-offs",
+            "Medallion architecture: Bronze (raw) \u2192 Silver (cleaned/deduped) \u2192 Gold (aggregated/linked) \u2014 articulate trade-offs",
             "Incremental vs. full-refresh: CDC (change data capture), watermarks, append-only vs. SCD Type 2 for history",
             "Schema evolution: backward-compatible changes, additive-only column additions, Avro / Iceberg schema registry patterns",
             "Idempotent + restartable design: write-audit-publish, dead-letter queues, exactly-once semantics",
@@ -121,7 +118,7 @@
           "area": "Data Quality & Validation",
           "items": [
             "Core DQ dimensions: completeness, uniqueness, timeliness, consistency, referential integrity",
-            "Tooling: Great Expectations / Soda / Pandera — how to write a data contract and gate a pipeline",
+            "Tooling: Great Expectations / Soda / Pandera \u2014 how to write a data contract and gate a pipeline",
             "Statistical profiling: null rates, value distribution shifts, cardinality drift, Z-score anomaly detection",
             "Alerting: p95 row-count thresholds, freshness SLAs, PagerDuty / Slack webhook integration",
             "Documentation: data dictionaries, lineage graphs (dbt docs, OpenLineage), column-level descriptions"
@@ -133,7 +130,7 @@
             "Snowflake: micro-partitions, clustering keys, zero-copy cloning, Streams + Tasks for CDC, COPY INTO",
             "BigQuery: partitioned/clustered tables, federated queries, INFORMATION_SCHEMA for metadata, slot reservations",
             "Databricks: Delta Lake (ACID, time-travel), Unity Catalog, Auto Loader for streaming ingestion",
-            "Orchestration: Airflow (DAGs, sensors, XComs) vs. Dagster (assets, software-defined partitions) — know the difference",
+            "Orchestration: Airflow (DAGs, sensors, XComs) vs. Dagster (assets, software-defined partitions) \u2014 know the difference",
             "dbt: models (staging/intermediate/marts), tests (not_null, unique, relationships), snapshots for SCD2, macros"
           ]
         },
@@ -142,23 +139,23 @@
           "items": [
             "Alt-data types: transaction data, clickstream, geospatial / point-of-interest, satellite imagery, NLP (earnings calls, news)",
             "Sourcing and linkage: CUSIP/ISIN/ticker cross-walks, address normalization, phone/email hashing for identity resolution",
-            "Data licensing: DUAs, redistribution restrictions, derived-data rules — when you can/can't re-share signals",
+            "Data licensing: DUAs, redistribution restrictions, derived-data rules \u2014 when you can/can't re-share signals",
             "PII handling: tokenization, SHA-256 hashing, k-anonymity, pseudonymization vs. anonymization",
             "Bias awareness: survivorship bias in vendor panels, look-ahead bias in point-in-time data, bot-traffic contamination in clickstream"
           ]
         }
       ],
       "story_beats": [
-        "M Science / Jefferies: 'At M Science, I ingested and cross-linked multiple alt-data vendor feeds to construct quant signals. Entity resolution across fragmented company identifiers — tickers, CIK, CUSIP — was a core daily challenge at scale.'",
-        "Bridges AI: 'As CTO I owned the full data stack — ingestion, cleaning, validation, and docs. I built the pipeline with data quality gates so downstream AI features had reliable inputs.'",
-        "MS Data Science: 'My stats background shapes how I think about data issues — I treat every new dataset with skepticism: what are the sampling biases, what's the missingness pattern, what would break if this feed went stale?'"
+        "M Science / Jefferies: 'At M Science, I ingested and cross-linked multiple alt-data vendor feeds to construct quant signals. Entity resolution across fragmented company identifiers \u2014 tickers, CIK, CUSIP \u2014 was a core daily challenge at scale.'",
+        "Bridges AI: 'As CTO I owned the full data stack \u2014 ingestion, cleaning, validation, and docs. I built the pipeline with data quality gates so downstream AI features had reliable inputs.'",
+        "MS Data Science: 'My stats background shapes how I think about data issues \u2014 I treat every new dataset with skepticism: what are the sampling biases, what's the missingness pattern, what would break if this feed went stale?'"
       ],
       "likely_questions": [
         "Walk me through a pipeline you built that handled messy, large-scale data.",
         "How do you approach entity resolution across two datasets with noisy identifiers?",
         "What does a good data quality framework look like to you?",
         "How do you decide between full-refresh and incremental ingestion?",
-        "Tell me about a time a data issue caused a downstream problem — how did you catch and fix it?",
+        "Tell me about a time a data issue caused a downstream problem \u2014 how did you catch and fix it?",
         "What alt-data sources have you worked with and how did you validate them?",
         "How do you think about privacy and compliance when integrating third-party data?",
         "How have you handled schema changes without breaking downstream consumers?",
@@ -265,7 +262,7 @@
       "day": "Tuesday",
       "location": "NYC (hybrid)",
       "salary": "Senior founding engineer comp + equity",
-      "about": "Investment management firm — institutional-quality alternative investments (fund of funds). Builds white-label fund of funds products for multi-family offices and advisory firms. AUM scaling rapidly. You'd be the first/lead engineer building AI systems for manager selection, portfolio construction, and investment workflow automation.",
+      "about": "Investment management firm \u2014 institutional-quality alternative investments (fund of funds). Builds white-label fund of funds products for multi-family offices and advisory firms. AUM scaling rapidly. You'd be the first/lead engineer building AI systems for manager selection, portfolio construction, and investment workflow automation.",
       "stack": [
         "TypeScript",
         "Next.js",
@@ -274,10 +271,10 @@
         "GCP (Cloud Run, BigQuery, Cloud Storage)"
       ],
       "your_strengths": [
-        "RAG systems and LLM workflows (strong): directly maps to their AI engineering needs — parsing fund docs, building investment intelligence",
+        "RAG systems and LLM workflows (strong): directly maps to their AI engineering needs \u2014 parsing fund docs, building investment intelligence",
         "Agentic systems: investment workflow automation (due diligence, monitoring, reporting) is exactly what they need",
-        "Co-Founder/CTO Bridges AI: founding engineer mindset — full ownership from ideation through post-launch; you've been this person before",
-        "M Science / Jefferies quant researcher: genuine, deep investment domain credibility — not a stretch, it's your background",
+        "Co-Founder/CTO Bridges AI: founding engineer mindset \u2014 full ownership from ideation through post-launch; you've been this person before",
+        "M Science / Jefferies quant researcher: genuine, deep investment domain credibility \u2014 not a stretch, it's your background",
         "MS Data Science: rigorous thinking about data quality, modeling, and statistical inference that an investment firm values"
       ],
       "prep_areas": [
@@ -285,19 +282,19 @@
           "area": "RAG Systems Deep Dive",
           "items": [
             "Chunking strategies: fixed-size (simple), semantic/sentence (coherent context), hierarchical (summary + detail), proposition-level (for dense factual docs)",
-            "Retrieval: dense (embedding cosine sim), sparse (BM25/TF-IDF), hybrid (RRF fusion) — know when hybrid beats dense-only",
+            "Retrieval: dense (embedding cosine sim), sparse (BM25/TF-IDF), hybrid (RRF fusion) \u2014 know when hybrid beats dense-only",
             "Reranking: cross-encoder models (ms-marco-MiniLM), LLM-as-judge reranking, Cohere Rerank / Jina Reranker",
             "Metadata filtering + query routing: filter by fund type, date range, manager before retrieval to narrow search space",
-            "Evaluation: RAGAS metrics (faithfulness, context recall, answer relevance, context precision) — run an eval before shipping",
-            "Equi-specific: RAG over PPMs, pitchbooks, SEC filings, performance reports, meeting notes — multi-format, multi-source"
+            "Evaluation: RAGAS metrics (faithfulness, context recall, answer relevance, context precision) \u2014 run an eval before shipping",
+            "Equi-specific: RAG over PPMs, pitchbooks, SEC filings, performance reports, meeting notes \u2014 multi-format, multi-source"
           ]
         },
         {
           "area": "LLM Integration & Agentic Workflows",
           "items": [
             "Structured output extraction: tool use / function calling for reliable JSON, pydantic output schemas",
-            "Parsing multi-format docs: PDF (PyMuPDF/pdfplumber), Excel (openpyxl), email → structured investment data",
-            "Multi-step investment analysis pipelines: search → retrieve → analyze → summarize → recommend",
+            "Parsing multi-format docs: PDF (PyMuPDF/pdfplumber), Excel (openpyxl), email \u2192 structured investment data",
+            "Multi-step investment analysis pipelines: search \u2192 retrieve \u2192 analyze \u2192 summarize \u2192 recommend",
             "Prompt engineering for financial tasks: few-shot with domain examples, chain-of-thought for quantitative reasoning",
             "Streaming responses in Next.js: Vercel AI SDK, ReadableStream, incremental UI updates for long analyses",
             "Tool use patterns: web search, calculator, document retrieval, code execution for quantitative calculations"
@@ -308,7 +305,7 @@
           "items": [
             "Next.js App Router: server components (async, no client JS), server actions, route handlers, streaming UI with Suspense",
             "TypeScript: strict mode, discriminated unions, Zod for runtime validation, tRPC for type-safe API",
-            "Auth: NextAuth.js / Clerk — JWT sessions, role-based access for client-facing vs. internal tools",
+            "Auth: NextAuth.js / Clerk \u2014 JWT sessions, role-based access for client-facing vs. internal tools",
             "Postgres: schema design for investment data (funds, managers, NAVs, returns), pgvector for embeddings, indexing strategy",
             "Python backend: FastAPI or Flask for AI inference endpoints, Pydantic models, async with asyncio",
             "Design a client-facing portfolio dashboard: how would you structure the schema and API?"
@@ -318,9 +315,9 @@
           "area": "Data Pipelines for Investment Data",
           "items": [
             "Alternative investment data: NAV, performance (monthly/quarterly), attribution, factor exposure, drawdown series",
-            "Fund of funds data flow: manager → sub-fund → aggregate portfolio; handling different reporting formats/cadences",
+            "Fund of funds data flow: manager \u2192 sub-fund \u2192 aggregate portfolio; handling different reporting formats/cadences",
             "Data normalization: mapping heterogeneous manager reports to a canonical schema",
-            "GCP pipeline: Cloud Storage (raw docs) → Cloud Run (parsing/ETL jobs) → BigQuery (analytics) → Postgres (ops data)",
+            "GCP pipeline: Cloud Storage (raw docs) \u2192 Cloud Run (parsing/ETL jobs) \u2192 BigQuery (analytics) \u2192 Postgres (ops data)",
             "dbt on BigQuery for transformation layer; Postgres as the operational database for the web app"
           ]
         },
@@ -331,28 +328,28 @@
             "Alternative investment types: hedge funds (L/S equity, macro, credit), PE (buyout, growth, venture), real assets, co-investments",
             "Manager selection criteria: Sharpe ratio, max drawdown, Sortino, Calmar, factor exposure analysis, style drift detection",
             "White-label fund products: separate accounts, sub-advised vehicles, how reporting changes at scale",
-            "AUM growth implications: more reporting, more due diligence workflows, more client portals → where AI helps most"
+            "AUM growth implications: more reporting, more due diligence workflows, more client portals \u2192 where AI helps most"
           ]
         },
         {
           "area": "Product Thinking & Founding Engineer Mindset",
           "items": [
-            "30/60/90-day plan: Day 1-30 — understand the business deeply, map existing data flows, ship one small high-value AI tool. Day 31-60 — RAG over fund docs live. Day 61-90 — automate one due diligence workflow.",
-            "Prioritization framework: effort × impact matrix; what's reversible (build it fast) vs. irreversible (be careful)",
-            "Technical decision-making under ambiguity: spike → validate assumption → decide; avoid analysis paralysis",
+            "30/60/90-day plan: Day 1-30 \u2014 understand the business deeply, map existing data flows, ship one small high-value AI tool. Day 31-60 \u2014 RAG over fund docs live. Day 61-90 \u2014 automate one due diligence workflow.",
+            "Prioritization framework: effort \u00d7 impact matrix; what's reversible (build it fast) vs. irreversible (be careful)",
+            "Technical decision-making under ambiguity: spike \u2192 validate assumption \u2192 decide; avoid analysis paralysis",
             "Team building vision: hire generalists early, keep the team small; every engineer ships to prod",
-            "Why keep the team small and flat: speed, ownership, direct feedback loop — matches their stated vision"
+            "Why keep the team small and flat: speed, ownership, direct feedback loop \u2014 matches their stated vision"
           ]
         }
       ],
       "story_beats": [
-        "Why investing (must be authentic): 'I spent years as a quant equity researcher at M Science / Jefferies, working directly with alt-data to build signals. Investing isn't adjacent to my interests — it's the domain I came from. I left to build AI products, and Equi is where those two worlds converge.'",
-        "Bridges AI CTO: 'I've been the founding engineer before — I set the technical direction, built the infra, shipped features, and hired the first engineers. I know what it means to own everything and build without a safety net.'",
-        "RAG + AI systems: 'At Bridges AI I built RAG pipelines and LLM-powered workflows in production. I can take a fund document corpus and have a working retrieval system running within a day — I've done it before.'",
-        "Full-stack: 'I work across the stack. I don't hand off the frontend to someone else — I design, build, and ship the full product from database schema to UI.'"
+        "Why investing (must be authentic): 'I spent years as a quant equity researcher at M Science / Jefferies, working directly with alt-data to build signals. Investing isn't adjacent to my interests \u2014 it's the domain I came from. I left to build AI products, and Equi is where those two worlds converge.'",
+        "Bridges AI CTO: 'I've been the founding engineer before \u2014 I set the technical direction, built the infra, shipped features, and hired the first engineers. I know what it means to own everything and build without a safety net.'",
+        "RAG + AI systems: 'At Bridges AI I built RAG pipelines and LLM-powered workflows in production. I can take a fund document corpus and have a working retrieval system running within a day \u2014 I've done it before.'",
+        "Full-stack: 'I work across the stack. I don't hand off the frontend to someone else \u2014 I design, build, and ship the full product from database schema to UI.'"
       ],
       "likely_questions": [
-        "Why investing? What draws you to this domain specifically — be specific.",
+        "Why investing? What draws you to this domain specifically \u2014 be specific.",
         "Walk me through an AI system you built end-to-end in production.",
         "How would you approach building a RAG system over our fund documents from scratch?",
         "What would you build in your first 30 days here?",
@@ -360,7 +357,7 @@
         "Tell me about a time you had to make a significant technical decision with limited information.",
         "How do you think about hiring and team-building as we scale?",
         "Walk me through something you built in TypeScript / Next.js.",
-        "How would you automate the due diligence workflow for manager selection — what would the AI pipeline look like?",
+        "How would you automate the due diligence workflow for manager selection \u2014 what would the AI pipeline look like?",
         "What's the hardest technical problem you've solved?"
       ],
       "prep_window_days": 3,
@@ -480,11 +477,11 @@
       "dormant": true,
       "location": "San Francisco / NYC",
       "salary": "Competitive base + bonus",
-      "about": "Woodline Partners is a multi-strategy / multi-manager hedge fund. The Sector Data Analyst role pairs fundamental/sector modeling with data analysis — building the datasets and KPIs that support a portfolio manager's stock-picking in a coverage sector.",
+      "about": "Woodline Partners is a multi-strategy / multi-manager hedge fund. The Sector Data Analyst role pairs fundamental/sector modeling with data analysis \u2014 building the datasets and KPIs that support a portfolio manager's stock-picking in a coverage sector.",
       "your_strengths": [
-        "M Science / Jefferies quant equity research — sector and fundamental modeling is directly your background",
+        "M Science / Jefferies quant equity research \u2014 sector and fundamental modeling is directly your background",
         "Strong Python + SQL for sourcing, cleaning, and modeling company/sector KPI data",
-        "MS Data Science — statistical rigor for signal validation and anomaly detection",
+        "MS Data Science \u2014 statistical rigor for signal validation and anomaly detection",
         "Clear communication of analysis to non-technical stakeholders (PMs)"
       ],
       "likely_questions": [
@@ -502,15 +499,15 @@
       "dormant": true,
       "location": "NYC",
       "salary": "Top-of-market base + bonus",
-      "about": "The D.E. Shaw group is a global investment and technology firm. The Applied AI Engineer builds production AI systems with ML-engineering rigor — the bar is strong software engineering plus genuine ML/LLM depth, applied to real research and infrastructure problems.",
+      "about": "The D.E. Shaw group is a global investment and technology firm. The Applied AI Engineer builds production AI systems with ML-engineering rigor \u2014 the bar is strong software engineering plus genuine ML/LLM depth, applied to real research and infrastructure problems.",
       "your_strengths": [
         "Production RAG and LLM workflow systems built end-to-end at Bridges AI",
-        "ML-engineering discipline — testing, packaging, serving, evaluation, observability",
+        "ML-engineering discipline \u2014 testing, packaging, serving, evaluation, observability",
         "From-scratch ML/transformer understanding (the AI Engineering track)",
         "Quant-research background gives domain fluency for a finance-AI firm"
       ],
       "likely_questions": [
-        "Design a production RAG / LLM system end-to-end — retrieval, serving, eval.",
+        "Design a production RAG / LLM system end-to-end \u2014 retrieval, serving, eval.",
         "How do you evaluate and monitor an LLM system in production?",
         "Implement and explain a core ML component from scratch (e.g. attention).",
         "Walk me through a hard engineering bug you debugged in an ML pipeline.",
@@ -524,11 +521,11 @@
       "dormant": true,
       "location": "NYC",
       "salary": "Top-of-market base + bonus",
-      "about": "Sources, evaluates, and onboards alternative datasets for systematic and discretionary strategies — turning messy third-party data into validated, point-in-time signals while reasoning carefully about biases and licensing.",
+      "about": "Sources, evaluates, and onboards alternative datasets for systematic and discretionary strategies \u2014 turning messy third-party data into validated, point-in-time signals while reasoning carefully about biases and licensing.",
       "your_strengths": [
-        "M Science alt-data experience — sourcing, entity resolution, signal construction",
+        "M Science alt-data experience \u2014 sourcing, entity resolution, signal construction",
         "Statistical rigor: look-ahead/survivorship awareness, sampling bias, imputation",
-        "Strong data engineering — pipelines, quality gates, point-in-time correctness",
+        "Strong data engineering \u2014 pipelines, quality gates, point-in-time correctness",
         "Factor/IC research intuition from the Quant track"
       ],
       "likely_questions": [
@@ -549,8 +546,8 @@
       "track": "sys-design",
       "tag": "Foundational",
       "url": "https://arxiv.org/abs/1706.03762",
-      "why": "The transformer paper. Every LLM you'll build, fine-tune, or interview about descends from this architecture — you must be able to explain self-attention from memory.",
-      "summary": "Replaces recurrence and convolutions with a pure attention mechanism: each token attends to every other token via scaled dot-product attention, run in parallel across multiple heads. Adds positional encodings (since attention is order-agnostic), residual connections, and layernorm. The result trains far faster than RNNs and captures long-range dependencies directly. Know the Q/K/V formulation, why you divide by √d_k, and the difference between encoder self-attention, decoder masked self-attention, and cross-attention."
+      "why": "The transformer paper. Every LLM you'll build, fine-tune, or interview about descends from this architecture \u2014 you must be able to explain self-attention from memory.",
+      "summary": "Replaces recurrence and convolutions with a pure attention mechanism: each token attends to every other token via scaled dot-product attention, run in parallel across multiple heads. Adds positional encodings (since attention is order-agnostic), residual connections, and layernorm. The result trains far faster than RNNs and captures long-range dependencies directly. Know the Q/K/V formulation, why you divide by \u221ad_k, and the difference between encoder self-attention, decoder masked self-attention, and cross-attention."
     },
     {
       "id": "gpt3-2020",
@@ -561,7 +558,7 @@
       "tag": "LLMs",
       "url": "https://arxiv.org/abs/2005.14165",
       "why": "Established in-context learning and the scaling-laws mindset that defines how the field thinks about model capability vs. parameters and data.",
-      "summary": "Scales a decoder-only transformer to 175B parameters and shows that a single frozen model performs new tasks from a few examples in the prompt — no gradient updates — purely via in-context learning. Documents how performance scales smoothly with model size and how prompt format (zero- vs. one- vs. few-shot) changes results. The conceptual takeaway for interviews: prompting is a capability that emerges with scale, and 'just add examples to the context' is often a viable alternative to fine-tuning."
+      "summary": "Scales a decoder-only transformer to 175B parameters and shows that a single frozen model performs new tasks from a few examples in the prompt \u2014 no gradient updates \u2014 purely via in-context learning. Documents how performance scales smoothly with model size and how prompt format (zero- vs. one- vs. few-shot) changes results. The conceptual takeaway for interviews: prompting is a capability that emerges with scale, and 'just add examples to the context' is often a viable alternative to fine-tuning."
     },
     {
       "id": "instructgpt-2022",
@@ -572,7 +569,7 @@
       "tag": "LLMs",
       "url": "https://arxiv.org/abs/2203.02155",
       "why": "The RLHF recipe behind ChatGPT-style assistants. This is how raw next-token predictors become aligned, useful products.",
-      "summary": "Three stages: (1) supervised fine-tuning on human-written demonstrations, (2) train a reward model on human rankings of model outputs, (3) optimize the policy against that reward model with PPO. A 1.3B InstructGPT was preferred by humans over the 175B base GPT-3, showing alignment matters more than raw scale for usefulness. Understand the SFT → reward model → PPO pipeline and the failure modes (reward hacking, alignment tax) — DPO (a simpler, RL-free alternative) is the natural follow-up read."
+      "summary": "Three stages: (1) supervised fine-tuning on human-written demonstrations, (2) train a reward model on human rankings of model outputs, (3) optimize the policy against that reward model with PPO. A 1.3B InstructGPT was preferred by humans over the 175B base GPT-3, showing alignment matters more than raw scale for usefulness. Understand the SFT \u2192 reward model \u2192 PPO pipeline and the failure modes (reward hacking, alignment tax) \u2014 DPO (a simpler, RL-free alternative) is the natural follow-up read."
     },
     {
       "id": "cot-2022",
@@ -582,8 +579,8 @@
       "track": "sys-design",
       "tag": "LLMs",
       "url": "https://arxiv.org/abs/2201.11903",
-      "why": "The single most practical prompting technique — and the basis for agentic reasoning loops you'll design at Equi/Aaru.",
-      "summary": "Simply prompting the model to 'think step by step' and produce intermediate reasoning before the final answer dramatically improves performance on arithmetic, commonsense, and symbolic reasoning — but only for sufficiently large models. Reasoning emerges as a scale-dependent capability. In practice this underpins self-consistency (sample multiple chains, take the majority) and ReAct-style agents. Cheap to apply, big wins on multi-step tasks; the cost is more tokens and latency."
+      "why": "The single most practical prompting technique \u2014 and the basis for agentic reasoning loops you'll design at Equi/Aaru.",
+      "summary": "Simply prompting the model to 'think step by step' and produce intermediate reasoning before the final answer dramatically improves performance on arithmetic, commonsense, and symbolic reasoning \u2014 but only for sufficiently large models. Reasoning emerges as a scale-dependent capability. In practice this underpins self-consistency (sample multiple chains, take the majority) and ReAct-style agents. Cheap to apply, big wins on multi-step tasks; the cost is more tokens and latency."
     },
     {
       "id": "lora-2021",
@@ -594,7 +591,7 @@
       "tag": "Efficiency",
       "url": "https://arxiv.org/abs/2106.09685",
       "why": "How fine-tuning is actually done in production on a budget. You'll be expected to know parameter-efficient fine-tuning cold.",
-      "summary": "Instead of updating all weights, freeze the pretrained model and inject small trainable low-rank matrices (A·B) into each layer; only those are trained. This cuts trainable parameters by ~10,000× and storage per task to megabytes, with no added inference latency (the deltas merge into the base weights). Multiple task-specific LoRA adapters can be swapped on one base model. QLoRA extends this to 4-bit quantized base models so you can fine-tune large models on a single GPU."
+      "summary": "Instead of updating all weights, freeze the pretrained model and inject small trainable low-rank matrices (A\u00b7B) into each layer; only those are trained. This cuts trainable parameters by ~10,000\u00d7 and storage per task to megabytes, with no added inference latency (the deltas merge into the base weights). Multiple task-specific LoRA adapters can be swapped on one base model. QLoRA extends this to 4-bit quantized base models so you can fine-tune large models on a single GPU."
     },
     {
       "id": "rag-2020",
@@ -604,7 +601,7 @@
       "track": "sys-design",
       "tag": "RAG & Retrieval",
       "url": "https://arxiv.org/abs/2005.11401",
-      "why": "The paper that named RAG — directly the Equi system-design round (Q&A over fund documents) and the crash-course /ask endpoint.",
+      "why": "The paper that named RAG \u2014 directly the Equi system-design round (Q&A over fund documents) and the crash-course /ask endpoint.",
       "summary": "Couples a parametric model (a seq2seq generator) with a non-parametric memory (a dense vector index of documents). At inference it retrieves the top-k relevant passages and conditions generation on them, so knowledge lives in an updatable index rather than the weights. This reduces hallucination, lets you cite sources, and means you update knowledge by re-indexing instead of retraining. Modern RAG elaborates every stage (chunking, hybrid retrieval, reranking, eval) but the core retrieve-then-generate loop is here."
     },
     {
@@ -615,8 +612,8 @@
       "track": "sys-design",
       "tag": "RAG & Retrieval",
       "url": "https://arxiv.org/abs/2004.04906",
-      "why": "The retrieval half of RAG. Explains why embedding search beats keyword search — and, by contrast, when BM25 still wins (the case for hybrid).",
-      "summary": "Trains a dual-encoder (separate encoders for questions and passages) with a contrastive objective so that relevant Q–passage pairs land close in embedding space, using in-batch negatives for efficient training. Dense retrieval substantially outperforms BM25 on open-domain QA because it matches on meaning, not surface tokens. The practical lesson for your RAG designs: dense retrieval handles paraphrase and synonymy but can miss exact identifiers/codes — which is exactly why production systems fuse dense + sparse (hybrid) retrieval."
+      "why": "The retrieval half of RAG. Explains why embedding search beats keyword search \u2014 and, by contrast, when BM25 still wins (the case for hybrid).",
+      "summary": "Trains a dual-encoder (separate encoders for questions and passages) with a contrastive objective so that relevant Q\u2013passage pairs land close in embedding space, using in-batch negatives for efficient training. Dense retrieval substantially outperforms BM25 on open-domain QA because it matches on meaning, not surface tokens. The practical lesson for your RAG designs: dense retrieval handles paraphrase and synonymy but can miss exact identifiers/codes \u2014 which is exactly why production systems fuse dense + sparse (hybrid) retrieval."
     },
     {
       "id": "lost-middle-2023",
@@ -626,7 +623,7 @@
       "track": "sys-design",
       "tag": "RAG & Retrieval",
       "url": "https://arxiv.org/abs/2307.03172",
-      "why": "A concrete, defensible reason to rerank and keep context tight — great to cite in a RAG design discussion.",
+      "why": "A concrete, defensible reason to rerank and keep context tight \u2014 great to cite in a RAG design discussion.",
       "summary": "Models use information best when it sits at the very start or very end of the context window; relevant facts buried in the middle are frequently ignored, producing a U-shaped accuracy curve. Simply stuffing more retrieved chunks in does not help and can hurt. The takeaways for RAG: retrieve fewer, higher-precision chunks; rerank so the strongest evidence sits at the edges; and don't assume a long context window removes the need for good retrieval."
     },
     {
@@ -637,7 +634,7 @@
       "track": "sys-design",
       "tag": "RAG & Retrieval",
       "url": "https://www.anthropic.com/news/contextual-retrieval",
-      "why": "The exact technique the crash course's Day-6 /ask endpoint is built on — a cheap, high-impact upgrade to naive chunking.",
+      "why": "The exact technique the crash course's Day-6 /ask endpoint is built on \u2014 a cheap, high-impact upgrade to naive chunking.",
       "summary": "Standard chunking strips each chunk of the document context it needs to be retrievable (a chunk saying 'revenue grew 3%' loses which company and quarter). Contextual Retrieval prepends a short, LLM-generated context blurb to each chunk before embedding/indexing, and combines contextual embeddings with contextual BM25. Anthropic reports large drops in retrieval-failure rate, further improved by adding a reranking step. Prompt-caching makes generating the per-chunk context cheap. This is the pragmatic, ship-it version of everything in the academic RAG papers."
     },
     {
@@ -649,7 +646,7 @@
       "tag": "Agents",
       "url": "https://arxiv.org/abs/2210.03629",
       "why": "The mental model for the agentic/tool-use workflows Equi wants (due-diligence automation) and the crash-course agent work.",
-      "summary": "Interleaves reasoning traces ('thoughts') with actions (tool/API calls) and observations in a loop: the model reasons about what to do, acts, reads the result, and reasons again. Grounding reasoning in real tool outputs reduces hallucination versus chain-of-thought alone, and the explicit trace makes the agent's behavior inspectable. This is the conceptual backbone of modern tool-using agents — function calling, retrieval, calculators, code execution all slot into the thought→action→observation cycle."
+      "summary": "Interleaves reasoning traces ('thoughts') with actions (tool/API calls) and observations in a loop: the model reasons about what to do, acts, reads the result, and reasons again. Grounding reasoning in real tool outputs reduces hallucination versus chain-of-thought alone, and the explicit trace makes the agent's behavior inspectable. This is the conceptual backbone of modern tool-using agents \u2014 function calling, retrieval, calculators, code execution all slot into the thought\u2192action\u2192observation cycle."
     },
     {
       "id": "ragas-2023",
@@ -670,8 +667,8 @@
       "track": "sys-design",
       "tag": "Data Integration",
       "url": "https://www.tandfonline.com/doi/abs/10.1080/01621459.1969.10501049",
-      "why": "The probabilistic foundation of entity resolution — the core Aaru skill and the crash-course Day-3 build. Splink is a direct modern implementation.",
-      "summary": "Formalizes record linkage as a decision problem: for each candidate pair of records, compute a likelihood ratio from the agreement/disagreement of their fields, weighting each field by how discriminating it is (matching on a rare surname says more than matching on a common state). Compare the score to two thresholds to declare match / non-match / needs-human-review, with the thresholds set to bound false-match and false-non-match rates. This 'compare fields, weight by informativeness, threshold the score' framework is exactly what probabilistic matchers like Splink implement today — pair it with blocking (to avoid all-pairs comparison) and you have scalable entity resolution."
+      "why": "The probabilistic foundation of entity resolution \u2014 the core Aaru skill and the crash-course Day-3 build. Splink is a direct modern implementation.",
+      "summary": "Formalizes record linkage as a decision problem: for each candidate pair of records, compute a likelihood ratio from the agreement/disagreement of their fields, weighting each field by how discriminating it is (matching on a rare surname says more than matching on a common state). Compare the score to two thresholds to declare match / non-match / needs-human-review, with the thresholds set to bound false-match and false-non-match rates. This 'compare fields, weight by informativeness, threshold the score' framework is exactly what probabilistic matchers like Splink implement today \u2014 pair it with blocking (to avoid all-pairs comparison) and you have scalable entity resolution."
     },
     {
       "id": "alexnet-2012",
@@ -693,7 +690,7 @@
       "tag": "Representation Learning",
       "url": "https://arxiv.org/abs/1310.4546",
       "why": "Introduced the dense word-embedding intuition that underpins all modern vector search and retrieval.",
-      "summary": "word2vec learns low-dimensional word vectors by predicting context words, using the efficient skip-gram model with negative sampling. The embeddings capture semantic and syntactic structure so well that analogies become vector arithmetic (king − man + woman ≈ queen). It made dense distributed representations practical at web scale. This is the conceptual ancestor of today's text embeddings and similarity search."
+      "summary": "word2vec learns low-dimensional word vectors by predicting context words, using the efficient skip-gram model with negative sampling. The embeddings capture semantic and syntactic structure so well that analogies become vector arithmetic (king \u2212 man + woman \u2248 queen). It made dense distributed representations practical at web scale. This is the conceptual ancestor of today's text embeddings and similarity search."
     },
     {
       "id": "vae-2013",
@@ -715,7 +712,7 @@
       "tag": "Vision",
       "url": "https://arxiv.org/abs/1409.1556",
       "why": "Established the depth-with-small-filters pattern and remains a common backbone / feature extractor.",
-      "summary": "VGG showed that stacking many small 3×3 convolutions into very deep, uniform networks substantially improves accuracy. Its simple, repetitive architecture made it easy to reason about and reuse. Pretrained VGG features became a default choice for transfer learning and perceptual losses. The design clarified that depth, not exotic filters, was a primary driver of CNN performance."
+      "summary": "VGG showed that stacking many small 3\u00d73 convolutions into very deep, uniform networks substantially improves accuracy. Its simple, repetitive architecture made it easy to reason about and reuse. Pretrained VGG features became a default choice for transfer learning and perceptual losses. The design clarified that depth, not exotic filters, was a primary driver of CNN performance."
     },
     {
       "id": "googlenet-inception-2014",
@@ -725,8 +722,8 @@
       "track": "sys-design",
       "tag": "Vision",
       "url": "https://arxiv.org/abs/1409.4842",
-      "why": "Introduced the efficiency-minded Inception module and 1×1 bottleneck convolutions still used to control compute.",
-      "summary": "GoogLeNet introduced the Inception module, which runs convolutions of multiple kernel sizes in parallel and concatenates them, capturing multi-scale features. It used 1×1 convolutions as cheap dimensionality-reduction bottlenecks to keep parameter count low. The result was a deep, accurate network far more compute-efficient than its peers. This efficiency-vs-accuracy framing recurs throughout production model design."
+      "why": "Introduced the efficiency-minded Inception module and 1\u00d71 bottleneck convolutions still used to control compute.",
+      "summary": "GoogLeNet introduced the Inception module, which runs convolutions of multiple kernel sizes in parallel and concatenates them, capturing multi-scale features. It used 1\u00d71 convolutions as cheap dimensionality-reduction bottlenecks to keep parameter count low. The result was a deep, accurate network far more compute-efficient than its peers. This efficiency-vs-accuracy framing recurs throughout production model design."
     },
     {
       "id": "seq2seq-2014",
@@ -736,29 +733,29 @@
       "track": "sys-design",
       "tag": "Sequence & Attention",
       "url": "https://arxiv.org/abs/1409.3215",
-      "why": "The encoder–decoder framework every modern generative / translation model conceptually builds on.",
-      "summary": "This paper showed an LSTM encoder could compress an input sequence into a fixed vector that a second LSTM decoder expands into an output sequence, enabling end-to-end machine translation. It established the encoder–decoder paradigm for variable-length input/output. A notable trick was reversing the source sentence to improve optimization. It set the stage for attention and ultimately transformers."
+      "why": "The encoder\u2013decoder framework every modern generative / translation model conceptually builds on.",
+      "summary": "This paper showed an LSTM encoder could compress an input sequence into a fixed vector that a second LSTM decoder expands into an output sequence, enabling end-to-end machine translation. It established the encoder\u2013decoder paradigm for variable-length input/output. A notable trick was reversing the source sentence to improve optimization. It set the stage for attention and ultimately transformers."
     },
     {
       "id": "bahdanau-attention-2014",
       "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
-      "authors": "Bahdanau et al. (Montréal)",
+      "authors": "Bahdanau et al. (Montr\u00e9al)",
       "year": 2014,
       "track": "sys-design",
       "tag": "Sequence & Attention",
       "url": "https://arxiv.org/abs/1409.0473",
-      "why": "The original attention mechanism — understanding it is the foundation for understanding transformers.",
+      "why": "The original attention mechanism \u2014 understanding it is the foundation for understanding transformers.",
       "summary": "This work fixed the bottleneck of compressing an entire sentence into one vector by letting the decoder attend to a weighted combination of all encoder states at each step. This soft alignment dramatically improved translation of long sentences. It introduced the core attention idea later generalized into self-attention. It is the direct intellectual precursor to 'Attention Is All You Need.'"
     },
     {
       "id": "gan-2014",
       "title": "Generative Adversarial Nets (GAN)",
-      "authors": "Goodfellow et al. (Montréal)",
+      "authors": "Goodfellow et al. (Montr\u00e9al)",
       "year": 2014,
       "track": "sys-design",
       "tag": "Generative",
       "url": "https://arxiv.org/abs/1406.2661",
-      "why": "Defined adversarial training — a foundational generative paradigm and a frequent conceptual interview topic.",
+      "why": "Defined adversarial training \u2014 a foundational generative paradigm and a frequent conceptual interview topic.",
       "summary": "GANs pit a generator that fabricates samples against a discriminator that tries to tell real from fake, training both in a minimax game. As the discriminator improves, the generator is pushed to produce increasingly realistic outputs. This adversarial framework produced a wave of high-fidelity image-synthesis research. It introduced training dynamics and instabilities that motivated much follow-on work."
     },
     {
@@ -769,7 +766,7 @@
       "track": "sys-design",
       "tag": "Optimization",
       "url": "https://arxiv.org/abs/1412.6980",
-      "why": "The default optimizer you configure in virtually every training job — expect questions on how it works.",
+      "why": "The default optimizer you configure in virtually every training job \u2014 expect questions on how it works.",
       "summary": "Adam combines momentum (a running average of gradients) with per-parameter adaptive learning rates (a running average of squared gradients), plus bias correction for the early steps. This makes it robust to sparse gradients and largely insensitive to hyperparameter tuning. It became the de facto optimizer for deep learning. Understanding its first/second-moment estimates is standard ML-engineering knowledge."
     },
     {
@@ -813,7 +810,7 @@
       "track": "sys-design",
       "tag": "Vision",
       "url": "https://arxiv.org/abs/1505.04597",
-      "why": "The encoder–decoder-with-skips backbone reused as the denoising network inside modern diffusion models.",
+      "why": "The encoder\u2013decoder-with-skips backbone reused as the denoising network inside modern diffusion models.",
       "summary": "U-Net pairs a contracting encoder with an expanding decoder and adds skip connections that pass high-resolution features across, enabling precise dense pixel-level predictions from little data. Originally for biomedical segmentation, its symmetric design generalized far beyond it. Today it is the standard noise-prediction backbone in diffusion image generators. Knowing U-Net is essential context for how Stable Diffusion works under the hood."
     },
     {
@@ -824,7 +821,7 @@
       "track": "sys-design",
       "tag": "Efficiency",
       "url": "https://arxiv.org/abs/1503.02531",
-      "why": "The basis for shrinking large models into cheap deployable ones — a core production-AI concern.",
+      "why": "The basis for shrinking large models into cheap deployable ones \u2014 a core production-AI concern.",
       "summary": "Knowledge distillation trains a small student model to mimic the soft probability outputs of a large teacher, using a temperature to expose the teacher's 'dark knowledge' about class similarities. The student often matches teacher accuracy at a fraction of the size and cost. It is a foundational technique for model compression and efficient serving. Modern distilled LLMs and small on-device models trace directly to this idea."
     },
     {
@@ -835,7 +832,7 @@
       "track": "sys-design",
       "tag": "Generative",
       "url": "https://arxiv.org/abs/1511.06434",
-      "why": "Stabilized GAN training and showed latent spaces support semantic interpolation — a key generative-AI concept.",
+      "why": "Stabilized GAN training and showed latent spaces support semantic interpolation \u2014 a key generative-AI concept.",
       "summary": "DCGAN provided architectural guidelines (strided convolutions, batch norm, no fully connected layers) that made GAN training reliably stable for images. It demonstrated smooth latent-space arithmetic and interpolation over generated faces and scenes. This bridged GANs from a fragile idea to a practical image-generation tool. It also showed GANs learn useful unsupervised representations."
     },
     {
@@ -846,7 +843,7 @@
       "track": "sys-design",
       "tag": "Optimization",
       "url": "https://arxiv.org/abs/1607.06450",
-      "why": "The normalization actually used inside transformers / LLMs — more relevant to NLP than batchnorm.",
+      "why": "The normalization actually used inside transformers / LLMs \u2014 more relevant to NLP than batchnorm.",
       "summary": "Layer normalization normalizes across the features of a single example rather than across the batch, making it independent of batch size and well-suited to sequence models. This batch-independence is exactly why transformers adopt it instead of batch norm. It stabilizes training of attention-based architectures. Variants like RMSNorm and the pre-norm vs post-norm placement debate all build on it."
     },
     {
@@ -879,7 +876,7 @@
       "track": "sys-design",
       "tag": "LLMs",
       "url": "https://arxiv.org/abs/2001.08361",
-      "why": "Quantified how loss scales with model / data / compute — the reasoning that justifies modern LLM scaling.",
+      "why": "Quantified how loss scales with model / data / compute \u2014 the reasoning that justifies modern LLM scaling.",
       "summary": "This paper showed that language-model loss falls as a smooth power law in model size, dataset size, and compute, with remarkably predictable behavior across orders of magnitude. It argued larger models are more sample-efficient and gave guidance on allocating a fixed compute budget. These empirical laws underpinned the strategic decision to scale up aggressively. It is essential context for any conversation about why LLMs got big (later refined by Chinchilla)."
     },
     {
@@ -891,7 +888,7 @@
       "tag": "Generative",
       "url": "https://arxiv.org/abs/2006.11239",
       "why": "The paper that made diffusion models competitive and launched the modern image-generation wave.",
-      "summary": "DDPM defines a forward process that gradually adds Gaussian noise to data and trains a network to reverse it step by step, recovering samples from pure noise. It reframed the training objective as a simple noise-prediction loss, making diffusion practical and high quality. This dethroned GANs as the leading image generators. It is the technical foundation beneath Stable Diffusion, DALL·E 2, and friends."
+      "summary": "DDPM defines a forward process that gradually adds Gaussian noise to data and trains a network to reverse it step by step, recovering samples from pure noise. It reframed the training objective as a simple noise-prediction loss, making diffusion practical and high quality. This dethroned GANs as the leading image generators. It is the technical foundation beneath Stable Diffusion, DALL\u00b7E 2, and friends."
     },
     {
       "id": "simclr-2020",
@@ -906,13 +903,13 @@
     },
     {
       "id": "vit-2020",
-      "title": "An Image is Worth 16×16 Words: Transformers for Image Recognition (ViT)",
+      "title": "An Image is Worth 16\u00d716 Words: Transformers for Image Recognition (ViT)",
       "authors": "Dosovitskiy et al. (Google Brain)",
       "year": 2020,
       "track": "sys-design",
       "tag": "Vision",
       "url": "https://arxiv.org/abs/2010.11929",
-      "why": "Unified vision and language under one transformer architecture — a key step toward multimodal models.",
+      "why": "Unified vision and language under one transformer architecture \u2014 a key step toward multimodal models.",
       "summary": "The Vision Transformer splits an image into fixed-size patches, embeds them as tokens, and feeds them to a standard transformer encoder with no convolutions. Given enough pretraining data, it matches or beats top CNNs, showing convolutional inductive biases are not strictly necessary. This convergence on a single architecture across modalities enabled today's multimodal systems. ViT backbones now power CLIP, modern detectors, and vision-language models."
     },
     {
@@ -945,7 +942,7 @@
       "track": "sys-design",
       "tag": "Generative",
       "url": "https://arxiv.org/abs/2112.10752",
-      "why": "The architecture behind Stable Diffusion — the most production-relevant generative-image paper to know.",
+      "why": "The architecture behind Stable Diffusion \u2014 the most production-relevant generative-image paper to know.",
       "summary": "Latent diffusion runs the diffusion process in a compressed latent space produced by a pretrained autoencoder rather than directly on pixels, slashing compute while preserving quality. Cross-attention layers inject conditioning such as text prompts. This made high-resolution text-to-image generation feasible on consumer GPUs and became Stable Diffusion. It is the canonical reference for how modern image generators are engineered."
     },
     {
@@ -967,8 +964,8 @@
       "track": "sys-design",
       "tag": "Efficiency",
       "url": "https://arxiv.org/abs/2205.14135",
-      "why": "The GPU-level optimization that makes long-context transformers practical — a hot systems-engineering topic.",
-      "summary": "FlashAttention computes exact attention without ever materializing the full N×N attention matrix in slow GPU memory, instead tiling the computation and fusing it in fast on-chip SRAM. This makes attention memory-linear and substantially faster by being IO-aware about the GPU memory hierarchy. It enabled longer context windows and cheaper training/inference. It is now a default kernel in modern LLM stacks and a favorite systems interview topic."
+      "why": "The GPU-level optimization that makes long-context transformers practical \u2014 a hot systems-engineering topic.",
+      "summary": "FlashAttention computes exact attention without ever materializing the full N\u00d7N attention matrix in slow GPU memory, instead tiling the computation and fusing it in fast on-chip SRAM. This makes attention memory-linear and substantially faster by being IO-aware about the GPU memory hierarchy. It enabled longer context windows and cheaper training/inference. It is now a default kernel in modern LLM stacks and a favorite systems interview topic."
     },
     {
       "id": "llm-int8-2022",
@@ -1000,19 +997,19 @@
       "track": "sys-design",
       "tag": "Efficiency",
       "url": "https://arxiv.org/abs/2401.04088",
-      "why": "The clearest modern reference for sparse Mixture-of-Experts — the efficiency technique behind many frontier models.",
+      "why": "The clearest modern reference for sparse Mixture-of-Experts \u2014 the efficiency technique behind many frontier models.",
       "summary": "Mixtral is a sparse Mixture-of-Experts model where a router selects 2 of 8 feed-forward experts per token, so only a fraction of the total parameters activate for any given input. This gives the quality of a much larger dense model at the inference cost of a small one. It matched or beat larger dense models while being far cheaper to serve. It is the go-to concrete example for explaining how sparse MoE trades total capacity against active compute."
     }
   ],
   "practice": {
-    "_comment": "Problem banks for interview prep. Each section → groups → problems. Problem keys: n=name, d=difficulty (E/M/H), s=1 marks Blind-75, u=leetcode slug (app builds https://leetcode.com/problems/{u}/), url=full link for non-leetcode items. Solved state is tracked client-side in localStorage.",
+    "_comment": "Problem banks for interview prep. Each section \u2192 groups \u2192 problems. Problem keys: n=name, d=difficulty (E/M/H), s=1 marks Blind-75, u=leetcode slug (app builds https://leetcode.com/problems/{u}/), url=full link for non-leetcode items. Solved state is tracked client-side in localStorage.",
     "sections": [
       {
         "id": "dsa",
-        "title": "DSA — NeetCode 150",
+        "title": "DSA \u2014 NeetCode 150",
         "accent": "#185FA5",
         "ref": "https://neetcode.io/roadmap",
-        "note": "Work pattern by pattern, not problem by problem. Do the Blind 75 (★) first for breadth, then fill in the rest of each pattern. Premium-locked problems have no direct link — solve them on NeetCode.",
+        "note": "Work pattern by pattern, not problem by problem. Do the Blind 75 (\u2605) first for breadth, then fill in the rest of each pattern. Premium-locked problems have no direct link \u2014 solve them on NeetCode.",
         "resources": [
           {
             "name": "NeetCode (YouTube)",
@@ -1043,7 +1040,7 @@
             "url": "https://csvistool.com/"
           },
           {
-            "name": "C++ — StudyPlan.dev",
+            "name": "C++ \u2014 StudyPlan.dev",
             "url": "https://www.studyplan.dev/cpp"
           },
           {
@@ -2018,22 +2015,22 @@
         "title": "Data Science & ML",
         "accent": "#7F77DD",
         "ref": "https://leetcode.com/studyplan/introduction-to-pandas/",
-        "note": "Pandas problems are on LeetCode (Introduction to Pandas). The stats/probability and ML items are conceptual — say the answer out loud or whiteboard the derivation, then tick it. Deep-ML is the 'LeetCode for ML' — implement algorithms from scratch.",
+        "note": "Pandas problems are on LeetCode (Introduction to Pandas). The stats/probability and ML items are conceptual \u2014 say the answer out loud or whiteboard the derivation, then tick it. Deep-ML is the 'LeetCode for ML' \u2014 implement algorithms from scratch.",
         "resources": [
           {
-            "name": "Deep-ML — Problems",
+            "name": "Deep-ML \u2014 Problems",
             "url": "https://www.deep-ml.com/problems"
           },
           {
-            "name": "Deep-ML — Labs",
+            "name": "Deep-ML \u2014 Labs",
             "url": "https://www.deep-ml.com/labs"
           },
           {
-            "name": "Cracked · DS Interview Prep",
+            "name": "Cracked \u00b7 DS Interview Prep",
             "url": "https://cracked-ds-platform.vercel.app/"
           },
           {
-            "name": "PaperCode — ML150",
+            "name": "PaperCode \u2014 ML150",
             "url": "https://www.papercode.in/papers/ml150_prerequisites"
           },
           {
@@ -2049,15 +2046,15 @@
             "url": "https://github.com/youssefHosni/Data-Science-Interview-Questions-Answers"
           },
           {
-            "name": "Backprop — Free ML Resources",
+            "name": "Backprop \u2014 Free ML Resources",
             "url": "https://www.trybackprop.com/blog/top_ml_learning_resources"
           },
           {
-            "name": "Exponent — ML Qs",
+            "name": "Exponent \u2014 ML Qs",
             "url": "https://www.tryexponent.com/blog/top-machine-learning-interview-questions"
           },
           {
-            "name": "InterviewBit — ML Qs",
+            "name": "InterviewBit \u2014 ML Qs",
             "url": "https://www.interviewbit.com/machine-learning-interview-questions/"
           }
         ],
@@ -2111,7 +2108,7 @@
             "name": "Statistics & Probability",
             "problems": [
               {
-                "n": "Derive the bias–variance decomposition"
+                "n": "Derive the bias\u2013variance decomposition"
               },
               {
                 "n": "Explain p-value, Type I/II error, and statistical power"
@@ -2120,7 +2117,7 @@
                 "n": "Compute A/B test sample size for a target MDE"
               },
               {
-                "n": "Maximum likelihood vs MAP — derive for a Gaussian"
+                "n": "Maximum likelihood vs MAP \u2014 derive for a Gaussian"
               },
               {
                 "n": "State and apply the Central Limit Theorem"
@@ -2132,7 +2129,7 @@
                 "n": "Bayes' theorem: the disease-testing / base-rate problem"
               },
               {
-                "n": "Confounders, colliders, and DAGs — when does correlation imply causation?"
+                "n": "Confounders, colliders, and DAGs \u2014 when does correlation imply causation?"
               }
             ]
           },
@@ -2143,19 +2140,19 @@
                 "n": "Derive the logistic-regression gradient"
               },
               {
-                "n": "L1 vs L2 regularization — effect on weights and when to use each"
+                "n": "L1 vs L2 regularization \u2014 effect on weights and when to use each"
               },
               {
-                "n": "ROC/AUC vs PR curve — which to use when"
+                "n": "ROC/AUC vs PR curve \u2014 which to use when"
               },
               {
-                "n": "Handle class imbalance — resampling, weighting, threshold tuning"
+                "n": "Handle class imbalance \u2014 resampling, weighting, threshold tuning"
               },
               {
                 "n": "Diagnose under/overfitting from learning curves"
               },
               {
-                "n": "Gradient boosting vs random forest — bias/variance trade-off"
+                "n": "Gradient boosting vs random forest \u2014 bias/variance trade-off"
               },
               {
                 "n": "Cross-validation pitfalls and data leakage"
@@ -2164,7 +2161,7 @@
                 "n": "Interpret a model with feature importance / SHAP"
               },
               {
-                "n": "Evaluate an LLM/RAG system — offline, online, and human eval"
+                "n": "Evaluate an LLM/RAG system \u2014 offline, online, and human eval"
               }
             ]
           }
@@ -2175,7 +2172,7 @@
         "title": "System Design & Cases",
         "accent": "#BA7517",
         "ref": "https://github.com/ByteByteGoHq/system-design-101",
-        "note": "For each prompt, talk through requirements → high-level design → data model → scaling/bottlenecks → trade-offs. The first two map directly to your Aaru and Equi rounds.",
+        "note": "For each prompt, talk through requirements \u2192 high-level design \u2192 data model \u2192 scaling/bottlenecks \u2192 trade-offs. The first two map directly to your Aaru and Equi rounds.",
         "groups": [
           {
             "name": "ML / AI System Design",
@@ -2236,7 +2233,7 @@
             "name": "Analytics / Product Cases",
             "problems": [
               {
-                "n": "DAU dropped 20% overnight — diagnose it"
+                "n": "DAU dropped 20% overnight \u2014 diagnose it"
               },
               {
                 "n": "Define success metrics for a new feature"
@@ -2259,7 +2256,7 @@
         "title": "Quant (for fun)",
         "accent": "#0D9488",
         "ref": "https://brainstellar.com/",
-        "note": "Probability brainteasers and market intuition — the kind D.E. Shaw / Woodline-adjacent quant chats throw out. Optional, but genuinely fun and sharpens the stats muscle.",
+        "note": "Probability brainteasers and market intuition \u2014 the kind D.E. Shaw / Woodline-adjacent quant chats throw out. Optional, but genuinely fun and sharpens the stats muscle.",
         "resources": [
           {
             "name": "BrainStellar Puzzles",
@@ -2282,7 +2279,7 @@
                 "n": "Expected flips to get HH vs HT"
               },
               {
-                "n": "Gambler's ruin — probability of reaching N before 0"
+                "n": "Gambler's ruin \u2014 probability of reaching N before 0"
               },
               {
                 "n": "Expected value of the max of two dice"
@@ -2291,13 +2288,13 @@
                 "n": "Is this coin fair? (Bayesian update)"
               },
               {
-                "n": "Birthday paradox — derive the 23 result"
+                "n": "Birthday paradox \u2014 derive the 23 result"
               },
               {
-                "n": "Coupon collector — expected draws for all N"
+                "n": "Coupon collector \u2014 expected draws for all N"
               },
               {
-                "n": "Random walk — probability of return to the origin"
+                "n": "Random walk \u2014 probability of return to the origin"
               },
               {
                 "n": "Secretary problem / optimal stopping (the 1/e rule)"
@@ -2306,7 +2303,7 @@
                 "n": "Monty Hall and its N-door generalization"
               },
               {
-                "n": "Reservoir sampling — prove uniformity"
+                "n": "Reservoir sampling \u2014 prove uniformity"
               }
             ]
           },
@@ -2323,7 +2320,7 @@
                 "n": "How would you quote a two-sided market as a market maker?"
               },
               {
-                "n": "Kelly criterion — derive the optimal bet fraction"
+                "n": "Kelly criterion \u2014 derive the optimal bet fraction"
               },
               {
                 "n": "Expected PnL of a biased coin-flip betting game"
@@ -2354,7 +2351,7 @@
                 "n": "Why this company specifically?"
               },
               {
-                "n": "Why now — why are you leaving / making this move?"
+                "n": "Why now \u2014 why are you leaving / making this move?"
               },
               {
                 "n": "Why are you moving from founder/CTO back to an IC engineering role?"
@@ -2363,7 +2360,7 @@
                 "n": "What are you looking for in your next role?"
               },
               {
-                "n": "Where do you see yourself in 2–3 years?"
+                "n": "Where do you see yourself in 2\u20133 years?"
               },
               {
                 "n": "What's your greatest strength? Greatest weakness?"
@@ -2406,7 +2403,7 @@
             "name": "Conflict & Disagreement",
             "problems": [
               {
-                "n": "Tell me about a disagreement with a coworker — how did it resolve?"
+                "n": "Tell me about a disagreement with a coworker \u2014 how did it resolve?"
               },
               {
                 "n": "Describe disagreeing with your manager / a senior person."
@@ -2441,7 +2438,7 @@
                 "n": "Describe a project that didn't go as planned."
               },
               {
-                "n": "Tell me about a bug/outage you caused — and what you learned."
+                "n": "Tell me about a bug/outage you caused \u2014 and what you learned."
               },
               {
                 "n": "Describe a decision you'd make differently in hindsight."
@@ -2493,7 +2490,7 @@
                 "n": "Tell me about a decision made with incomplete information."
               },
               {
-                "n": "Describe a time requirements were unclear — how did you proceed?"
+                "n": "Describe a time requirements were unclear \u2014 how did you proceed?"
               },
               {
                 "n": "How do you make a reversible vs irreversible decision?"
@@ -2519,7 +2516,7 @@
             "name": "Teamwork & Collaboration",
             "problems": [
               {
-                "n": "Tell me about a great team you were part of — why did it work?"
+                "n": "Tell me about a great team you were part of \u2014 why did it work?"
               },
               {
                 "n": "Describe working with a difficult stakeholder."
@@ -2652,7 +2649,7 @@
             "name": "Investing & Domain Motivation",
             "problems": [
               {
-                "n": "Why investing / fintech — and why is it authentic for you?"
+                "n": "Why investing / fintech \u2014 and why is it authentic for you?"
               },
               {
                 "n": "What do you find interesting about fund-of-funds / alt investments?"
@@ -2677,7 +2674,7 @@
   },
   "day_of_week": {
     "Monday": "Set weekly goals per track, review last week's deliverables",
-    "Tuesday": "Implementation focus — code runs today",
+    "Tuesday": "Implementation focus \u2014 code runs today",
     "Wednesday": "Read one complete paper end-to-end",
     "Thursday": "Push something to GitHub",
     "Friday": "Write 500+ words technical content, review the week",
@@ -2693,39 +2690,39 @@
   "phases": [
     {
       "n": 1,
-      "name": "Build the Floor",
-      "months": "1-3",
-      "window": "Aug–Oct 2026",
-      "goal": "Be demonstrably interview-ready. Not applying yet, deliberately.",
-      "note": "Confidence built purely by studying evaporates on contact with a real loop; the Month 3 gate is the defense."
+      "name": "Floor + Flagship v1",
+      "months": "1-2",
+      "window": "Aug 24 - Oct 31 2026",
+      "goal": "Clear the senior coding/recall bar AND get the flagship deployed and serving real traffic.",
+      "note": "Two things at once, deliberately. The flagship needs runway to accumulate real operating history before anyone asks about it; starting it after applications open is starting it too late."
     },
     {
       "n": 2,
-      "name": "Apply and Convert",
-      "months": "4-6",
-      "window": "Nov 2026–Jan 2027",
-      "goal": "15–20 applications/week; screens to onsites.",
-      "note": "Nov–Jan is a stronger hiring window than August, so the delay lands him in it."
+      "name": "Senior applications live",
+      "months": "3-5",
+      "window": "Nov 1 2026 - Jan 31 2027",
+      "goal": "15-20 senior applications/week while the flagship scales underneath. Screens to onsites.",
+      "note": "Applications open on schedule per the v2 argument - time-to-first-offer is still the dominant risk. The flagship keeps improving mid-search, which upgrades the story between the first-round and the onsite."
     },
     {
       "n": 3,
-      "name": "Close",
-      "months": "7-9",
-      "window": "Feb–Apr 2027",
-      "goal": "Cluster offers, negotiate on level, sign by May 2027.",
-      "note": "$210K now beats $280K arriving six months later; the ladder does more work than the starting rung."
+      "name": "Staff tier opens",
+      "months": "6",
+      "window": "Feb 1 - Feb 22 2027",
+      "goal": "Staff applications, gated on Gate 2. Convert senior offers in parallel.",
+      "note": "Staff is applied for only with the load-test numbers and the published writeup in hand. Without those it is a senior application with a staff title on it, and it reads that way."
     },
     {
       "n": 4,
-      "name": "Land Well, Then Compound",
-      "months": "10-12",
-      "window": "May–Jul 2027",
-      "goal": "Ship visibly in the first 90 days; artifact track begins.",
-      "note": "Artifacts are deferred value — they don't help get THIS job, they make the $500K tier real in years 2–4."
+      "name": "Close and land",
+      "months": "7-9",
+      "window": "Mar - May 2027",
+      "goal": "Cluster offers, negotiate on level, sign.",
+      "note": "v2's rule survives intact: the ladder does more work than the starting rung. Take the first good senior offer unless a staff loop is already at onsite."
     }
   ],
   "gate": {
-    "name": "Month 3 Checkpoint - Ready to Apply",
+    "name": "Gate 1 - Senior-ready (applications open)",
     "target_date": "2026-10-31",
     "criteria": [
       {
@@ -2734,177 +2731,455 @@
         "fail_response": "3 more weeks of DSA only; everything else holds; do NOT extend the whole phase."
       },
       {
-        "id": "sysdesign",
-        "text": "5 system design mocks completed without freezing",
-        "fail_response": "Paid mocks with a practicing engineer; external feedback, not more solo reps."
-      },
-      {
         "id": "recall",
         "text": "Anki deck at 90%+ recall on the fundamentals set",
         "fail_response": "Two weeks of Anki intensity."
       },
       {
+        "id": "sysdesign",
+        "text": "6 ML system designs written, each with an explicit 1K -> 100K -> 10M scale ladder",
+        "fail_response": "Paid mocks with a practicing engineer; external feedback, not more solo reps."
+      },
+      {
+        "id": "flagship_live",
+        "text": "Flagship deployed, serving real traffic, with a metrics dashboard showing p50/p99 and cost",
+        "fail_response": "Cut flagship scope, do not extend the date. A smaller system that is LIVE beats a larger one that is not."
+      },
+      {
         "id": "assets",
-        "text": "Resume final, GitHub presentable, LinkedIn aligned",
+        "text": "Resume rewritten around owned systems and scale numbers; GitHub and LinkedIn aligned",
         "fail_response": "One weekend; this is not a skill gap."
       }
     ],
-    "all_fail_response": "The 10 hrs/week wasn't real. Re-plan against actual capacity rather than intended capacity."
+    "all_fail_response": "The 20 hrs/week wasn't real. Restore archive.v2_* and run the 10h/week floor plan - it is a good plan and it is still there. Do not run a 20h plan at 10h of capacity; that produces neither outcome."
   },
   "tracks": {
-    "dsa": {
-      "name": "DSA / Coding",
-      "weight": 0.5,
-      "weekly_hours": 5,
-      "daily_hours": 1.0,
-      "color": {
-        "bg": "#FBEAEA",
-        "text": "#7A1F1F",
-        "border": "#C43333"
-      },
-      "summary": "The round that eliminates people. Consulting and founding work does not keep this sharp, and no amount of system-design brilliance survives a failed screen.",
+    "foundations": {
+      "name": "From-Scratch Foundations",
+      "weekly_hours": 3,
+      "weekly_hours_phase2": 2,
+      "daily_hours": 0.6,
       "skills": [
-        "Arrays & hashing",
-        "Two pointers",
-        "Sliding window",
-        "Stack",
-        "Binary search",
-        "Linked lists",
-        "Trees & tries",
-        "Heap / priority queue",
-        "Backtracking",
-        "Graphs",
-        "1D dynamic programming",
-        "Python stdlib fluency"
+        "autograd/backprop",
+        "matrix calculus",
+        "transformer internals",
+        "tokenization (BPE)",
+        "attention math",
+        "classic ML derivations",
+        "MLE/MAP",
+        "regularization as prior",
+        "decoding strategies",
+        "KV cache",
+        "quantization",
+        "LoRA",
+        "eval design",
+        "entropy/perplexity/KL",
+        "distributed training concepts"
       ],
       "months": [
         {
           "n": 1,
-          "title": "Primer + Arrays, Hashing, Two Pointers",
-          "roi": 95,
-          "focus": "Neetcode primer week, then arrays/hashing/two-pointers/sliding-window/stack. Rule: >35 min on a problem means read the solution, then re-solve from scratch 3 days later. Expect the first two weeks to feel bad — getting stuck IS the mechanism, not a sign the plan is wrong."
+          "title": "Autograd and backprop, by hand",
+          "roi": 90,
+          "focus": "Build a working autograd engine (~200 lines, micrograd-class) and train an MLP with it on real data. Math companion, strictly bounded: matrix calculus, the chain rule as computation graph, why gradients vanish and what normalization does about it. DELIVERABLE: the engine, with tests, in the flagship repo. If you cannot derive backprop on a whiteboard at the end of this month, repeat it before moving on - everything downstream assumes it."
         },
         {
           "n": 2,
-          "title": "Binary Search, Linked Lists, Trees, Tries",
+          "title": "Transformer from scratch",
           "roi": 92,
-          "focus": "Binary search, linked lists, trees, tries. Patterns start repeating here; the goal is recognizing which pattern a fresh problem belongs to before writing code."
+          "focus": "BPE tokenizer, scaled dot-product attention, multi-head, positional encoding, residual stream, layernorm - assembled into a decoder that trains and generates. Karpathy's makemore/nanoGPT is the reference path; type it, do not clone it. Math: attention as a similarity kernel, why sqrt(d_k), what the residual stream carries. DELIVERABLE: a trained small model with a loss curve you can explain line by line."
         },
         {
           "n": 3,
-          "title": "Heap, Backtracking, Graphs, 1D DP",
+          "title": "Classic ML, derived not recalled",
+          "roi": 78,
+          "focus": "Linear and logistic regression with regularization, k-means, decision trees, gradient boosting intuition - implemented, then checked against sklearn for parity. Math: MLE vs MAP, regularization as a prior, bias-variance, why convexity matters and where it stops applying. DELIVERABLE: one notebook, derivation next to implementation next to the parity check. This is the month that makes ML-fundamentals rounds boring, which is the goal."
+        },
+        {
+          "n": 4,
+          "title": "Inference internals and the cost model",
+          "roi": 88,
+          "focus": "Decoding (temperature, top-k, top-p, beam), KV cache mechanics, batching, quantization basics. Measured on YOUR flagship, not in the abstract. Math: entropy, perplexity, KL. DELIVERABLE: a latency/throughput/cost table across decoding and batching configs, and a cost-per-1K-requests model you can defend. Senior interviewers ask what it costs; almost no candidate has a number."
+        },
+        {
+          "n": 5,
+          "title": "Adaptation: fine-tune vs prompt vs retrieve",
+          "roi": 80,
+          "focus": "LoRA derived and implemented from scratch, applied to a real task, evaluated against a prompted and a retrieval baseline. The deliverable is the DECISION FRAMEWORK, not the adapter: when each approach wins, and at what data volume the crossover happens. DELIVERABLE: three-way eval with a written recommendation."
+        },
+        {
+          "n": 6,
+          "title": "Distributed training and scale, conceptually",
+          "roi": 72,
+          "focus": "Data / tensor / pipeline parallelism, ZeRO sharding, gradient accumulation, mixed precision. Mostly conceptual plus one hands-on multi-device run (simulated is fine and you should say so). This is staff-tier surface area: you are not expected to have trained a 70B model, you are expected to reason correctly about what it would take. DELIVERABLE: a written explainer that survives hostile questioning."
+        },
+        {
+          "n": 7,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 8,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 9,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 10,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 11,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 12,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        }
+      ]
+    },
+    "flagship": {
+      "name": "Flagship System (alt-data x production AI)",
+      "weekly_hours": 5,
+      "weekly_hours_phase2": 6,
+      "daily_hours": 1.1,
+      "skills": [
+        "system design doc",
+        "data ingestion at volume",
+        "LLM extraction pipeline",
+        "eval harness",
+        "low-latency serving",
+        "caching and batching",
+        "observability",
+        "cost instrumentation",
+        "load testing",
+        "bottleneck analysis",
+        "failure modes and backpressure",
+        "multi-tenancy",
+        "technical writing",
+        "onsite talk-track"
+      ],
+      "months": [
+        {
+          "n": 1,
+          "title": "Scope, design doc, ingestion",
+          "roi": 95,
+          "focus": "The system: ingest a high-volume unstructured alt-data source, run LLM extraction over it, serve structured signals through a low-latency API. This is the rarest thing you can build - it sits exactly on the alt-data x production-AI seam that almost no MLE candidate occupies, and it is already seeded as the spike artifact in migration 003. WRITE THE DESIGN DOC FIRST: SLOs (p99 latency, freshness, cost per 1K docs), schema, failure modes. That doc doubles as system-design practice and becomes the writeup's spine. DELIVERABLE: design doc + ingestion running against real data."
+        },
+        {
+          "n": 2,
+          "title": "Model layer and the eval harness",
+          "roi": 93,
+          "focus": "LLM extraction with a REAL eval set - hand-label a few hundred examples, because this is the thing portfolio projects never have and senior interviewers always ask for. Baseline, then a measured improvement. DELIVERABLE: versioned eval harness with metrics and a before/after you can point at. 'How did you know it worked' is the question that separates senior from mid, and it is answered here or not at all."
+        },
+        {
+          "n": 3,
+          "title": "Serving, observability, cost",
+          "roi": 94,
+          "focus": "API, caching, request batching, tracing, dashboard, cost tracking. This is the Gate 1 criterion: live, serving, instrumented. DELIVERABLE: deployed service with a dashboard showing p50/p99 and cost per 1K requests. Get real users even if it is ten - the difference between 'deployed' and 'serving traffic' is the difference between a demo and a system."
+        },
+        {
+          "n": 4,
+          "title": "Scale it until it breaks",
+          "roi": 96,
+          "focus": "Load-test to 100x current traffic. Find the bottleneck. Fix it. Then do it again. Document what broke and why - THIS IS THE MONTH THAT BUYS THE SENIOR TITLE. An engineer who has watched their own system fail under load and fixed it talks differently about system design, and interviewers hear it immediately. DELIVERABLE: load test report - QPS, p50/p99 curves, cost curve, bottleneck analysis, the fix, the re-test."
+        },
+        {
+          "n": 5,
+          "title": "Harden, then publish",
+          "roi": 92,
+          "focus": "Retries, backpressure, graceful degradation, idempotency, what happens when the model provider 429s. Then write the public technical post: the design, the numbers, what broke, what you would do differently. DELIVERABLE: published writeup with real numbers. This is Gate 2's second criterion and the single highest-leverage artifact in the whole plan - it converts private work into public evidence, which is the entire v2 legibility thesis applied at senior scope."
+        },
+        {
+          "n": 6,
+          "title": "Staff-tier extension and the talk-track",
+          "roi": 88,
+          "focus": "One genuine extension - multi-tenancy, or online eval, or a second model path with routing. Then compress the whole system into a 20-minute onsite talk-track: 2 min context, 5 min architecture, 5 min the hard tradeoff, 5 min what broke, 3 min what is next. Rehearse it out loud. DELIVERABLE: extension shipped + talk-track rehearsed. Most candidates improvise this and ramble; a rehearsed version reads as seniority."
+        },
+        {
+          "n": 7,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 8,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 9,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 10,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 11,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 12,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        }
+      ]
+    },
+    "sys-design": {
+      "name": "ML System Design",
+      "weekly_hours": 3,
+      "weekly_hours_phase2": 4,
+      "daily_hours": 0.6,
+      "skills": [
+        "answer framework",
+        "scale ladders",
+        "RAG at scale",
+        "agentic workflows",
+        "recommender",
+        "feature store",
+        "LLM eval pipeline",
+        "real-time inference",
+        "multi-tenant platform",
+        "cost modeling",
+        "migration and rollout",
+        "build vs buy"
+      ],
+      "months": [
+        {
+          "n": 1,
+          "title": "Framework + first two designs, with scale ladders",
+          "roi": 88,
+          "focus": "Lock the answer framework (requirements -> data -> model -> serving -> monitoring -> tradeoffs), then designs 1-2: RAG over enterprise docs, agentic workflow. THE V3 CHANGE: every design carries an explicit scale ladder - what changes at 1K, 100K, 10M users, and WHY. That ladder is the senior differentiator; mid-level candidates design for one scale and stop."
+        },
+        {
+          "n": 2,
+          "title": "Designs 3-6",
           "roi": 90,
-          "focus": "Heap/priority queue, backtracking, graphs, 1D dynamic programming — the hard stretch. This is where the gate's under-30-minutes criterion is won or lost."
+          "focus": "Recommender, feature store, LLM eval pipeline, real-time inference. Scale ladder on each. Add the cost dimension: dollars per 1K requests at each rung, because senior design rounds increasingly ask and the flagship work in M4 gives you real numbers to reason from."
+        },
+        {
+          "n": 3,
+          "title": "Designs 7-8, then mocks begin",
+          "roi": 88,
+          "focus": "Multi-tenant platform, plus one design in your weakest domain. Then start mocks - out loud, timed, with a whiteboard. Solo reps stop paying here; the failure mode is freezing, and you only find that under observation."
+        },
+        {
+          "n": 4,
+          "title": "Mocks keyed to the onsite calendar",
+          "roi": 82,
+          "focus": "70/30 mocks to reading. Every real interview's design question gets a written post-mortem the same day - what you missed, what you would say now. That log is worth more than new designs by this point."
+        },
+        {
+          "n": 5,
+          "title": "Mocks + gap-chasing",
+          "roi": 80,
+          "focus": "Mocks continue. Any dimension fumbled twice in real loops gets a dedicated session. Paid mocks with a practicing senior engineer if freezing persists - external feedback beats another solo rep."
+        },
+        {
+          "n": 6,
+          "title": "Staff framing",
+          "roi": 84,
+          "focus": "Same designs, different altitude: build vs buy, migration and rollout strategy, what you would push back on, how you would staff it, what you would tell a VP. Staff design rounds test organizational judgment more than architecture."
+        },
+        {
+          "n": 7,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 8,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 9,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 10,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 11,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        },
+        {
+          "n": 12,
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
+        }
+      ]
+    },
+    "dsa": {
+      "name": "DSA / Coding",
+      "weekly_hours": 5,
+      "weekly_hours_phase2": 2,
+      "daily_hours": 1.0,
+      "skills": [
+        "arrays/hashing",
+        "two pointers",
+        "sliding window",
+        "stack",
+        "binary search",
+        "linked lists",
+        "trees",
+        "tries",
+        "heap",
+        "backtracking",
+        "graphs",
+        "1D DP",
+        "timed sets"
+      ],
+      "months": [
+        {
+          "n": 1,
+          "title": "Primer + arrays, hashing, two pointers",
+          "roi": 95,
+          "focus": "Neetcode primer week, then arrays/hashing/two-pointers/sliding-window/stack. Rule: >35 min on a problem means read the solution, understand it, re-do it cold in 48 hours. Grinding past 35 minutes teaches endurance, not pattern recognition."
+        },
+        {
+          "n": 2,
+          "title": "Binary search, linked lists, trees, tries, heap",
+          "roi": 93,
+          "focus": "Patterns start repeating here; the goal is recognizing the shape in 60 seconds, not recalling the solution. Timed sets from week 3 - the screen is timed, so practice must be."
+        },
+        {
+          "n": 3,
+          "title": "Graphs, backtracking, 1D DP - then maintenance",
+          "roi": 88,
+          "focus": "The hard stretch, completed before applications go live mid-month. From Nov 1 this track drops to 2h/week maintenance permanently; skills decay but the marginal hour is now worth more in the flagship."
         },
         {
           "n": 4,
           "title": "Maintenance under live fire",
           "roi": 70,
-          "focus": "Applications are live; ~2h/week of maintenance reps. Skills decay fast and screens are live now — dropping DSA entirely in Month 4 is how a green gate turns into a failed screen in Month 5."
+          "focus": "2h/week. Re-drill any pattern that fumbles in a real screen the same week it fumbles - that signal is worth more than a syllabus."
         },
         {
           "n": 5,
           "title": "Maintenance",
           "roi": 65,
-          "focus": "~2h/week maintenance. Re-drill any pattern that fumbles in a real screen the same week it fumbles."
+          "focus": "2h/week. Timed sets over new topics."
         },
         {
           "n": 6,
           "title": "Maintenance",
           "roi": 60,
-          "focus": "~2h/week maintenance through onsite season. Timed sets over new topics."
+          "focus": "2h/week through onsite season."
         },
         {
           "n": 7,
-          "title": "Taper",
+          "title": "Post-offer",
           "roi": 40,
-          "focus": "Taper. Keep one timed set a week while negotiation takes the foreground."
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 8,
-          "title": "Taper",
-          "roi": 35,
-          "focus": "Taper. Enough to stay warm for any late-arriving final loops."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 9,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off. The job is signed or closing; grinding problems now is avoidance of the actual close."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 10,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 11,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 12,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         }
       ]
     },
     "ml-recall": {
       "name": "ML Fundamentals Recall",
-      "weight": 0.2,
       "weekly_hours": 2,
+      "weekly_hours_phase2": 1,
       "daily_hours": 0.4,
-      "color": {
-        "bg": "#E8F1FA",
-        "text": "#0E3A66",
-        "border": "#185FA5"
-      },
-      "summary": "Breadth under time pressure. Not new material — retrieval speed on material he already scored 98% in.",
       "skills": [
-        "Bias-variance",
-        "Regularization (L1/L2)",
-        "Gradient boosting mechanics",
-        "Class imbalance",
-        "Cross-validation variants",
-        "Feature leakage",
-        "Convergence failures",
+        "Anki deck",
+        "classical ML recall",
         "RAG failure modes",
-        "Eval design",
-        "Fine-tune vs prompt vs retrieve"
+        "eval design",
+        "fine-tune vs prompt vs retrieve",
+        "metrics selection",
+        "calibration"
       ],
       "months": [
         {
           "n": 1,
           "title": "Build the deck",
           "roi": 85,
-          "focus": "Build the Anki deck from the CU Boulder notes. The goal is 40-second retrieval, which is a different state than having scored 98% — the exam tested recognition, the interview tests production."
+          "focus": "Build the Anki deck from the CU Boulder notes. The target state is 40-second retrieval, which is different from having scored well on the exam. Foundations M1-M3 generate cards as a side effect - let them."
         },
         {
           "n": 2,
-          "title": "LLM-era cards",
-          "roi": 80,
-          "focus": "Add the LLM-era cards: RAG failure modes, eval design, fine-tune vs prompt vs retrieve. This is the material interviewers actually probe in 2026."
+          "title": "LLM-era cards + drill to 90%",
+          "roi": 84,
+          "focus": "Add RAG failure modes, eval design, fine-tune vs prompt vs retrieve, calibration. Drill to 90%+ - the Gate 1 criterion. Cards that keep lapsing point at real gaps; chase those rather than adding new cards."
         },
         {
           "n": 3,
-          "title": "Drill to 90%",
-          "roi": 85,
-          "focus": "Drill the full deck to 90%+ recall — the gate criterion. Cards that keep lapsing point at real gaps; chase those, not new cards."
+          "title": "Hold at 90%",
+          "roi": 70,
+          "focus": "Maintenance only. From here every question fumbled in a real interview becomes a card the same day - that loop is the whole value of the deck during applications."
         },
         {
           "n": 4,
           "title": "Maintenance + interview feedback loop",
           "roi": 60,
-          "focus": "Maintenance reps. Every question fumbled in a real interview becomes a card the same day."
+          "focus": "Maintenance. Fold fumbled questions back in same-day."
         },
         {
           "n": 5,
           "title": "Maintenance",
           "roi": 55,
-          "focus": "Maintenance; keep folding fumbled interview questions back into the deck."
+          "focus": "Maintenance."
         },
         {
           "n": 6,
@@ -2914,260 +3189,170 @@
         },
         {
           "n": 7,
-          "title": "Maintenance",
+          "title": "Post-offer",
           "roi": 40,
-          "focus": "Light maintenance."
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 8,
-          "title": "Maintenance",
-          "roi": 35,
-          "focus": "Light maintenance."
-        },
-        {
-          "n": 9,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
-        },
-        {
-          "n": 10,
-          "title": "Pull-based foundations",
-          "roi": 50,
-          "focus": "The pull-based foundations lane opens: depth pursued in response to a concrete confusion is retained; depth pursued preemptively mostly isn't. Boyd's Convex Optimization and Murphy chapters get pulled as specific walls appear at work — not read cover to cover on spec."
-        },
-        {
-          "n": 11,
-          "title": "Pull-based foundations",
-          "roi": 50,
-          "focus": "Continue pulling foundations against real walls from the job. The job decides the syllabus now."
-        },
-        {
-          "n": 12,
-          "title": "Pull-based foundations",
-          "roi": 50,
-          "focus": "Same lane. If nothing at work is forcing depth, that's a signal to take harder problems at work, not to invent coursework."
-        }
-      ]
-    },
-    "sys-design": {
-      "name": "ML System Design",
-      "weight": 0.2,
-      "weekly_hours": 2,
-      "daily_hours": 0.4,
-      "color": {
-        "bg": "#E7F3E8",
-        "text": "#1B4D1F",
-        "border": "#2E7D32"
-      },
-      "summary": "His strongest round — production systems and client-facing ownership are exactly what it tests. Two gaps: scale and multi-tenancy.",
-      "skills": [
-        "Requirements interrogation",
-        "Metric definition",
-        "Data & training loop",
-        "Serving architecture",
-        "Evaluation design",
-        "Failure modes & tradeoffs",
-        "Scale (sharding, replication, p99)",
-        "Multi-tenancy & cost attribution"
-      ],
-      "months": [
-        {
-          "n": 1,
-          "title": "Not yet",
-          "roi": 30,
-          "focus": "Not yet — DSA and positioning own Month 1. Read Chip Huyen in background time; the round is strong enough that starting it later costs little."
-        },
-        {
-          "n": 2,
-          "title": "Framework + first four designs",
-          "roi": 85,
-          "focus": "Lock the answer framework, then the first four designs: RAG over enterprise docs, an agentic workflow, a recommender, fraud detection. Narrate each aloud, timed at 45 minutes — reading is not preparation, speaking under pressure is."
-        },
-        {
-          "n": 3,
-          "title": "Remaining four + the two known gaps",
-          "roi": 88,
-          "focus": "Remaining four: feature store, LLM eval pipeline, real-time inference, multi-tenant platform. Then drill the two known gaps directly: scale at 10k req/sec (sharding, replication, p99 budgets) and multi-tenancy/cost attribution."
-        },
-        {
-          "n": 4,
-          "title": "Mocks scale with onsites",
-          "roi": 75,
-          "focus": "Mocks scale with the onsite calendar, 70/30 mocks-to-reading. Every real interview's design question gets a written post-mortem."
-        },
-        {
-          "n": 5,
-          "title": "Mocks",
-          "roi": 70,
-          "focus": "Mocks keyed to upcoming onsites; 70/30 mocks-to-reading holds."
-        },
-        {
-          "n": 6,
-          "title": "Mocks",
-          "roi": 70,
-          "focus": "Mocks through peak onsite season."
-        },
-        {
-          "n": 7,
-          "title": "Mocks as needed",
-          "roi": 50,
-          "focus": "Mocks only for live final rounds."
-        },
-        {
-          "n": 8,
-          "title": "Mocks as needed",
+          "title": "Post-offer",
           "roi": 40,
-          "focus": "Same."
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 9,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 10,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off — the first 90 days at the new job are the real system design practice now."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 11,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 12,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         }
       ]
     },
     "search": {
       "name": "Positioning & Search",
-      "weight": 0.1,
-      "weekly_hours": 1,
-      "daily_hours": 0.2,
-      "color": {
-        "bg": "#F0EAF8",
-        "text": "#43276B",
-        "border": "#6A3FA0"
-      },
-      "summary": "Front-loaded into Week 1, dormant through Month 3, then owns the plan from Month 4. The bottleneck is execution here, not capability.",
+      "weekly_hours": 2,
+      "weekly_hours_phase2": 5,
+      "daily_hours": 0.4,
       "skills": [
-        "Canonical resume",
-        "Alt-data swap-in block",
-        "GitHub legibility",
-        "Target list construction",
-        "Application cadence",
-        "Behavioral narratives",
-        "Negotiation on data",
-        "Level over base"
+        "resume (systems framing)",
+        "GitHub",
+        "LinkedIn",
+        "target list",
+        "two-lane funnel",
+        "applications",
+        "behavioral STARs",
+        "CTO scope reframe",
+        "negotiation",
+        "stall diagnosis"
       ],
       "months": [
         {
           "n": 1,
-          "title": "Positioning week",
+          "title": "Positioning - rewrite around owned systems",
           "roi": 100,
-          "focus": "Drafting the resume now is not about applying — it's how he finds out which story he actually has. Canonical frame: \"builds production ML systems that make money.\" Lead with Valorem (3M+ property records, 13-service FastAPI/GraphQL pipeline on AWS); M Science is the credibility line. Build the alt-data swap-in bullet block, and pin 3 GitHub repos each stating problem/architecture/one number."
+          "focus": "THE V3 CHANGE, and it is the highest-ROI hour in the plan: the resume reframes from projects to OWNED SYSTEMS WITH NUMBERS. 'Built a RAG system' is mid-level. 'Owned document extraction serving N req/day at p99 X ms, cut cost per 1K by Y%' is senior. Consulting work reads as projects unless you force it into system language - that is the single biggest legibility gap between where you are and the senior band. Do this in month 1; it also tells you which numbers the flagship must produce."
         },
         {
           "n": 2,
-          "title": "Dormant",
-          "roi": 20,
-          "focus": "Dormant. Resist tinkering with the resume — at this stage that's procrastination wearing productivity's clothes."
+          "title": "Target list, two lanes",
+          "roi": 78,
+          "focus": "Senior lane (opens Nov 1): Series B-D applied-AI/infra, AI-forward mid-size, quant engineering. Staff lane (opens Feb, gated): frontier labs, larger infra orgs. Tag every application with its lane and tier - the funnel view (v_funnel_by_tier, already built in migration 003) makes stall diagnosis a query instead of a feeling."
         },
         {
           "n": 3,
-          "title": "Target list",
-          "roi": 75,
-          "focus": "Build the target list: 60% Series B–D applied-AI/infra, 20% AI-forward mid-size, 10% quant fund engineering (research screens on credentials, engineering doesn't), 10% hyperscaler. Run this as the FLOOR, not the whole bet: in parallel, open a tier-one lane — frontier-lab FDE/applied and quant-fund engineering — applied opportunistically at lower volume. Those are the seats where the $500K tier actually lives; Series B–D is what protects time-to-offer while they cook. Tag every application with its tier so the funnel shows whether tier-one is converting or only the floor is. Decision rule, written now before it is emotional: take the first good floor offer (real comp ladder) UNLESS a tier-one loop is already at onsite — do not let a floor offer expire chasing a tier-one maybe."
+          "title": "Senior applications live",
+          "roi": 95,
+          "focus": "15-20/week from Nov 1. Spreadsheet or the existing applications table - do NOT build tooling; that is failure mode 2 wearing productivity's clothes. Behavioral STARs drafted this month, including the Bridges AI CTO reframe: you have led technical direction across multiple client systems, which IS scope - it just does not read that way on a resume."
         },
         {
           "n": 4,
-          "title": "Applications live",
-          "roi": 95,
-          "focus": "Applications open. 15–20/week, tracked in a spreadsheet. Do NOT build tooling yet — a spreadsheet does the job and tooling is a way to feel productive without applying."
+          "title": "Convert, and diagnose stalls by symptom",
+          "roi": 92,
+          "focus": "No screens = resume/targeting. Screens but no onsites = the coding round. Onsites but no offers = system design or the experience deep-dive. Each symptom has a different fix; guessing wastes the window."
         },
         {
           "n": 5,
-          "title": "Diagnose stalls",
+          "title": "Onsite season + narratives",
           "roi": 90,
-          "focus": "Diagnose stalls by symptom: no screens means resume/targeting; screens but no onsites means the coding round; onsites but no offers means design or behavioral. Fix the failing stage, not everything."
+          "focus": "Tighten the behavioral set. The flagship deep-dive is now the centerpiece answer - rehearsed, not improvised. Take the first good senior offer unless a staff loop is already at onsite (the v2 offer-discipline rule, unchanged and still correct)."
         },
         {
           "n": 6,
-          "title": "Onsites + behavioral narratives",
-          "roi": 90,
-          "focus": "Onsite season. Tighten the behavioral narratives — founding Bridges AI, the Valorem build, leaving quant research — each with a decision, a tradeoff, and a number."
+          "title": "Staff lane opens, senior closes",
+          "roi": 88,
+          "focus": "Staff applications go out only if Gate 2 passed. Senior offers close in parallel - do not let a good senior offer expire waiting on a staff loop. Negotiate on level using the flagship numbers and any competing offer."
         },
         {
           "n": 7,
-          "title": "Negotiate on data",
-          "roi": 90,
-          "focus": "Negotiate on data, not feelings: competing offers, level bands, location-adjusted comps. Level beats base — argue the level first, the number follows."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 8,
-          "title": "Negotiate / close",
-          "roi": 85,
-          "focus": "Keep offers warm and clustered. The goal is signing well, not squeezing the last $10K out of a single offer."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 9,
-          "title": "Sign",
-          "roi": 80,
-          "focus": "Sign by May 2027. Done is the deliverable."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 10,
-          "title": "First 90 days",
-          "roi": 70,
-          "focus": "First 90 days: ship visibly, and own the highest-leverage system nobody owns."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 11,
-          "title": "First 90 days",
-          "roi": 65,
-          "focus": "Keep shipping; convert early wins into scope."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         },
         {
           "n": 12,
-          "title": "Artifact track begins",
-          "roi": 60,
-          "focus": "The artifact track opens: reproductions, OSS PRs, writing. This is the years-2–4 compounding lane, started only now, on purpose."
+          "title": "Post-offer",
+          "roi": 40,
+          "focus": "In role. Compound inside a comp ladder."
         }
       ]
     }
   },
   "not_doing": [
-    "Coursera specializations — an MS at 3.84 already outranks them.",
-    "Additional degrees.",
-    "Measure-theoretic probability — paper fluency needs comfortable, not expert.",
-    "Reading the agentic-AI survey cover to cover — it's a map, not a course.",
-    "CLRS or a full algorithms MOOC — pattern recognition under time pressure is the gap, not proofs.",
-    "Paper reproductions before Month 12 — genuinely valuable, infinitely expandable, and the most comfortable form of avoidance.",
-    "Building a job-pipeline scraper before Month 2 — a spreadsheet does 90% of the job on day one."
+    "Measure-theoretic probability - paper fluency needs comfortable, not expert. (kept from v2)",
+    "Bishop or Murphy cover to cover - a BS Math and an MS DS already cover this; rereading it is comfort, not progress.",
+    "Any from-scratch implementation outside the six in the foundations track. That list is the WHOLE deep-fundamentals answer, capped at 62 of 520 hours.",
+    "A second flagship. One system taken to real scale beats two taken to demo.",
+    "Kaggle competitions - they read as modelling exercises, not production ownership, which is the exact gap being closed.",
+    "Paper reproductions - genuinely valuable, infinitely expandable, and the most comfortable form of avoidance.",
+    "Building job-search tooling. A spreadsheet does 90% of it; BracketLens already covers the rest.",
+    "Additional degrees or certificates.",
+    "Claiming user scale you do not have. Say 'load-tested to X'; the follow-up questions go straight to operational detail."
   ],
   "failure_modes": [
     {
-      "name": "The gate slipping",
-      "detail": "October 31 arrives, criteria are unmet, and 'one more month' gets granted informally. The gate only works if failing it triggers the named fail_response, dated and written down — not a quiet extension of Phase 1."
+      "name": "Depth-chasing as avoidance",
+      "detail": "v2's failure mode 2, and the reason this plan caps foundations at 62 hours with a monthly deliverable. If foundations runs over budget two weeks running, that is the signal - not a scheduling problem, an avoidance one. The request that produced this plan ('deep mathematics and fundamentals') is exactly the shape this failure mode takes."
     },
     {
-      "name": "Depth-chasing as avoidance",
-      "detail": "Hours drift toward intellectually satisfying material — papers, foundations, reproductions — while DSA reps and application counts lag. Everything in not_doing is a flavor of this; the log will show it before it feels like it."
+      "name": "The flagship never ships",
+      "detail": "The build expands to fill all available time and never gets load-tested or written up, so 146 hours produce no evidence. The monthly deliverable is the defense; a month that ends without its deliverable is a month that did not happen. Gate 1 requires LIVE, not finished."
+    },
+    {
+      "name": "The gate slipping",
+      "detail": "October 31 arrives, criteria are unmet, and 'one more month' gets granted informally. The gate only works if failing it triggers the named fail_response, dated and written down."
+    },
+    {
+      "name": "Capacity was aspirational",
+      "detail": "20h/week was the answer to a question, not a demonstrated fact - and v2 logged 0 hours in its first 18 days. Two consecutive weeks under 15h means restore archive.v2_* and run the 10h floor plan, which is a good plan. A 20h plan run at 10h of capacity delivers neither outcome."
     },
     {
       "name": "Holding out for the perfect offer",
-      "detail": "Turning down a good $210K offer to keep searching for $280K. The ladder does more work than the starting rung, and every month of delay is a month of comp and compounding forgone."
+      "detail": "Turning down a good senior offer to keep chasing staff. Staff is the stretch; senior at $300-450K was the target. The ladder does more work than the starting rung."
     }
   ],
   "archive": {
-    "_comment": "Parked year-2 continuation: the Elite AI Engineer curriculum (4 tracks, ~21h/week, $300-600K Head-of-AI target), the crash course, and the original student framing. Kept intact, not deleted — this is the plan to return to after landing and compounding in an MLE seat. Do not run both plans at once: with two live plans the days drift toward whichever is more intellectually appealing, and that is never the one that gets hired.",
+    "_comment": "Parked year-2 continuation: the Elite AI Engineer curriculum (4 tracks, ~21h/week, $300-600K Head-of-AI target), the crash course, and the original student framing. Kept intact, not deleted \u2014 this is the plan to return to after landing and compounding in an MLE seat. Do not run both plans at once: with two live plans the days drift toward whichever is more intellectually appealing, and that is never the one that gets hired.",
     "elite_tracks": {
       "ai-eng": {
         "name": "AI Engineering",
@@ -3178,7 +3363,7 @@
           "text": "#085041",
           "border": "#1D9E75"
         },
-        "summary": "From-scratch implementations: math → autograd → transformers → LLMs → RAG/agents → CUDA → alignment → distributed inference.",
+        "summary": "From-scratch implementations: math \u2192 autograd \u2192 transformers \u2192 LLMs \u2192 RAG/agents \u2192 CUDA \u2192 alignment \u2192 distributed inference.",
         "skills": [
           "Linear algebra & optimization",
           "Autograd from scratch",
@@ -3201,13 +3386,13 @@
           },
           {
             "n": 2,
-            "title": "Classical ML — Theory to Production",
+            "title": "Classical ML \u2014 Theory to Production",
             "roi": 84,
             "focus": "Every classical algorithm from scratch. MLflow tracking. Ship something deployed by week 8."
           },
           {
             "n": 3,
-            "title": "Deep Learning — Neural Nets to CNNs",
+            "title": "Deep Learning \u2014 Neural Nets to CNNs",
             "roi": 82,
             "focus": "Autograd extended, ResNet from scratch, production image API. Cap CNN architecture history at 10 hrs total."
           },
@@ -3215,23 +3400,23 @@
             "n": 4,
             "title": "Sequence Models & the Transformer",
             "roi": 87,
-            "focus": "LSTM→attention→full Transformer from scratch. GPT with KV cache. BPE tokenizer. Reproduce paper BLEU within 2 points."
+            "focus": "LSTM\u2192attention\u2192full Transformer from scratch. GPT with KV cache. BPE tokenizer. Reproduce paper BLEU within 2 points."
           },
           {
             "n": 5,
-            "title": "LLMs — Pre-training to Fine-tuning",
+            "title": "LLMs \u2014 Pre-training to Fine-tuning",
             "roi": 87,
             "focus": "Pre-training pipeline, LoRA/QLoRA from scratch, vLLM inference server. Chinchilla laws. 125M model trained end-to-end."
           },
           {
             "n": 6,
-            "title": "AI Engineering — RAG, Agents, Production",
+            "title": "AI Engineering \u2014 RAG, Agents, Production",
             "roi": 92,
             "focus": "Production RAG platform, coding agent, MCP multi-agent system, RAGAS evaluation, full observability stack."
           },
           {
             "n": 7,
-            "title": "Systems — GPUs, CUDA, Distributed AI",
+            "title": "Systems \u2014 GPUs, CUDA, Distributed AI",
             "roi": 87,
             "focus": "CUDA kernels, FlashAttention tiling, FSDP distributed training, Kubernetes ML platform."
           },
@@ -3239,7 +3424,7 @@
             "n": 8,
             "title": "Reinforcement Learning & Alignment",
             "roi": 74,
-            "focus": "PPO/DQN from scratch, RLHF pipeline (SFT→RM→PPO), DPO comparison, GRPO reasoning training."
+            "focus": "PPO/DQN from scratch, RLHF pipeline (SFT\u2192RM\u2192PPO), DPO comparison, GRPO reasoning training."
           },
           {
             "n": 9,
@@ -3249,7 +3434,7 @@
           },
           {
             "n": 10,
-            "title": "Frontier — Multimodal & Research",
+            "title": "Frontier \u2014 Multimodal & Research",
             "roi": 70,
             "focus": "ViT, CLIP, diffusion, Mamba. Multimodal RAG. Paper reproduction. Research preprint drafted."
           },
@@ -3261,7 +3446,7 @@
           },
           {
             "n": 12,
-            "title": "Elite Synthesis — Launch & Specialization",
+            "title": "Elite Synthesis \u2014 Launch & Specialization",
             "roi": 88,
             "focus": "Distributed inference system 1000 QPS. Personal AI OS. Research preprint submitted."
           }
@@ -3276,7 +3461,7 @@
           "text": "#0C447C",
           "border": "#185FA5"
         },
-        "summary": "The production ML lifecycle: clean code → pipelines → serving → CI/CD → monitoring → orchestration → platform. What turns a model into a system.",
+        "summary": "The production ML lifecycle: clean code \u2192 pipelines \u2192 serving \u2192 CI/CD \u2192 monitoring \u2192 orchestration \u2192 platform. What turns a model into a system.",
         "skills": [
           "Python testing & packaging",
           "Docker & containers",
@@ -3373,7 +3558,7 @@
           "text": "#3C3489",
           "border": "#7F77DD"
         },
-        "summary": "Statistical rigor and inference: hypothesis testing → experiments → causal inference → modeling → Bayesian → communication. The analyst muscle for the D.E. Shaw / Woodline data roles.",
+        "summary": "Statistical rigor and inference: hypothesis testing \u2192 experiments \u2192 causal inference \u2192 modeling \u2192 Bayesian \u2192 communication. The analyst muscle for the D.E. Shaw / Woodline data roles.",
         "skills": [
           "Statistical inference",
           "Experiment design & A/B testing",
@@ -3390,7 +3575,7 @@
             "n": 1,
             "title": "Statistical Inference",
             "roi": 82,
-            "focus": "Distributions, estimation, CLT, hypothesis testing, confidence intervals, bootstrap — from first principles."
+            "focus": "Distributions, estimation, CLT, hypothesis testing, confidence intervals, bootstrap \u2014 from first principles."
           },
           {
             "n": 2,
@@ -3456,7 +3641,7 @@
             "n": 12,
             "title": "End-to-End DS Capstone",
             "roi": 84,
-            "focus": "Full analysis from question → data → model → recommendation, with quantified business impact."
+            "focus": "Full analysis from question \u2192 data \u2192 model \u2192 recommendation, with quantified business impact."
           }
         ]
       },
@@ -3469,7 +3654,7 @@
           "text": "#633806",
           "border": "#BA7517"
         },
-        "summary": "The differentiator for D.E. Shaw Alt-Data and Woodline: alt-data sourcing → factor research → backtesting → portfolio/risk → research platform. Builds directly on the quant-research background.",
+        "summary": "The differentiator for D.E. Shaw Alt-Data and Woodline: alt-data sourcing \u2192 factor research \u2192 backtesting \u2192 portfolio/risk \u2192 research platform. Builds directly on the quant-research background.",
         "skills": [
           "Market microstructure",
           "Alt-data sourcing & scraping",
@@ -3517,7 +3702,7 @@
             "n": 6,
             "title": "Sector & Fundamental Modeling",
             "roi": 85,
-            "focus": "Model company/sector KPIs, fundamental factors, earnings dynamics — the Woodline core skill."
+            "focus": "Model company/sector KPIs, fundamental factors, earnings dynamics \u2014 the Woodline core skill."
           },
           {
             "n": 7,
@@ -3547,7 +3732,7 @@
             "n": 11,
             "title": "Quant Research Platform",
             "roi": 84,
-            "focus": "Reproducible research pipeline: data → signal → backtest → report, versioned and automated."
+            "focus": "Reproducible research pipeline: data \u2192 signal \u2192 backtest \u2192 report, versioned and automated."
           },
           {
             "n": 12,
@@ -3561,7 +3746,7 @@
     "crash_course": {
       "title": "2-Week Intensive Crash Course",
       "start_date": "2026-06-23",
-      "project": "crash-course/ (Atlas-FoF) — one fund-of-funds build exercising every skill these roles test",
+      "project": "crash-course/ (Atlas-FoF) \u2014 one fund-of-funds build exercising every skill these roles test",
       "summary": "Bounded sprint: one project, only what gets tested, a finishable deliverable each day. The months-long track plan is paused and resumes after.",
       "pillars": [
         "Python + SQL data fluency",
@@ -3582,8 +3767,8 @@
         {
           "n": 1,
           "week": 1,
-          "title": "Ingest · Inspect · Quality Log",
-          "build": "Load 3 feeds → bronze + data-quality log",
+          "title": "Ingest \u00b7 Inspect \u00b7 Quality Log",
+          "build": "Load 3 feeds \u2192 bronze + data-quality log",
           "drill": "pandas inspect",
           "done": "issues print to a log"
         },
@@ -3591,7 +3776,7 @@
           "n": 2,
           "week": 1,
           "title": "Schema Harmonization",
-          "build": "Harmonize units/dates/taxonomies → silver",
+          "build": "Harmonize units/dates/taxonomies \u2192 silver",
           "drill": "normalization patterns",
           "done": "one typed clean table"
         },
@@ -3599,17 +3784,17 @@
           "n": 3,
           "week": 1,
           "title": "Entity Resolution",
-          "build": "block → fuzzy → union-find → gold",
+          "build": "block \u2192 fuzzy \u2192 union-find \u2192 gold",
           "drill": "the Aaru core skill",
           "done": "score vs ground_truth (precision/recall)"
         },
         {
           "n": 4,
           "week": 1,
-          "title": "Dedup · Validation · Lineage",
+          "title": "Dedup \u00b7 Validation \u00b7 Lineage",
           "build": "Dedup + validate; quarantine bad rows",
           "drill": "SQL: ROW_NUMBER, COALESCE",
-          "done": "Northgate≠Northgate; bad rows flagged"
+          "done": "Northgate\u2260Northgate; bad rows flagged"
         },
         {
           "n": 5,
@@ -3649,7 +3834,7 @@
           "title": "Q&A Panel (full slice)",
           "build": "Client component wired to /ask",
           "drill": "vertical slice",
-          "done": "browser → API → gold works"
+          "done": "browser \u2192 API \u2192 gold works"
         },
         {
           "n": 10,
@@ -3662,7 +3847,7 @@
         {
           "n": 11,
           "week": 2,
-          "title": "System Design — Aaru",
+          "title": "System Design \u2014 Aaru",
           "build": "Doc: ingest a 100TB demographic panel",
           "drill": "pipeline design out loud",
           "done": "1 page + diagram"
@@ -3670,7 +3855,7 @@
         {
           "n": 12,
           "week": 2,
-          "title": "System Design — Equi",
+          "title": "System Design \u2014 Equi",
           "build": "Doc: RAG + multi-tenant white-label",
           "drill": "RAG design out loud",
           "done": "1 page + diagram"
@@ -3697,7 +3882,515 @@
       "name": "Nevyn Duarte",
       "background": "BS Mathematics (UT Austin), MS Data Science CU Boulder (GPA 3.84). Co-Founder/CTO Bridges AI. Ex-quantitative equity researcher (M Science / Jefferies). Strong Python, RAG systems, LLM workflows, agentic systems.",
       "commitment": "3 focused hours/day (~21h/week), 12-month elite curriculum across 4 parallel tracks",
-      "income_target": "$300K–$600K+"
-    }
+      "income_target": "$300K\u2013$600K+"
+    },
+    "v2_student": {
+      "name": "Nevyn Duarte",
+      "background": "BS Mathematics (UT Austin), MS Data Science CU Boulder (GPA 3.84). Co-Founder/CTO Bridges AI. Ex-quantitative equity researcher (M Science / Jefferies). Strong Python, RAG systems, LLM workflows, agentic systems.",
+      "commitment": "10 focused hours/week alongside Bridges AI client work (~2h/day, 5 days)",
+      "income_target": "$200K-$300K TC",
+      "thesis": "Not under-skilled for this band \u2014 under-legible and under-drilled. The production systems already clear the technical bar for tier-two AI companies. Missing: a coherent public story, DSA sharpness for the coding screen, and a systematic pipeline instead of reactive recruiter outreach.",
+      "dominant_risk": "Time-to-first-offer, not skill. Every month consulting is a month not compounding inside a company with a comp ladder."
+    },
+    "v2_tracks": {
+      "dsa": {
+        "name": "DSA / Coding",
+        "weight": 0.5,
+        "weekly_hours": 5,
+        "daily_hours": 1.0,
+        "color": {
+          "bg": "#FBEAEA",
+          "text": "#7A1F1F",
+          "border": "#C43333"
+        },
+        "summary": "The round that eliminates people. Consulting and founding work does not keep this sharp, and no amount of system-design brilliance survives a failed screen.",
+        "skills": [
+          "Arrays & hashing",
+          "Two pointers",
+          "Sliding window",
+          "Stack",
+          "Binary search",
+          "Linked lists",
+          "Trees & tries",
+          "Heap / priority queue",
+          "Backtracking",
+          "Graphs",
+          "1D dynamic programming",
+          "Python stdlib fluency"
+        ],
+        "months": [
+          {
+            "n": 1,
+            "title": "Primer + Arrays, Hashing, Two Pointers",
+            "roi": 95,
+            "focus": "Neetcode primer week, then arrays/hashing/two-pointers/sliding-window/stack. Rule: >35 min on a problem means read the solution, then re-solve from scratch 3 days later. Expect the first two weeks to feel bad \u2014 getting stuck IS the mechanism, not a sign the plan is wrong."
+          },
+          {
+            "n": 2,
+            "title": "Binary Search, Linked Lists, Trees, Tries",
+            "roi": 92,
+            "focus": "Binary search, linked lists, trees, tries. Patterns start repeating here; the goal is recognizing which pattern a fresh problem belongs to before writing code."
+          },
+          {
+            "n": 3,
+            "title": "Heap, Backtracking, Graphs, 1D DP",
+            "roi": 90,
+            "focus": "Heap/priority queue, backtracking, graphs, 1D dynamic programming \u2014 the hard stretch. This is where the gate's under-30-minutes criterion is won or lost."
+          },
+          {
+            "n": 4,
+            "title": "Maintenance under live fire",
+            "roi": 70,
+            "focus": "Applications are live; ~2h/week of maintenance reps. Skills decay fast and screens are live now \u2014 dropping DSA entirely in Month 4 is how a green gate turns into a failed screen in Month 5."
+          },
+          {
+            "n": 5,
+            "title": "Maintenance",
+            "roi": 65,
+            "focus": "~2h/week maintenance. Re-drill any pattern that fumbles in a real screen the same week it fumbles."
+          },
+          {
+            "n": 6,
+            "title": "Maintenance",
+            "roi": 60,
+            "focus": "~2h/week maintenance through onsite season. Timed sets over new topics."
+          },
+          {
+            "n": 7,
+            "title": "Taper",
+            "roi": 40,
+            "focus": "Taper. Keep one timed set a week while negotiation takes the foreground."
+          },
+          {
+            "n": 8,
+            "title": "Taper",
+            "roi": 35,
+            "focus": "Taper. Enough to stay warm for any late-arriving final loops."
+          },
+          {
+            "n": 9,
+            "title": "Off",
+            "roi": 10,
+            "focus": "Off. The job is signed or closing; grinding problems now is avoidance of the actual close."
+          },
+          {
+            "n": 10,
+            "title": "Off",
+            "roi": 10,
+            "focus": "Off."
+          },
+          {
+            "n": 11,
+            "title": "Off",
+            "roi": 10,
+            "focus": "Off."
+          },
+          {
+            "n": 12,
+            "title": "Off",
+            "roi": 10,
+            "focus": "Off."
+          }
+        ]
+      },
+      "ml-recall": {
+        "name": "ML Fundamentals Recall",
+        "weight": 0.2,
+        "weekly_hours": 2,
+        "daily_hours": 0.4,
+        "color": {
+          "bg": "#E8F1FA",
+          "text": "#0E3A66",
+          "border": "#185FA5"
+        },
+        "summary": "Breadth under time pressure. Not new material \u2014 retrieval speed on material he already scored 98% in.",
+        "skills": [
+          "Bias-variance",
+          "Regularization (L1/L2)",
+          "Gradient boosting mechanics",
+          "Class imbalance",
+          "Cross-validation variants",
+          "Feature leakage",
+          "Convergence failures",
+          "RAG failure modes",
+          "Eval design",
+          "Fine-tune vs prompt vs retrieve"
+        ],
+        "months": [
+          {
+            "n": 1,
+            "title": "Build the deck",
+            "roi": 85,
+            "focus": "Build the Anki deck from the CU Boulder notes. The goal is 40-second retrieval, which is a different state than having scored 98% \u2014 the exam tested recognition, the interview tests production."
+          },
+          {
+            "n": 2,
+            "title": "LLM-era cards",
+            "roi": 80,
+            "focus": "Add the LLM-era cards: RAG failure modes, eval design, fine-tune vs prompt vs retrieve. This is the material interviewers actually probe in 2026."
+          },
+          {
+            "n": 3,
+            "title": "Drill to 90%",
+            "roi": 85,
+            "focus": "Drill the full deck to 90%+ recall \u2014 the gate criterion. Cards that keep lapsing point at real gaps; chase those, not new cards."
+          },
+          {
+            "n": 4,
+            "title": "Maintenance + interview feedback loop",
+            "roi": 60,
+            "focus": "Maintenance reps. Every question fumbled in a real interview becomes a card the same day."
+          },
+          {
+            "n": 5,
+            "title": "Maintenance",
+            "roi": 55,
+            "focus": "Maintenance; keep folding fumbled interview questions back into the deck."
+          },
+          {
+            "n": 6,
+            "title": "Maintenance",
+            "roi": 55,
+            "focus": "Maintenance through onsites."
+          },
+          {
+            "n": 7,
+            "title": "Maintenance",
+            "roi": 40,
+            "focus": "Light maintenance."
+          },
+          {
+            "n": 8,
+            "title": "Maintenance",
+            "roi": 35,
+            "focus": "Light maintenance."
+          },
+          {
+            "n": 9,
+            "title": "Off",
+            "roi": 10,
+            "focus": "Off."
+          },
+          {
+            "n": 10,
+            "title": "Pull-based foundations",
+            "roi": 50,
+            "focus": "The pull-based foundations lane opens: depth pursued in response to a concrete confusion is retained; depth pursued preemptively mostly isn't. Boyd's Convex Optimization and Murphy chapters get pulled as specific walls appear at work \u2014 not read cover to cover on spec."
+          },
+          {
+            "n": 11,
+            "title": "Pull-based foundations",
+            "roi": 50,
+            "focus": "Continue pulling foundations against real walls from the job. The job decides the syllabus now."
+          },
+          {
+            "n": 12,
+            "title": "Pull-based foundations",
+            "roi": 50,
+            "focus": "Same lane. If nothing at work is forcing depth, that's a signal to take harder problems at work, not to invent coursework."
+          }
+        ]
+      },
+      "sys-design": {
+        "name": "ML System Design",
+        "weight": 0.2,
+        "weekly_hours": 2,
+        "daily_hours": 0.4,
+        "color": {
+          "bg": "#E7F3E8",
+          "text": "#1B4D1F",
+          "border": "#2E7D32"
+        },
+        "summary": "His strongest round \u2014 production systems and client-facing ownership are exactly what it tests. Two gaps: scale and multi-tenancy.",
+        "skills": [
+          "Requirements interrogation",
+          "Metric definition",
+          "Data & training loop",
+          "Serving architecture",
+          "Evaluation design",
+          "Failure modes & tradeoffs",
+          "Scale (sharding, replication, p99)",
+          "Multi-tenancy & cost attribution"
+        ],
+        "months": [
+          {
+            "n": 1,
+            "title": "Not yet",
+            "roi": 30,
+            "focus": "Not yet \u2014 DSA and positioning own Month 1. Read Chip Huyen in background time; the round is strong enough that starting it later costs little."
+          },
+          {
+            "n": 2,
+            "title": "Framework + first four designs",
+            "roi": 85,
+            "focus": "Lock the answer framework, then the first four designs: RAG over enterprise docs, an agentic workflow, a recommender, fraud detection. Narrate each aloud, timed at 45 minutes \u2014 reading is not preparation, speaking under pressure is."
+          },
+          {
+            "n": 3,
+            "title": "Remaining four + the two known gaps",
+            "roi": 88,
+            "focus": "Remaining four: feature store, LLM eval pipeline, real-time inference, multi-tenant platform. Then drill the two known gaps directly: scale at 10k req/sec (sharding, replication, p99 budgets) and multi-tenancy/cost attribution."
+          },
+          {
+            "n": 4,
+            "title": "Mocks scale with onsites",
+            "roi": 75,
+            "focus": "Mocks scale with the onsite calendar, 70/30 mocks-to-reading. Every real interview's design question gets a written post-mortem."
+          },
+          {
+            "n": 5,
+            "title": "Mocks",
+            "roi": 70,
+            "focus": "Mocks keyed to upcoming onsites; 70/30 mocks-to-reading holds."
+          },
+          {
+            "n": 6,
+            "title": "Mocks",
+            "roi": 70,
+            "focus": "Mocks through peak onsite season."
+          },
+          {
+            "n": 7,
+            "title": "Mocks as needed",
+            "roi": 50,
+            "focus": "Mocks only for live final rounds."
+          },
+          {
+            "n": 8,
+            "title": "Mocks as needed",
+            "roi": 40,
+            "focus": "Same."
+          },
+          {
+            "n": 9,
+            "title": "Off",
+            "roi": 10,
+            "focus": "Off."
+          },
+          {
+            "n": 10,
+            "title": "Off",
+            "roi": 10,
+            "focus": "Off \u2014 the first 90 days at the new job are the real system design practice now."
+          },
+          {
+            "n": 11,
+            "title": "Off",
+            "roi": 10,
+            "focus": "Off."
+          },
+          {
+            "n": 12,
+            "title": "Off",
+            "roi": 10,
+            "focus": "Off."
+          }
+        ]
+      },
+      "search": {
+        "name": "Positioning & Search",
+        "weight": 0.1,
+        "weekly_hours": 1,
+        "daily_hours": 0.2,
+        "color": {
+          "bg": "#F0EAF8",
+          "text": "#43276B",
+          "border": "#6A3FA0"
+        },
+        "summary": "Front-loaded into Week 1, dormant through Month 3, then owns the plan from Month 4. The bottleneck is execution here, not capability.",
+        "skills": [
+          "Canonical resume",
+          "Alt-data swap-in block",
+          "GitHub legibility",
+          "Target list construction",
+          "Application cadence",
+          "Behavioral narratives",
+          "Negotiation on data",
+          "Level over base"
+        ],
+        "months": [
+          {
+            "n": 1,
+            "title": "Positioning week",
+            "roi": 100,
+            "focus": "Drafting the resume now is not about applying \u2014 it's how he finds out which story he actually has. Canonical frame: \"builds production ML systems that make money.\" Lead with Valorem (3M+ property records, 13-service FastAPI/GraphQL pipeline on AWS); M Science is the credibility line. Build the alt-data swap-in bullet block, and pin 3 GitHub repos each stating problem/architecture/one number."
+          },
+          {
+            "n": 2,
+            "title": "Dormant",
+            "roi": 20,
+            "focus": "Dormant. Resist tinkering with the resume \u2014 at this stage that's procrastination wearing productivity's clothes."
+          },
+          {
+            "n": 3,
+            "title": "Target list",
+            "roi": 75,
+            "focus": "Build the target list: 60% Series B\u2013D applied-AI/infra, 20% AI-forward mid-size, 10% quant fund engineering (research screens on credentials, engineering doesn't), 10% hyperscaler. Run this as the FLOOR, not the whole bet: in parallel, open a tier-one lane \u2014 frontier-lab FDE/applied and quant-fund engineering \u2014 applied opportunistically at lower volume. Those are the seats where the $500K tier actually lives; Series B\u2013D is what protects time-to-offer while they cook. Tag every application with its tier so the funnel shows whether tier-one is converting or only the floor is. Decision rule, written now before it is emotional: take the first good floor offer (real comp ladder) UNLESS a tier-one loop is already at onsite \u2014 do not let a floor offer expire chasing a tier-one maybe."
+          },
+          {
+            "n": 4,
+            "title": "Applications live",
+            "roi": 95,
+            "focus": "Applications open. 15\u201320/week, tracked in a spreadsheet. Do NOT build tooling yet \u2014 a spreadsheet does the job and tooling is a way to feel productive without applying."
+          },
+          {
+            "n": 5,
+            "title": "Diagnose stalls",
+            "roi": 90,
+            "focus": "Diagnose stalls by symptom: no screens means resume/targeting; screens but no onsites means the coding round; onsites but no offers means design or behavioral. Fix the failing stage, not everything."
+          },
+          {
+            "n": 6,
+            "title": "Onsites + behavioral narratives",
+            "roi": 90,
+            "focus": "Onsite season. Tighten the behavioral narratives \u2014 founding Bridges AI, the Valorem build, leaving quant research \u2014 each with a decision, a tradeoff, and a number."
+          },
+          {
+            "n": 7,
+            "title": "Negotiate on data",
+            "roi": 90,
+            "focus": "Negotiate on data, not feelings: competing offers, level bands, location-adjusted comps. Level beats base \u2014 argue the level first, the number follows."
+          },
+          {
+            "n": 8,
+            "title": "Negotiate / close",
+            "roi": 85,
+            "focus": "Keep offers warm and clustered. The goal is signing well, not squeezing the last $10K out of a single offer."
+          },
+          {
+            "n": 9,
+            "title": "Sign",
+            "roi": 80,
+            "focus": "Sign by May 2027. Done is the deliverable."
+          },
+          {
+            "n": 10,
+            "title": "First 90 days",
+            "roi": 70,
+            "focus": "First 90 days: ship visibly, and own the highest-leverage system nobody owns."
+          },
+          {
+            "n": 11,
+            "title": "First 90 days",
+            "roi": 65,
+            "focus": "Keep shipping; convert early wins into scope."
+          },
+          {
+            "n": 12,
+            "title": "Artifact track begins",
+            "roi": 60,
+            "focus": "The artifact track opens: reproductions, OSS PRs, writing. This is the years-2\u20134 compounding lane, started only now, on purpose."
+          }
+        ]
+      }
+    },
+    "v2_phases": [
+      {
+        "n": 1,
+        "name": "Build the Floor",
+        "months": "1-3",
+        "window": "Aug\u2013Oct 2026",
+        "goal": "Be demonstrably interview-ready. Not applying yet, deliberately.",
+        "note": "Confidence built purely by studying evaporates on contact with a real loop; the Month 3 gate is the defense."
+      },
+      {
+        "n": 2,
+        "name": "Apply and Convert",
+        "months": "4-6",
+        "window": "Nov 2026\u2013Jan 2027",
+        "goal": "15\u201320 applications/week; screens to onsites.",
+        "note": "Nov\u2013Jan is a stronger hiring window than August, so the delay lands him in it."
+      },
+      {
+        "n": 3,
+        "name": "Close",
+        "months": "7-9",
+        "window": "Feb\u2013Apr 2027",
+        "goal": "Cluster offers, negotiate on level, sign by May 2027.",
+        "note": "$210K now beats $280K arriving six months later; the ladder does more work than the starting rung."
+      },
+      {
+        "n": 4,
+        "name": "Land Well, Then Compound",
+        "months": "10-12",
+        "window": "May\u2013Jul 2027",
+        "goal": "Ship visibly in the first 90 days; artifact track begins.",
+        "note": "Artifacts are deferred value \u2014 they don't help get THIS job, they make the $500K tier real in years 2\u20134."
+      }
+    ],
+    "v2_gate": {
+      "name": "Month 3 Checkpoint - Ready to Apply",
+      "target_date": "2026-10-31",
+      "criteria": [
+        {
+          "id": "dsa",
+          "text": "LeetCode mediums under 30 min, consistently, on unseen problems",
+          "fail_response": "3 more weeks of DSA only; everything else holds; do NOT extend the whole phase."
+        },
+        {
+          "id": "sysdesign",
+          "text": "5 system design mocks completed without freezing",
+          "fail_response": "Paid mocks with a practicing engineer; external feedback, not more solo reps."
+        },
+        {
+          "id": "recall",
+          "text": "Anki deck at 90%+ recall on the fundamentals set",
+          "fail_response": "Two weeks of Anki intensity."
+        },
+        {
+          "id": "assets",
+          "text": "Resume final, GitHub presentable, LinkedIn aligned",
+          "fail_response": "One weekend; this is not a skill gap."
+        }
+      ],
+      "all_fail_response": "The 10 hrs/week wasn't real. Re-plan against actual capacity rather than intended capacity."
+    },
+    "_v2_note": "v2 (MLE floor, $200-300K, 10h/week) parked 2026-08-24 when the target moved to senior/staff at 20h/week. Kept intact: if capacity proves to be 10h/week rather than 20h, restore these four objects rather than improvising a middle plan.",
+    "stale_2026_roles": [
+      {
+        "id": "aaru",
+        "name": "Aaru \u2014 Software Engineer, Data Integration",
+        "primary_tracks": [
+          "ml-recall",
+          "sys-design"
+        ],
+        "note": "Data pipelines, entity resolution, large-scale ingestion, alt-data. Interview Wed Jun 24."
+      },
+      {
+        "id": "equi",
+        "name": "Equi \u2014 Founding Engineer, Applied AI Lead",
+        "primary_tracks": [
+          "sys-design"
+        ],
+        "note": "Full-stack AI (RAG, LLM workflows), TypeScript/Next.js, investment domain. Interview Tue Jun 23."
+      }
+    ]
+  },
+  "gate_2": {
+    "name": "Gate 2 - Staff-ready (staff applications open)",
+    "target_date": "2027-02-01",
+    "criteria": [
+      {
+        "id": "load_test",
+        "text": "Flagship load-tested at >=100x baseline traffic, with a written bottleneck analysis and the fix that followed",
+        "fail_response": "Apply senior-only. Staff comes at the next company, from inside a comp ladder."
+      },
+      {
+        "id": "writeup",
+        "text": "Public technical writeup published, with real numbers, that survives hostile questioning",
+        "fail_response": "Apply senior-only; publish when it is true rather than when it is due."
+      },
+      {
+        "id": "depth",
+        "text": "Can derive and whiteboard backprop and attention from memory, and defend an inference-cost model",
+        "fail_response": "Two weeks on the foundations backlog, senior applications continue regardless."
+      },
+      {
+        "id": "scope_narrative",
+        "text": "Behavioral narratives told at org scope - the Bridges AI CTO reframe, not a project list",
+        "fail_response": "This is a writing problem, not an experience problem. One weekend with a mock interviewer."
+      }
+    ],
+    "all_fail_response": "Staff was the stretch and it did not land. This is the expected outcome, not the failure case - senior at $300-450K was the target. Close the senior offers."
   }
 }
