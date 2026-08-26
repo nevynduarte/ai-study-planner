@@ -6,6 +6,7 @@
  * Routes:
  *   GET   /api/data        → latest plan/frontier/advisory + log + status + tutor Q&A
  *                            + applications + artifacts + gate + funnel + funnel_by_tier
+ *                            + postings (scraped leads — NOT applications)
  *   POST  /api/log         → insert a study_log row
  *   POST  /api/ask         → insert a tutor_qa question (answered later by P620)
  *   POST  /api/application → create an application row
@@ -13,6 +14,7 @@
  *   POST  /api/artifact    → create an artifact row
  *   PATCH /api/artifact    → update an artifact (shipped requires evidence_url)
  *   PATCH /api/gate        → record a gate-criterion check (stamps checked_at)
+ *   PATCH /api/posting     → save / dismiss / promote a scraped posting
  *   everything else        → static assets (the built SPA)
  */
 
@@ -42,6 +44,14 @@ function authorized(request, env) {
 }
 
 const VALID_TRACKS = ["dsa", "ml-recall", "sys-design", "search"];
+const VALID_POSTING_STATUS = ["new", "saved", "dismissed", "promoted"];
+
+// D1 stores the matched-skills array as JSON text; never let a malformed row
+// take down /api/data.
+function safeJson(v, fallback) {
+  if (v == null) return fallback;
+  try { return JSON.parse(v); } catch { return fallback; }
+}
 const VALID_STAGES = ["applied", "screen", "onsite", "offer", "closed"];
 const VALID_TIERS = ["series-bd", "midsize", "quant-eng", "hyperscaler", "frontier-lab"];
 const VALID_OUTCOMES = ["active", "rejected", "withdrawn", "accepted", "declined"];
@@ -73,6 +83,7 @@ export default {
     if (pathname === "/api/artifact" && m === "POST")  return postArtifact(request, env);
     if (pathname === "/api/artifact" && m === "PATCH") return patchArtifact(request, env);
     if (pathname === "/api/gate" && m === "PATCH") return patchGate(request, env);
+    if (pathname === "/api/posting" && m === "PATCH") return patchPosting(request, env);
     if (pathname.startsWith("/api/")) return json({ error: "Not found" }, 404);
 
     // Non-API requests → static assets (React app)
@@ -84,7 +95,7 @@ async function getData(env) {
   try {
     const db = env.DB;
     const [plan, frontier, advisory, log, statusRows, questions, coverage,
-           applications, artifacts, gate, funnel, funnelByTier] = await Promise.all([
+           applications, artifacts, gate, funnel, funnelByTier, postings] = await Promise.all([
       db.prepare("SELECT date, content, generated_at FROM daily_plan ORDER BY generated_at DESC LIMIT 1").first(),
       db.prepare("SELECT date, content, generated_at FROM frontier ORDER BY generated_at DESC LIMIT 1").first(),
       db.prepare("SELECT date, content, generated_at FROM advisory ORDER BY generated_at DESC LIMIT 1").first(),
@@ -97,6 +108,8 @@ async function getData(env) {
       db.prepare("SELECT criterion, passed, checked_at, evidence, notes FROM gate_check").all().catch(() => ({ results: [] })),
       db.prepare("SELECT * FROM v_funnel").first().catch(() => null),
       db.prepare("SELECT * FROM v_funnel_by_tier").all().catch(() => ({ results: [] })),
+      // Scraped leads, best-scoring first. Empty until migration 004 has run.
+      db.prepare("SELECT * FROM v_posting_shortlist LIMIT 25").all().catch(() => ({ results: [] })),
     ]);
     const status = {};
     for (const r of statusRows.results || []) status[r.key] = r.value;
@@ -113,6 +126,7 @@ async function getData(env) {
       gate: gate.results || [],
       funnel: funnel || null,
       funnel_by_tier: funnelByTier.results || [],
+      postings: (postings.results || []).map(p => ({ ...p, skills: safeJson(p.skills, []) })),
     });
   } catch (e) {
     return json({ error: e.message }, 500);
@@ -301,4 +315,30 @@ async function patchGate(request, env) {
   } catch (e) {
     return json({ error: e.message }, 500);
   }
+}
+
+/**
+ * PATCH /api/posting  { id, status }
+ *
+ * Triage a scraped lead: save it, dismiss it, or mark it promoted.
+ *
+ * Note what this deliberately does NOT do: it never creates an `applications`
+ * row. Postings and applications are separate because v_funnel counts every
+ * application row as "applied", and auto-promoting scraped leads would report
+ * applications that never happened. Marking a posting `promoted` records that
+ * YOU applied; creating the application row stays an explicit POST /api/application.
+ */
+async function patchPosting(request, env) {
+  const b = await request.json().catch(() => ({}));
+  const id = Number(b.id);
+  if (!Number.isInteger(id) || id <= 0) return json({ error: "id required" }, 400);
+  if (!VALID_POSTING_STATUS.includes(b.status)) {
+    return json({ error: `status must be one of ${VALID_POSTING_STATUS.join(", ")}` }, 400);
+  }
+  const res = await env.DB
+    .prepare("UPDATE job_postings SET status = ?, promoted_application_id = COALESCE(?, promoted_application_id) WHERE id = ?")
+    .bind(b.status, b.application_id ?? null, id)
+    .run();
+  if (!res.meta || res.meta.changes === 0) return json({ error: "posting not found" }, 404);
+  return json({ ok: true, id, status: b.status });
 }

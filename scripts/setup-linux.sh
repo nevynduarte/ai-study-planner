@@ -84,10 +84,11 @@ MAILTO=""
 0 6 * * *  $PROJECT/scripts/daily-briefing.sh    # 6am ET  — briefing + plan + frontier
 0 * * * *  $PROJECT/scripts/answer-questions.sh  # hourly  — answer tutor questions
 0 23 * * * $PROJECT/scripts/advisory.sh          # 11pm ET — plan health advisory
+30 4 * * * $PROJECT/scripts/scan-jobs.sh         # 4:30am ET — scrape + score job leads (before the 6am briefing reads them)
 EOF
 crontab "$CRON_TMP"
 rm -f "$CRON_TMP"
-ok "cron installed (CRON_TZ=$TZ_ET): 6am briefing · hourly tutor · 11pm advisory"
+ok "cron installed (CRON_TZ=$TZ_ET): 4:30am job scan · 6am briefing · hourly tutor · 11pm advisory"
 
 # 8. Seed D1 from current status.json (non-fatal if D1 isn't reachable yet).
 say "Syncing status.json → D1..."
@@ -96,7 +97,7 @@ bash "$PROJECT/scripts/sync-to-d1.sh" && ok "status synced to D1" || warn "sync 
 # 9. Test push via ntfy.
 # shellcheck source=/dev/null
 source "$DIR/lib.sh"
-if send_push "AI Study Planner — setup OK" "This box ($(hostname)) is now the scheduled runner. 6am briefing · hourly tutor · 11pm advisory." "$APP_URL"; then
+if send_push "AI Study Planner — setup OK" "This box ($(hostname)) is now the scheduled runner. 4:30am job scan · 6am briefing · hourly tutor · 11pm advisory." "$APP_URL"; then
   ok "test push sent — check your phone"
 else
   warn "test push failed — verify config/notify.local.json (ntfy_topic)"
@@ -105,6 +106,7 @@ fi
 echo
 echo "─────────────────────────────────────────────"
 echo "Done. This box now runs the schedule (Eastern):"
+echo "  4:30am → job scan (scrape + score leads into D1)"
 echo "  6am  → briefing + plan + frontier"
 echo "  hourly → tutor answers"
 echo "  11pm → advisory"

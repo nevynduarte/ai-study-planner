@@ -1,0 +1,3 @@
+# Job-lead scanner only (scripts/scan_jobs.py). The rest of the planner is
+# Node/Bash — install this on the box that runs the 4:30am cron entry.
+python-jobspy>=1.1.80
