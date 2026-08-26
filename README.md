@@ -88,11 +88,12 @@ cron; prefer `setup-linux.sh`.
 
 | When (ET) | Script | Writes |
 |-----------|--------|--------|
+| 4:30am daily | `scan-jobs.sh` | scored job leads → `job_postings` |
 | 6am daily | `daily-briefing.sh` | push briefing + track-weighted `daily_plan` + per-track `frontier` |
 | every hour | `answer-questions.sh` | tutor answers in `tutor_qa` |
 | 11pm daily | `advisory.sh` | `advisory` + `skill_coverage` updates |
 
-All three are grounded by `build_context()` (in `lib.sh`), which injects the curriculum, per-track positions, skill coverage, and the recent study log into every prompt.
+All are grounded by `build_context()` (in `lib.sh`), which injects the curriculum, per-track positions, skill coverage, and the recent study log into every prompt.
 
 ## Daily workflow
 

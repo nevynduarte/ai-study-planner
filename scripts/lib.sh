@@ -103,6 +103,10 @@ build_context() {
       "$PROJECT/public/curriculum.json" "$PROJECT/config/status.json" 2>/dev/null \
       || echo "(curriculum context unavailable)"
     echo
+    echo "=== SCANNED LEADS (top 5 by score; scripts/scan-jobs.sh) ==="
+    d1_json "SELECT title,company,salary_min,salary_max,skills,score,job_url FROM v_posting_shortlist LIMIT 5;" 2>/dev/null \
+      | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const j=JSON.parse(s),r=(j[0]&&j[0].results)||[];if(!r.length){console.log("(none)");return;}for(const x of r){const c=x.salary_min||x.salary_max?` $${x.salary_min||"?"}-${x.salary_max||"?"}`:"";let sk=[];try{sk=JSON.parse(x.skills||"[]")}catch(e){}console.log(`${(x.score||0).toFixed(2)} ${x.title} @ ${x.company||"?"}${c} [${sk.join(", ")}] ${x.job_url}`);}}catch(e){console.log("(leads unavailable)");}})'
+    echo
     echo "=== RECENT STUDY LOG (most recent 25; track in brackets) ==="
     d1_json "SELECT date,hours,topic,track,notes FROM study_log ORDER BY id DESC LIMIT 25;" 2>/dev/null \
       | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const j=JSON.parse(s),r=(j[0]&&j[0].results)||[];if(!r.length){console.log("(none yet)");return;}for(const x of r)console.log(`${x.date}: ${x.hours}h [${x.track||"unassigned"}] — ${x.topic}${x.notes?" | "+x.notes:""}`);}catch(e){console.log("(log unavailable)");}})'
