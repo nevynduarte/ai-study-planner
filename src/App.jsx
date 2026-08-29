@@ -5,8 +5,10 @@ import remarkGfm from "remark-gfm";
 import DocReader from "./components/DocReader.jsx";
 import { usePersisted } from "./hooks/usePersisted.js";
 import { parsePlan } from "./lib/parsePlan.js";
-import { COV } from "./lib/constants.js";
+import { COV, covOf, DAILY_HOURS, WEEKLY_TARGET } from "./lib/constants.js";
 import { slugify, nodeText, READER_ACCENT } from "./lib/text.js";
+import { getJSON, postJSON, patchJSON } from "./lib/api.js";
+import { hexA, todayFmt, fmtDate, fmtTs, roiColor } from "./lib/format.js";
 
 export default function App() {
   const [tab,     setTab]     = useState("today");
