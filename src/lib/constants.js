@@ -5,9 +5,9 @@ export const COV = {
   "built":           { label:"●",  bg:"#E6F1FB", text:"#0C447C", border:"#185FA5", dot:"#185FA5" },
   "interview-ready": { label:"★",  bg:"#EAF3DE", text:"#3B6D11", border:"#639922", dot:"#639922" },
 };
-const covOf = (m, track, skill) => m[`${track}:::${skill}`] || "not-started";
+export const covOf = (m, track, skill) => m[`${track}:::${skill}`] || "not-started";
 
-// Single-user, client-side persisted UI state (localStorage). Used for toggles
-// the static curriculum + D1 don't model: crash-day completion, archived
-// interviews, papers marked read. Falls back to `initial` if storage is empty
-// or unavailable, and ignores write errors (private mode / quota).
+// Daily study commitment. 2 focused hours/day (10h/week) alongside consulting.
+// Per-track hours derive from each track's weight, so this is the only knob.
+export const DAILY_HOURS   = 2;
+export const WEEKLY_TARGET = 10;

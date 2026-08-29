@@ -1,6 +1,16 @@
 // Parses a P620-generated markdown plan into renderable blocks.
 // Extracted from App.jsx unchanged — pure, and the piece most worth testing
 // in isolation if this ever gets a test runner.
+// P620 emits checklist lines shaped `**HH:MM–HH:MM** [Track] [MODE] — task
+// · done when: signal`, plus a "### Wrap" section of three named items.
+// Anything unrecognized falls back to a plain checklist item so a malformed
+// plan still renders.
+const TRACK_GUESS = [
+  [/\bdsa\b|coding|leetcode|neetcode/i, "dsa"],
+  [/recall|fundamental|anki|breadth/i, "ml-recall"],
+  [/sys|design/i, "sys-design"],
+  [/search|position|resume/i, "search"],
+];
 const guessTrack = (s) => { for (const [re, id] of TRACK_GUESS) if (re.test(s)) return id; return null; };
 export function parsePlan(md) {
   const blocks = [], wrap = [];
