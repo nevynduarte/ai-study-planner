@@ -40,8 +40,21 @@ pixel-perfect UI. No infra yak-shaving. Depth only where it's tested.
 | 10 | Multi-tenancy: `tenant_id` row scoping | RBAC reasoning | 2 partners, disjoint funds |
 | 11 | System-design doc: Aaru "ingest 100TB panel" | pipeline design out loud | 1 page + diagram |
 | 12 | System-design doc: Equi RAG + white-label | RAG design out loud | 1 page + diagram |
-| 13 | **3-layer evals** (offline CI / online / human) + faithfulness check; lineage | calibrate LLM-judge to humans | eval prints numbers; judge ≥80% agree |
+| 13 | **3-layer evals** (offline CI / online / human) with the standard named metrics — faithfulness, answer relevancy, context recall (Ragas vocabulary, hand-rolled); lineage | calibrate LLM-judge to humans | eval prints all three metrics; judge ≥80% agree |
 | 14 | Polish + record yourself narrating both | behavioral story bank | demoable repo + crisp story |
+
+## Stretch (optional, after Day 14 — one day, only if interviews probe agents)
+The course covers RAG, structured outputs, and evals; the one 2026 interview
+topic it skips is tool-calling agents. If a loop asks for it, close the gap in
+a single bounded day on the code you already have:
+
+| Day | Build | Drill | Done when |
+|----|----|----|----|
+| 15 | Agentic `/ask`: model chooses between a SQL tool (`/funds` queries) and RAG retrieval; log every step (inputs, tool calls, outputs) to a trace table; retry-or-refuse on tool failure | tool calling + tracing + failure recovery | a logged trace shows a 2-tool answer, and a forced tool error degrades gracefully instead of hallucinating |
+
+Vocabulary to be able to say out loud afterward: ReAct loop, tool schema,
+structured outputs as the contract, trace/span, human-approval gate. No
+frameworks — raw API tool calls keep it explainable.
 
 ## Daily rhythm (decide once, ~3 hrs)
 - 15 min — read the day's row + recall yesterday

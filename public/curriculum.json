@@ -2059,6 +2059,14 @@
           {
             "name": "InterviewBit — ML Qs",
             "url": "https://www.interviewbit.com/machine-learning-interview-questions/"
+          },
+          {
+            "name": "AIMLInterviews (GitHub, alirezadir)",
+            "url": "https://github.com/alirezadir/AIMLInterviews"
+          },
+          {
+            "name": "LLMs Research — Flashcards",
+            "url": "https://llmsresearch.com/flashcards"
           }
         ],
         "groups": [
@@ -2176,6 +2184,12 @@
         "accent": "#BA7517",
         "ref": "https://github.com/ByteByteGoHq/system-design-101",
         "note": "For each prompt, talk through requirements → high-level design → data model → scaling/bottlenecks → trade-offs. The first two map directly to your Aaru and Equi rounds.",
+        "resources": [
+          {
+            "name": "AIMLInterviews — ML system design (GitHub, alirezadir)",
+            "url": "https://github.com/alirezadir/AIMLInterviews"
+          }
+        ],
         "groups": [
           {
             "name": "ML / AI System Design",
