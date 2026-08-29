@@ -108,8 +108,12 @@ async function getData(env) {
       db.prepare("SELECT criterion, passed, checked_at, evidence, notes FROM gate_check").all().catch(() => ({ results: [] })),
       db.prepare("SELECT * FROM v_funnel").first().catch(() => null),
       db.prepare("SELECT * FROM v_funnel_by_tier").all().catch(() => ({ results: [] })),
-      // Scraped leads, best-scoring first. Empty until migration 004 has run.
-      db.prepare("SELECT * FROM v_posting_shortlist LIMIT 25").all().catch(() => ({ results: [] })),
+      // Scraped leads for the Roles tab. Not v_posting_shortlist (that view is
+      // status='new' only, for the briefing) — the tab also needs saved and
+      // promoted rows to survive a reload. Empty until migration 004 has run.
+      db.prepare(`SELECT * FROM job_postings WHERE status != 'dismissed'
+                  ORDER BY CASE status WHEN 'saved' THEN 0 WHEN 'promoted' THEN 1 ELSE 2 END,
+                           score DESC, last_seen DESC LIMIT 100`).all().catch(() => ({ results: [] })),
     ]);
     const status = {};
     for (const r of statusRows.results || []) status[r.key] = r.value;
