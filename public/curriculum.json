@@ -2021,6 +2021,10 @@
         "note": "Pandas problems are on LeetCode (Introduction to Pandas). The stats/probability and ML items are conceptual — say the answer out loud or whiteboard the derivation, then tick it. Deep-ML is the 'LeetCode for ML' — implement algorithms from scratch.",
         "resources": [
           {
+            "name": "LeetCode — Intro to Pandas (study plan)",
+            "url": "https://leetcode.com/studyplan/introduction-to-pandas/"
+          },
+          {
             "name": "Deep-ML — Problems",
             "url": "https://www.deep-ml.com/problems"
           },
@@ -2119,28 +2123,36 @@
             "name": "Statistics & Probability",
             "problems": [
               {
-                "n": "Derive the bias–variance decomposition"
+                "n": "Derive the bias–variance decomposition",
+                "url": "http://scott.fortmann-roe.com/docs/BiasVariance.html"
               },
               {
-                "n": "Explain p-value, Type I/II error, and statistical power"
+                "n": "Explain p-value, Type I/II error, and statistical power",
+                "url": "https://en.wikipedia.org/wiki/Type_I_and_type_II_errors"
               },
               {
-                "n": "Compute A/B test sample size for a target MDE"
+                "n": "Compute A/B test sample size for a target MDE",
+                "url": "https://www.evanmiller.org/ab-testing/sample-size.html"
               },
               {
-                "n": "Maximum likelihood vs MAP — derive for a Gaussian"
+                "n": "Maximum likelihood vs MAP — derive for a Gaussian",
+                "url": "https://www.cs.cornell.edu/courses/cs4780/2018fa/lectures/lecturenote04.html"
               },
               {
-                "n": "State and apply the Central Limit Theorem"
+                "n": "State and apply the Central Limit Theorem",
+                "url": "https://www.youtube.com/watch?v=YAlJCEDH2uY"
               },
               {
-                "n": "Bootstrap a confidence interval from scratch"
+                "n": "Bootstrap a confidence interval from scratch",
+                "url": "https://www.youtube.com/watch?v=Xz0x-8-cgaQ"
               },
               {
-                "n": "Bayes' theorem: the disease-testing / base-rate problem"
+                "n": "Bayes' theorem: the disease-testing / base-rate problem",
+                "url": "https://www.youtube.com/watch?v=HZGCoVF3YvM"
               },
               {
-                "n": "Confounders, colliders, and DAGs — when does correlation imply causation?"
+                "n": "Confounders, colliders, and DAGs — when does correlation imply causation?",
+                "url": "https://theeffectbook.net/"
               }
             ]
           },
@@ -2148,31 +2160,40 @@
             "name": "ML Modeling (conceptual)",
             "problems": [
               {
-                "n": "Derive the logistic-regression gradient"
+                "n": "Derive the logistic-regression gradient",
+                "url": "https://web.stanford.edu/~jurafsky/slp3/5.pdf"
               },
               {
-                "n": "L1 vs L2 regularization — effect on weights and when to use each"
+                "n": "L1 vs L2 regularization — effect on weights and when to use each",
+                "url": "https://explained.ai/regularization/"
               },
               {
-                "n": "ROC/AUC vs PR curve — which to use when"
+                "n": "ROC/AUC vs PR curve — which to use when",
+                "url": "https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc"
               },
               {
-                "n": "Handle class imbalance — resampling, weighting, threshold tuning"
+                "n": "Handle class imbalance — resampling, weighting, threshold tuning",
+                "url": "https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/"
               },
               {
-                "n": "Diagnose under/overfitting from learning curves"
+                "n": "Diagnose under/overfitting from learning curves",
+                "url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_learning_curve.html"
               },
               {
-                "n": "Gradient boosting vs random forest — bias/variance trade-off"
+                "n": "Gradient boosting vs random forest — bias/variance trade-off",
+                "url": "https://explained.ai/gradient-boosting/"
               },
               {
-                "n": "Cross-validation pitfalls and data leakage"
+                "n": "Cross-validation pitfalls and data leakage",
+                "url": "https://www.kaggle.com/code/alexisbcook/data-leakage"
               },
               {
-                "n": "Interpret a model with feature importance / SHAP"
+                "n": "Interpret a model with feature importance / SHAP",
+                "url": "https://christophm.github.io/interpretable-ml-book/shap.html"
               },
               {
-                "n": "Evaluate an LLM/RAG system — offline, online, and human eval"
+                "n": "Evaluate an LLM/RAG system — offline, online, and human eval",
+                "url": "https://hamel.dev/blog/posts/evals/"
               }
             ]
           }
@@ -2195,31 +2216,40 @@
             "name": "ML / AI System Design",
             "problems": [
               {
-                "n": "RAG over fund documents with cited, traceable answers (Equi)"
+                "n": "RAG over fund documents with cited, traceable answers (Equi)",
+                "url": "https://www.anthropic.com/news/contextual-retrieval"
               },
               {
-                "n": "Ingest a 100TB alt-data source + entity resolution (Aaru)"
+                "n": "Ingest a 100TB alt-data source + entity resolution (Aaru)",
+                "url": "https://www.databricks.com/glossary/medallion-architecture"
               },
               {
-                "n": "Recommendation system (YouTube / Netflix-style)"
+                "n": "Recommendation system (YouTube / Netflix-style)",
+                "url": "https://eugeneyan.com/writing/system-design-for-discovery/"
               },
               {
-                "n": "News feed ranking"
+                "n": "News feed ranking",
+                "url": "https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-news-feed"
               },
               {
-                "n": "Ad click-through-rate prediction"
+                "n": "Ad click-through-rate prediction",
+                "url": "https://research.google/pubs/ad-click-prediction-a-view-from-the-trenches/"
               },
               {
-                "n": "Fraud / anomaly detection system"
+                "n": "Fraud / anomaly detection system",
+                "url": "https://stripe.com/blog/how-we-built-it-stripe-radar"
               },
               {
-                "n": "Search ranking & typeahead"
+                "n": "Search ranking & typeahead",
+                "url": "https://systemdesignschool.io/problems/typeahead/solution"
               },
               {
-                "n": "Real-time feature store + low-latency model serving"
+                "n": "Real-time feature store + low-latency model serving",
+                "url": "https://www.tecton.ai/blog/what-is-a-feature-store/"
               },
               {
-                "n": "LLM evaluation & observability pipeline"
+                "n": "LLM evaluation & observability pipeline",
+                "url": "https://docs.arize.com/phoenix"
               }
             ]
           },
@@ -2227,22 +2257,28 @@
             "name": "Classic System Design",
             "problems": [
               {
-                "n": "Design a URL shortener (TinyURL)"
+                "n": "Design a URL shortener (TinyURL)",
+                "url": "https://www.hellointerview.com/learn/system-design/problem-breakdowns/bitly"
               },
               {
-                "n": "Design a rate limiter"
+                "n": "Design a rate limiter",
+                "url": "https://www.hellointerview.com/learn/system-design/problem-breakdowns/distributed-rate-limiter"
               },
               {
-                "n": "Design a chat / messaging system"
+                "n": "Design a chat / messaging system",
+                "url": "https://www.hellointerview.com/learn/system-design/problem-breakdowns/whatsapp"
               },
               {
-                "n": "Design a distributed cache"
+                "n": "Design a distributed cache",
+                "url": "https://github.com/donnemartin/system-design-primer/blob/master/solutions/system_design/query_cache/README.md"
               },
               {
-                "n": "Design a web crawler"
+                "n": "Design a web crawler",
+                "url": "https://www.hellointerview.com/learn/system-design/problem-breakdowns/web-crawler"
               },
               {
-                "n": "Design a notification system"
+                "n": "Design a notification system",
+                "url": "https://www.hellointerview.com/learn/system-design/problem-breakdowns/notification-system"
               }
             ]
           },
@@ -2250,19 +2286,24 @@
             "name": "Analytics / Product Cases",
             "problems": [
               {
-                "n": "DAU dropped 20% overnight — diagnose it"
+                "n": "DAU dropped 20% overnight — diagnose it",
+                "url": "https://www.tryexponent.com/courses/execution-metrics"
               },
               {
-                "n": "Define success metrics for a new feature"
+                "n": "Define success metrics for a new feature",
+                "url": "https://research.google/pubs/measuring-the-user-experience-on-a-large-scale-user-centered-metrics-for-web-applications/"
               },
               {
-                "n": "Should we launch feature X? (experiment design + decision)"
+                "n": "Should we launch feature X? (experiment design + decision)",
+                "url": "https://www.evanmiller.org/how-not-to-run-an-ab-test.html"
               },
               {
-                "n": "Estimate the market size (guesstimate)"
+                "n": "Estimate the market size (guesstimate)",
+                "url": "https://careerinconsulting.com/market-sizing-questions/"
               },
               {
-                "n": "Prioritize a roadmap under limited engineering capacity"
+                "n": "Prioritize a roadmap under limited engineering capacity",
+                "url": "https://www.productplan.com/glossary/rice-scoring-model/"
               }
             ]
           }
@@ -2703,6 +2744,199 @@
     "learning": "Actively studying / partial understanding",
     "built": "Implemented or applied end-to-end at least once",
     "interview-ready": "Can explain and reproduce under interview pressure"
+  },
+  "intros": {
+    "_comment": "One introductory article/video per coverage skill, so no term on the Coverage tab is a bare unknown. Keyed by the exact skill string; rendered as an 'intro' link on each skill row. kind: video|article.",
+    "Arrays & hashing": {
+      "url": "https://www.geeksforgeeks.org/hashing-data-structure/",
+      "source": "GeeksforGeeks",
+      "kind": "article"
+    },
+    "Two pointers": {
+      "url": "https://www.geeksforgeeks.org/two-pointers-technique/",
+      "source": "GeeksforGeeks",
+      "kind": "article"
+    },
+    "Sliding window": {
+      "url": "https://www.geeksforgeeks.org/window-sliding-technique/",
+      "source": "GeeksforGeeks",
+      "kind": "article"
+    },
+    "Stack": {
+      "url": "https://www.geeksforgeeks.org/stack-data-structure/",
+      "source": "GeeksforGeeks",
+      "kind": "article"
+    },
+    "Binary search": {
+      "url": "https://www.khanacademy.org/computing/computer-science/algorithms/binary-search/a/binary-search",
+      "source": "Khan Academy",
+      "kind": "article"
+    },
+    "Linked lists": {
+      "url": "https://www.geeksforgeeks.org/data-structures/linked-list/",
+      "source": "GeeksforGeeks",
+      "kind": "article"
+    },
+    "Trees & tries": {
+      "url": "https://www.geeksforgeeks.org/binary-tree-data-structure/",
+      "source": "GeeksforGeeks",
+      "kind": "article"
+    },
+    "Heap / priority queue": {
+      "url": "https://www.geeksforgeeks.org/heap-data-structure/",
+      "source": "GeeksforGeeks",
+      "kind": "article"
+    },
+    "Backtracking": {
+      "url": "https://www.geeksforgeeks.org/backtracking-algorithms/",
+      "source": "GeeksforGeeks",
+      "kind": "article"
+    },
+    "Graphs": {
+      "url": "https://www.geeksforgeeks.org/graph-data-structure-and-algorithms/",
+      "source": "GeeksforGeeks",
+      "kind": "article"
+    },
+    "1D dynamic programming": {
+      "url": "https://www.geeksforgeeks.org/dynamic-programming/",
+      "source": "GeeksforGeeks",
+      "kind": "article"
+    },
+    "Python stdlib fluency": {
+      "url": "https://docs.python.org/3/tutorial/stdlib.html",
+      "source": "Python docs — stdlib tour",
+      "kind": "article"
+    },
+    "Bias-variance": {
+      "url": "https://www.youtube.com/watch?v=EuBBz3bI-aA",
+      "source": "StatQuest",
+      "kind": "video"
+    },
+    "Regularization (L1/L2)": {
+      "url": "https://www.youtube.com/watch?v=Q81RR3yKn30",
+      "source": "StatQuest — Ridge (L2)",
+      "kind": "video"
+    },
+    "Gradient boosting mechanics": {
+      "url": "https://www.youtube.com/watch?v=3CC4N4z3GJc",
+      "source": "StatQuest — Gradient Boost pt 1",
+      "kind": "video"
+    },
+    "Class imbalance": {
+      "url": "https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/",
+      "source": "Machine Learning Mastery",
+      "kind": "article"
+    },
+    "Cross-validation variants": {
+      "url": "https://www.youtube.com/watch?v=fSytzGwwBVw",
+      "source": "StatQuest",
+      "kind": "video"
+    },
+    "Feature leakage": {
+      "url": "https://www.kaggle.com/code/alexisbcook/data-leakage",
+      "source": "Kaggle Learn",
+      "kind": "article"
+    },
+    "Convergence failures": {
+      "url": "https://karpathy.github.io/2019/04/25/recipe/",
+      "source": "Karpathy — A Recipe for Training Neural Networks",
+      "kind": "article"
+    },
+    "RAG failure modes": {
+      "url": "https://arxiv.org/abs/2401.05856",
+      "source": "Seven Failure Points of RAG (paper)",
+      "kind": "article"
+    },
+    "Eval design": {
+      "url": "https://hamel.dev/blog/posts/evals/",
+      "source": "Hamel Husain — Your AI Product Needs Evals",
+      "kind": "article"
+    },
+    "Fine-tune vs prompt vs retrieve": {
+      "url": "https://applied-llms.org/",
+      "source": "What We Learned From a Year of Building with LLMs",
+      "kind": "article"
+    },
+    "Requirements interrogation": {
+      "url": "https://github.com/donnemartin/system-design-primer",
+      "source": "System Design Primer",
+      "kind": "article"
+    },
+    "Metric definition": {
+      "url": "https://developers.google.com/machine-learning/guides/rules-of-ml",
+      "source": "Google — Rules of ML",
+      "kind": "article"
+    },
+    "Data & training loop": {
+      "url": "https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning",
+      "source": "Google Cloud — MLOps levels",
+      "kind": "article"
+    },
+    "Serving architecture": {
+      "url": "https://huyenchip.com/machine-learning-systems-design/toc.html",
+      "source": "Chip Huyen — ML Systems Design",
+      "kind": "article"
+    },
+    "Evaluation design": {
+      "url": "https://docs.ragas.io/",
+      "source": "Ragas docs",
+      "kind": "article"
+    },
+    "Failure modes & tradeoffs": {
+      "url": "https://sre.google/sre-book/table-of-contents/",
+      "source": "Google SRE Book",
+      "kind": "article"
+    },
+    "Scale (sharding, replication, p99)": {
+      "url": "https://github.com/ByteByteGoHq/system-design-101",
+      "source": "ByteByteGo — System Design 101",
+      "kind": "article"
+    },
+    "Multi-tenancy & cost attribution": {
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/saas-architecture-fundamentals/saas-architecture-fundamentals.html",
+      "source": "AWS — SaaS Architecture Fundamentals",
+      "kind": "article"
+    },
+    "Canonical resume": {
+      "url": "https://www.techinterviewhandbook.org/resume/",
+      "source": "Tech Interview Handbook",
+      "kind": "article"
+    },
+    "Alt-data swap-in block": {
+      "url": "https://www.techinterviewhandbook.org/resume/",
+      "source": "Tech Interview Handbook — tailoring",
+      "kind": "article"
+    },
+    "GitHub legibility": {
+      "url": "https://github.com/abhisheknaiidu/awesome-github-profile-readme",
+      "source": "Awesome GitHub Profile READMEs",
+      "kind": "article"
+    },
+    "Target list construction": {
+      "url": "https://github.com/poteto/hiring-without-whiteboards",
+      "source": "Hiring Without Whiteboards (company list)",
+      "kind": "article"
+    },
+    "Application cadence": {
+      "url": "https://www.techinterviewhandbook.org/software-engineering-interview-guide/",
+      "source": "Tech Interview Handbook",
+      "kind": "article"
+    },
+    "Behavioral narratives": {
+      "url": "https://www.techinterviewhandbook.org/behavioral-interview/",
+      "source": "Tech Interview Handbook",
+      "kind": "article"
+    },
+    "Negotiation on data": {
+      "url": "https://www.kalzumeus.com/2012/01/23/salary-negotiation/",
+      "source": "patio11 — Salary Negotiation",
+      "kind": "article"
+    },
+    "Level over base": {
+      "url": "https://haseebq.com/my-ten-rules-for-negotiating-a-job-offer/",
+      "source": "Haseeb Qureshi — Ten Rules for Negotiating",
+      "kind": "article"
+    }
   },
   "phases": [
     {
