@@ -9,6 +9,7 @@ import { COV, covOf, DAILY_HOURS, WEEKLY_TARGET } from "./lib/constants.js";
 import { slugify, nodeText, READER_ACCENT } from "./lib/text.js";
 import { getJSON, postJSON, patchJSON } from "./lib/api.js";
 import { hexA, todayFmt, fmtDate, fmtTs, roiColor } from "./lib/format.js";
+import { findIntro } from "./lib/intros.js";
 
 export default function App() {
   const [tab,     setTab]     = useState("today");
@@ -845,6 +846,7 @@ export default function App() {
             {plan?.content && parsedPlan.blocks.map((b, i) => {
               const checked = planCheckedSet.has(b.label);
               const ac = (b.track && tracks[b.track]?.color?.border) || txtT;
+              const intro = findIntro(cur, b.track, `${b.task || b.label} ${b.doneWhen || ""}`);
               return (
                 <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start", padding:"11px 0 11px 12px", borderTop: i>0 ? `1px solid ${brd}` : "none",
                     borderLeft:`3px solid ${checked ? hexA(ac,0.35) : ac}`, marginLeft:-2, opacity: checked ? 0.62 : 1 }}>
@@ -854,6 +856,12 @@ export default function App() {
                       {b.time && <span style={{ fontSize:11.5, fontWeight:700, color:txtT, fontVariantNumeric:"tabular-nums" }}>{b.time}</span>}
                       {b.track && tracks[b.track] && <span style={{ fontSize:10.5, fontWeight:800, letterSpacing:0.4, color:ac }}>{tracks[b.track].name.toUpperCase()}</span>}
                       {b.mode && <span style={{ fontSize:10, color:txtT, letterSpacing:0.5 }}>{b.mode}</span>}
+                      {intro && (
+                        <a href={intro.url} target="_blank" rel="noreferrer" title={`${intro.skill} — ${intro.source}`}
+                           style={{ fontSize:10.5, color:txtS, textDecoration:"none", border:`1px solid ${brd}`, borderRadius:6, padding:"1px 7px", whiteSpace:"nowrap" }}>
+                          {intro.kind === "video" ? "▶" : "↗"} intro
+                        </a>
+                      )}
                     </div>
                     <div style={{ fontSize:13.5, lineHeight:1.55, color: checked ? txtT : txt, textDecoration: checked ? "line-through" : "none", textDecorationColor: hexA(ac, 0.6) }}>{b.task}</div>
                     {b.doneWhen && (
@@ -1513,10 +1521,18 @@ export default function App() {
                   <div style={{ padding:"0 1rem 0.9rem" }}>
                     {skills.map((sk, i) => {
                       const st = covOf(covMap, id, sk);
+                      const intro = cur?.intros?.[sk];
                       return (
                         <div key={sk} style={{ display:"flex", alignItems:"center", gap:10, padding:"6px 0", borderTop:`1px solid ${brd}` }}>
                           <span style={cell(st, 12)}>{halfFill(st, 12)}</span>
                           <span style={{ flex:1, fontSize:12.5, color: st === "not-started" ? txtS : txt }}>{sk}</span>
+                          {intro?.url && (
+                            <a href={intro.url} target="_blank" rel="noreferrer" title={`${intro.kind === "video" ? "Video" : "Article"}: ${intro.source}`}
+                               onClick={(ev) => ev.stopPropagation()}
+                               style={{ fontSize:10.5, color:txtS, textDecoration:"none", border:`1px solid ${brd}`, borderRadius:6, padding:"1px 7px", whiteSpace:"nowrap", flexShrink:0 }}>
+                              {intro.kind === "video" ? "▶" : "↗"} intro
+                            </a>
+                          )}
                           <span style={{ fontSize:10.5, fontWeight:700, letterSpacing:0.3, color: st === "not-started" ? txtT : COV[st].dot }}>{st}</span>
                         </div>
                       );
