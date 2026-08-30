@@ -23,6 +23,17 @@ export default function App() {
   const [logTr, setLogTr] = useState(""); const [logN, setLogN] = useState(""); const [logMsg, setLogMsg] = useState("");
   // Tutor question form
   const [q, setQ] = useState(""); const [asking, setAsking] = useState(false); const [askMsg, setAskMsg] = useState("");
+  // Roles tab — optimistic status overrides (id -> status) while PATCHes land
+  const [postingOverride, setPostingOverride] = useState({});
+  const [postingBusy, setPostingBusy] = useState(null);
+  const setPostingStatus = async (id, status) => {
+    const prev = postingOverride;
+    setPostingBusy(id);
+    setPostingOverride(o => ({ ...o, [id]: status }));
+    try { await patchJSON("/api/posting", { id, status }); }
+    catch { setPostingOverride(prev); }
+    finally { setPostingBusy(null); }
+  };
   // Interview prep — accordion + on-demand full-guide fetch
   const [expandedAreas, setExpandedAreas] = useState(new Set());
   const toggleArea = (key) => setExpandedAreas(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
@@ -69,6 +80,7 @@ export default function App() {
   const plan      = data?.plan || null;
   const frontier  = data?.frontier || null;
   const advisory  = data?.advisory || null;
+  const postings  = data?.postings || [];
   const tracks    = cur?.tracks || {};
   const trackIds  = Object.keys(tracks);
 
@@ -396,7 +408,7 @@ export default function App() {
   );
 
   const TAB_LABELS = {};
-  const TABS = ["today","gate","interviews","plan","calendar","tutor","research","practice","frontier","advisory","coverage","log"];
+  const TABS = ["today","gate","interviews","roles","plan","calendar","tutor","research","practice","frontier","advisory","coverage","log"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
@@ -1539,6 +1551,83 @@ export default function App() {
                     })}
                   </div>
                 )}
+              </div>
+            );
+          })}
+        </div>
+        );
+      })()}
+
+      {/* ── ROLES — scraped + scored job leads ── */}
+      {tab==="roles" && (() => {
+        const rows = postings
+          .map(p => ({ ...p, st: postingOverride[p.id] ?? p.status ?? "new",
+                       sk: Array.isArray(p.skills) ? p.skills : (() => { try { return JSON.parse(p.skills || "[]"); } catch { return []; } })() }))
+          .filter(p => p.st !== "dismissed");
+        const comp = (p) => (p.salary_min || p.salary_max)
+          ? `$${Math.round((p.salary_min || p.salary_max)/1000)}K–$${Math.round((p.salary_max || p.salary_min)/1000)}K`
+          : null;
+        const stAccent = { saved:"#185FA5", promoted:"#639922" };
+        return (
+        <div>
+          <div style={{ ...S.card }}>
+            <div style={{ fontSize:14, fontWeight:600 }}>Scraped roles <span style={{ fontWeight:500, color:txtT }}>— {rows.length} open leads</span></div>
+            <div style={{ fontSize:12, color:txtT, marginTop:4, lineHeight:1.55 }}>
+              Scanned nightly at 4:30am ET across Indeed / LinkedIn / Glassdoor / ZipRecruiter / Google Jobs, scored against the curriculum's
+              skill set and your comp target. Saving keeps a lead pinned; it becomes an application only when you actually apply.
+            </div>
+          </div>
+          {rows.length === 0 && (
+            <div style={S.card}>
+              <div style={{ fontSize:13, color:txtS, lineHeight:1.65 }}>
+                Nothing scraped yet. If this stays empty, check the runner box: <code style={{ fontSize:12 }}>crontab -l</code> should list the
+                4:30am scan, and <code style={{ fontSize:12 }}>logs/scan-jobs.log</code> should show "Wrote N postings to D1".
+                Run it manually with <code style={{ fontSize:12 }}>bash scripts/scan-jobs.sh</code>.
+              </div>
+            </div>
+          )}
+          {rows.map(p => {
+            const busy = postingBusy === p.id;
+            return (
+              <div key={p.id} style={{ ...S.card, borderLeft:`3px solid ${stAccent[p.st] || brd}` }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:10, flexWrap:"wrap" }}>
+                  <div style={{ minWidth:0, flex:1 }}>
+                    <div style={{ fontSize:13.5, fontWeight:600, lineHeight:1.4 }}>
+                      {p.company ? `${p.company} — ` : ""}{p.title}
+                      {p.st !== "new" && <span style={{ ...pill(stAccent[p.st] || txtT), marginLeft:8, verticalAlign:"1px" }}>{p.st}</span>}
+                    </div>
+                    <div style={{ fontSize:11.5, color:txtT, marginTop:3, display:"flex", gap:8, flexWrap:"wrap" }}>
+                      {p.location && <span>{p.location}</span>}
+                      {p.source && <span>via {p.source}</span>}
+                      {p.date_posted && <span>posted {fmtDate(p.date_posted)}</span>}
+                      {comp(p) && <span style={{ fontWeight:600, color:txtS }}>{comp(p)}</span>}
+                    </div>
+                    {p.sk.length > 0 && (
+                      <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginTop:7 }}>
+                        {p.sk.slice(0, 8).map(s => <span key={s} style={pill("#7F77DD", { fontSize:10.5 })}>{s}</span>)}
+                        {p.sk.length > 8 && <span style={{ fontSize:10.5, color:txtT, alignSelf:"center" }}>+{p.sk.length - 8}</span>}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:8, flexShrink:0 }}>
+                    <span style={S.roiBadge(Math.round((p.score || 0) * 100))} title={`skill match ${Math.round((p.skill_score||0)*100)}% · comp fit ${Math.round((p.comp_score||0)*100)}%`}>
+                      {Math.round((p.score || 0) * 100)}% match
+                    </span>
+                    <div style={{ display:"flex", gap:6 }}>
+                      <a href={p.job_url} target="_blank" rel="noreferrer" style={{ ...S.btn(false), fontSize:12, textDecoration:"none", display:"inline-block" }}>View ↗</a>
+                      {p.st !== "promoted" && (
+                        <button style={{ ...S.btn(p.st !== "saved", busy), fontSize:12 }} disabled={busy}
+                                onClick={() => setPostingStatus(p.id, p.st === "saved" ? "new" : "saved")}>
+                          {p.st === "saved" ? "Unsave" : "Save"}
+                        </button>
+                      )}
+                      {p.st !== "promoted" && (
+                        <button style={{ ...S.btn(false, busy), fontSize:12 }} disabled={busy}
+                                onClick={() => setPostingStatus(p.id, "dismissed")}>Dismiss</button>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             );
           })}
