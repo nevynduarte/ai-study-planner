@@ -196,11 +196,26 @@ def external_id(url: str) -> str:
 
 # Postings worth storing. Broad on purpose — scoring ranks them; this only
 # keeps obviously irrelevant roles (sales, recruiting, legal) out of D1.
+# Covers the full family of titles worth targeting: AI/ML engineering, data
+# science/analytics, MLOps/infra, quant, research, and the software roles
+# adjacent to them. Order doesn't matter; any single hit marks a posting
+# relevant (and thus scored + eligible for the D1 shortlist).
 AI_TITLE = re.compile(
     r"machine learning|\bml\b|\bai\b|artificial intelligence|applied scientist"
-    r"|research (engineer|scientist)|data scientist|\bllm\b|deep learning|\bnlp\b"
-    r"|computer vision|inference|model serving|software engineer|data engineer"
-    r"|infrastructure|platform engineer|quantitative", re.I)
+    r"|applied ai|research (engineer|scientist)|research scientist"
+    # data science / analytics family
+    r"|data scientist|data science|data analyst|data analytics|analytics engineer"
+    r"|business intelligence|\bbi\b (analyst|engineer|developer)|decision scientist"
+    r"|product analyst|quantitative analyst|quant(itative)? (developer|researcher|analyst|engineer)"
+    r"|quant\b|statistician"
+    # LLM / GenAI / applied
+    r"|\bllm\b|\bgenai\b|generative ai|deep learning|\bnlp\b|computer vision|\bcv\b"
+    r"|forward deployed|solutions? engineer|solutions? architect|prompt engineer"
+    # engineering / infra / platform
+    r"|inference|model serving|software engineer|data engineer|analytics? engineer"
+    r"|ml(ops)?|mlops|ai infrastructure|ai platform|infrastructure engineer"
+    r"|platform engineer|backend engineer|full[- ]?stack|data (platform|infrastructure)"
+    r"|search engineer|recommendation|ranking|personalization|quantitative", re.I)
 
 _COMP = re.compile(r"\$\s*(\d{2,3})(?:[.,](\d{3}))?\s*([kK])?")
 
@@ -395,17 +410,22 @@ def archive_rows(rows: list[dict], db_path: pathlib.Path, now: str) -> tuple[int
     return new, len(rows)
 
 
-def scrape(terms: list[str], location: str, limit: int, hours_old: int) -> list[dict]:
+def scrape(terms: list[str], locations, limit: int, hours_old: int) -> list[dict]:
     try:
         from jobspy import scrape_jobs
     except ImportError:
         print("jobspy not installed — pip install python-jobspy", file=sys.stderr)
         return []
 
+    if isinstance(locations, str):
+        locations = [locations]
+    # term × location sweeps. Austin is included so the big boards (which DO
+    # geo-filter, unlike the ATS APIs) surface Austin-local roles directly.
+    pairs = [(t, loc) for loc in locations for t in terms]
     rows: list[dict] = []
-    for i, term in enumerate(terms):
+    for i, (term, location) in enumerate(pairs):
         if i:
-            time.sleep(random.uniform(15, 45))   # jitter between term sweeps; boards notice bursts
+            time.sleep(random.uniform(15, 45))   # jitter between sweeps; boards notice bursts
         try:
             df = scrape_jobs(site_name=SITES, search_term=term, location=location,
                              results_wanted=limit, hours_old=hours_old,
@@ -449,8 +469,11 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=50, help="results per search term")
     ap.add_argument("--hours-old", type=int, default=72)
-    ap.add_argument("--location", default="USA")
-    ap.add_argument("--terms", default="machine learning engineer,ML engineer,AI engineer,applied scientist,data engineer,applied AI")
+    ap.add_argument("--location", default="USA;Austin, TX", help="semicolon-separated jobspy locations; each is swept for every term")
+    ap.add_argument("--terms", default=(
+        "machine learning engineer,ML engineer,AI engineer,applied scientist,"
+        "data scientist,data engineer,data analyst,analytics engineer,"
+        "quantitative developer,quantitative analyst,MLOps engineer,applied AI"))
     ap.add_argument("--ats-file", default=str(ATS_BOARDS), help="ATS board list; '' disables")
     ap.add_argument("--ats-days", type=int, default=30, help="ATS: score postings newer than this (everything is archived regardless)")
     ap.add_argument("--ats-cap", type=int, default=75, help="ATS: max scored postings per company")
@@ -463,17 +486,19 @@ def main() -> int:
     band = target_band(curr)
     loc_prefs = location_pref(curr)
     terms = [t.strip() for t in a.terms.split(",") if t.strip()]
+    locations = [l.strip() for l in a.location.split(";") if l.strip()]
     boards = load_ats_boards(pathlib.Path(a.ats_file)) if a.ats_file else []
 
     if a.dry_run:
-        json.dump({"dry_run": True, "terms": terms, "sites": SITES,
+        json.dump({"dry_run": True, "terms": terms, "sites": SITES, "locations": locations,
+                   "jobspy_sweeps": len(terms) * len(locations),
                    "ats_boards": len(boards), "ats_days": a.ats_days,
                    "tracked_skills": len(skills), "sample_skills": skills[:8],
                    "target_band": band, "location_targets": loc_prefs}, sys.stdout, indent=2)
         print()
         return 0
 
-    board_rows = [dict(r, relevant=True) for r in scrape(terms, a.location, a.limit, a.hours_old)]
+    board_rows = [dict(r, relevant=True) for r in scrape(terms, locations, a.limit, a.hours_old)]
     rows = board_rows + fetch_ats(boards, a.ats_days, a.ats_cap)
     # Boards + ATS can list the same posting under different URLs; the URL-hash
     # dedup in scrape() can't catch that, so postings from ATS keep their own
