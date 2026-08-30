@@ -25,11 +25,12 @@ export default function App() {
   // Tutor question form
   const [q, setQ] = useState(""); const [asking, setAsking] = useState(false); const [askMsg, setAskMsg] = useState("");
   // Today-plan study guides + Projects tab + roadmap day selector
-  const [guideFor,  setGuideFor]  = useState(null);   // plan-block label with guide open
   const [copiedKey, setCopiedKey] = useState(null);   // which copy button just fired
   const [projOpen,  setProjOpen]  = useState(null);   // expanded project id
   const [rhythmDay, setRhythmDay] = useState(null);   // selected weekday on the roadmap
   const [projDone,  setProjDone]  = usePersisted("asp.projects.done", {});  // { projectId: [milestone labels] }
+  const [researchView, setResearchView] = useState("frontier");  // frontier | papers
+  const [jobsView,     setJobsView]     = useState("interviews"); // interviews | leads
   const toggleMilestone = (pid, label) => setProjDone(prev => {
     const cur = prev[pid] || [];
     return { ...prev, [pid]: cur.includes(label) ? cur.filter(x => x !== label) : [...cur, label] };
@@ -423,8 +424,8 @@ export default function App() {
     </button>
   );
 
-  const TAB_LABELS = {};
-  const TABS = ["today","plan","projects","progress","interviews","roles","tutor","research","practice","frontier","advisory","log"];
+  const TAB_LABELS = { jobs: "Jobs", research: "Research" };
+  const TABS = ["today","plan","projects","progress","jobs","tutor","research","practice","advisory","log"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
@@ -454,6 +455,16 @@ export default function App() {
           @keyframes asp-pop { 0% { transform: scale(0.7); } 55% { transform: scale(1.14); } 100% { transform: scale(1); } }
           .asp-pop { animation: asp-pop 0.18s ease-out; }
         }
+        /* Responsive grids: reflow instead of overflowing on narrow screens. */
+        .asp-stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+        .asp-phase-grid { display:grid; grid-template-columns:repeat(${(cur?.phases||[]).length||4},1fr); gap:0; border-radius:12px; overflow:hidden; }
+        @media (max-width:620px) {
+          .asp-stat-grid  { grid-template-columns:repeat(2,1fr); }
+          .asp-phase-grid { grid-template-columns:repeat(2,1fr); }
+        }
+        @media (max-width:380px) {
+          .asp-stat-grid  { grid-template-columns:1fr 1fr; gap:7px; }
+        }
       `}</style>
 
       {/* Header */}
@@ -481,8 +492,24 @@ export default function App() {
         {TABS.map(t => <button key={t} style={S.tab(tab===t)} onClick={() => setTab(t)}>{TAB_LABELS[t] || (t.charAt(0).toUpperCase()+t.slice(1))}</button>)}
       </div>
 
-      {/* ── INTERVIEWS ── */}
-      {tab==="interviews" && (() => {
+      {/* ── JOBS = interview targets + scraped leads, one tab ── */}
+      {tab==="jobs" && (
+        <div style={{ display:"flex", gap:6, marginBottom:14 }}>
+          {[["interviews","🎯 Interview targets"],["leads",`💼 Scraped leads${postings.length ? ` (${postings.filter(p => (postingOverride[p.id] ?? p.status ?? "new") !== "dismissed").length})` : ""}`]].map(([id,label]) => {
+            const on = jobsView === id;
+            return (
+              <button key={id} onClick={() => setJobsView(id)}
+                style={{ fontSize:12.5, fontWeight:600, padding:"7px 14px", borderRadius:999, cursor:"pointer",
+                         border:`1px solid ${on?"#185FA5":brd}`, background:on?hexA("#185FA5",dark?0.2:0.1):surface, color:on?"#185FA5":txtS, whiteSpace:"nowrap" }}>
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── JOBS · interview targets ── */}
+      {tab==="jobs" && jobsView==="interviews" && (() => {
         const allIvs = cur?.interviews || [];
         const activeIvs    = allIvs.filter(iv => !isArchived(iv));
         const archivedList = allIvs.filter(iv => isArchived(iv));
@@ -877,7 +904,6 @@ export default function App() {
               const intro = findIntro(cur, b.track, `${b.task || b.label} ${b.doneWhen || ""}`);
               const t = b.track ? tracks[b.track] : null;
               const md = b.track ? monthData(b.track) : null;
-              const guideOpen = guideFor === b.label;
               const prompt = coachPrompt({ task: b.task || b.label, doneWhen: b.doneWhen, trackName: t?.name, skill: intro?.skill, time: b.time });
               return (
                 <div key={i} style={{ padding:"11px 0 11px 12px", borderTop: i>0 ? `1px solid ${brd}` : "none",
@@ -888,60 +914,53 @@ export default function App() {
                     <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", marginBottom:3 }}>
                       {b.time && <span style={{ fontSize:11.5, fontWeight:700, color:txtT, fontVariantNumeric:"tabular-nums" }}>{b.time}</span>}
                       {b.track && tracks[b.track] && <span style={{ fontSize:10.5, fontWeight:800, letterSpacing:0.4, color:ac }}>{tracks[b.track].name.toUpperCase()}</span>}
-                      {b.mode && <span style={{ fontSize:10, color:txtT, letterSpacing:0.5 }}>{b.mode}</span>}
-                      {intro && (
-                        <a href={intro.url} target="_blank" rel="noreferrer" title={`${intro.skill} — ${intro.source}`}
-                           style={{ fontSize:10.5, color:txtS, textDecoration:"none", border:`1px solid ${brd}`, borderRadius:6, padding:"1px 7px", whiteSpace:"nowrap" }}>
-                          {intro.kind === "video" ? "▶" : "↗"} intro
-                        </a>
-                      )}
-                      <button onClick={() => setGuideFor(guideOpen ? null : b.label)}
-                        style={{ fontSize:10.5, color: guideOpen ? "#fff" : txtS, background: guideOpen ? ac : "transparent", cursor:"pointer",
-                                 border:`1px solid ${guideOpen ? ac : brd}`, borderRadius:6, padding:"1px 7px", whiteSpace:"nowrap" }}>
-                        ⓘ guide
-                      </button>
+                      {b.mode && <span style={{ fontSize:10, color:txtT, letterSpacing:0.5 }}>{b.mode === "THEORY" ? "LEARN" : b.mode === "IMPLEMENTATION" ? "BUILD" : b.mode}</span>}
                     </div>
                     <div style={{ fontSize:13.5, lineHeight:1.55, color: checked ? txtT : txt, textDecoration: checked ? "line-through" : "none", textDecorationColor: hexA(ac, 0.6) }}>{b.task}</div>
                     {b.doneWhen && (
-                      <div style={{ fontSize:12, color: checked ? txtT : txtS, lineHeight:1.5, marginTop:5, paddingTop:5, borderTop:`1px dashed ${brd}` }}>
+                      <div style={{ fontSize:12, color: checked ? txtT : txtS, lineHeight:1.5, marginTop:5 }}>
                         <span style={{ fontWeight:700, color: checked ? txtT : ac }}>done when</span> — {b.doneWhen}
                       </div>
                     )}
                   </div>
                   </div>
-                  {guideOpen && (
-                    <div style={{ margin:"10px 0 2px 30px", padding:"12px 14px", borderRadius:12, background:hexA(ac, dark?0.09:0.05), border:`1px solid ${hexA(ac, dark?0.28:0.16)}`, fontSize:12.5, lineHeight:1.6 }}>
-                      <div style={{ marginBottom:8 }}>
-                        <span style={{ fontWeight:700, color:ac }}>What — </span>
-                        <span style={{ color:txtS }}>{b.task}{b.mode ? ` (${b.mode === "THEORY" ? "a learning block: understand before you build" : "a building block: something must run by the end"})` : ""}{b.doneWhen ? ` You're done when: ${b.doneWhen}` : ""}</span>
-                      </div>
-                      {t?.why && (
-                        <div style={{ marginBottom:8 }}>
-                          <span style={{ fontWeight:700, color:ac }}>Why — </span>
-                          <span style={{ color:txtS }}>{t.why}</span>
-                        </div>
-                      )}
-                      {md?.title && (
-                        <div style={{ marginBottom:8 }}>
-                          <span style={{ fontWeight:700, color:ac }}>Where you are — </span>
-                          <span style={{ color:txtS }}>Month {monthOf(b.track)}: {md.title}.{md.focus ? ` ${md.focus}` : ""} All of it feeds the {gateDate} readiness gate before applications open in November.</span>
-                        </div>
-                      )}
-                      <div style={{ marginBottom:10 }}>
-                        <span style={{ fontWeight:700, color:ac }}>Learn — </span>
-                        {intro
-                          ? <a href={intro.url} target="_blank" rel="noreferrer" style={{ color:linkC, textDecoration:"underline", textUnderlineOffset:2 }}>{intro.kind === "video" ? "▶ " : ""}{intro.skill} — {intro.source}</a>
-                          : <span style={{ color:txtS }}>ask the tutor below — that's what it's for.</span>}
-                      </div>
-                      <div style={{ borderTop:`1px dashed ${hexA(ac,0.35)}`, paddingTop:10 }}>
-                        <div style={{ fontWeight:700, color:ac, marginBottom:6 }}>Claude coach prompt <span style={{ fontWeight:500, color:txtT }}>— paste into Claude, or send to the tutor</span></div>
-                        <pre style={{ whiteSpace:"pre-wrap", fontFamily:"inherit", fontSize:11.5, lineHeight:1.55, color:txtS, background:bgS, border:`1px solid ${brd}`, borderRadius:10, padding:"10px 12px", margin:"0 0 8px", maxHeight:180, overflowY:"auto" }}>{prompt}</pre>
-                        <div style={{ display:"flex", gap:8 }}>
-                          <button style={{ ...S.btn(false), fontSize:12 }} onClick={() => copyText(`plan-${i}`, prompt)}>{copiedKey === `plan-${i}` ? "Copied ✓" : "Copy prompt"}</button>
-                          <button style={{ ...S.btn(true), fontSize:12 }} onClick={() => { setQ(prompt); setTab("tutor"); }}>Ask the tutor →</button>
-                        </div>
-                      </div>
+
+                  {/* Always-on What / Why / Where / Learn breakdown for this interval */}
+                  {!checked && (
+                  <div style={{ margin:"9px 0 2px 30px", padding:"11px 13px", borderRadius:12, background:hexA(ac, dark?0.08:0.045), border:`1px solid ${hexA(ac, dark?0.24:0.14)}`, fontSize:12, lineHeight:1.6 }}>
+                    <div style={{ marginBottom:6 }}>
+                      <span style={{ fontWeight:700, color:ac }}>What · </span>
+                      <span style={{ color:txtS }}>{b.mode === "THEORY" ? "Learning block — understand it before building." : b.mode === "IMPLEMENTATION" ? "Building block — something should run by the end." : "Work this until the “done when” is true."}</span>
                     </div>
+                    {t?.why && (
+                      <div style={{ marginBottom:6 }}>
+                        <span style={{ fontWeight:700, color:ac }}>Why · </span>
+                        <span style={{ color:txtS }}>{t.why}</span>
+                      </div>
+                    )}
+                    {md?.title && (
+                      <div style={{ marginBottom:6 }}>
+                        <span style={{ fontWeight:700, color:ac }}>Where · </span>
+                        <span style={{ color:txtS }}>Month {monthOf(b.track)}: {md.title}. Feeds the {gateDate} readiness gate.</span>
+                      </div>
+                    )}
+                    <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap", marginTop:8 }}>
+                      {intro && (
+                        <a href={intro.url} target="_blank" rel="noreferrer" title={`${intro.skill} — ${intro.source}`}
+                           style={{ fontSize:11, color:linkC, textDecoration:"none", border:`1px solid ${brd}`, borderRadius:7, padding:"3px 9px", whiteSpace:"nowrap" }}>
+                          {intro.kind === "video" ? "▶ watch" : "↗ read"} · {intro.source}
+                        </a>
+                      )}
+                      <button style={{ fontSize:11, fontWeight:600, color:"#fff", background:ac, border:"none", borderRadius:7, padding:"4px 11px", cursor:"pointer" }}
+                        onClick={() => { setQ(prompt); setTab("tutor"); }}>
+                        🧭 Coach me through this
+                      </button>
+                      <button style={{ fontSize:11, color:txtS, background:"transparent", border:`1px solid ${brd}`, borderRadius:7, padding:"4px 10px", cursor:"pointer" }}
+                        onClick={() => copyText(`plan-${i}`, prompt)}>
+                        {copiedKey === `plan-${i}` ? "Copied ✓" : "Copy prompt"}
+                      </button>
+                    </div>
+                  </div>
                   )}
                 </div>
               );
@@ -1177,7 +1196,7 @@ export default function App() {
             return (
               <>
                 <div style={{ ...S.card, padding:"1rem 1.15rem" }}>
-                  <div style={{ display:"grid", gridTemplateColumns:`repeat(${cur.phases.length},1fr)`, gap:0, borderRadius:12, overflow:"hidden", border:`1px solid ${brd}` }}>
+                  <div className="asp-phase-grid" style={{ border:`1px solid ${brd}` }}>
                     {cur.phases.map((ph, i) => {
                       const on = i === (curPhaseIdx === -1 ? cur.phases.length - 1 : curPhaseIdx);
                       const ac = phAc[i % phAc.length];
@@ -1228,7 +1247,7 @@ export default function App() {
 
           {/* Progress overview */}
           <div style={{ ...S.lbl, margin:"18px 0 8px 2px" }}>This week · {DAILY_HOURS}h/day target</div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:"0.875rem" }}>
+          <div className="asp-stat-grid" style={{ marginBottom:"0.875rem" }}>
             {[["Total hours",totalHrs,"#1D9E75"],["This week",`${weekHrs}`,"#185FA5",`/ ${WEEKLY_TARGET}h`],["Day",startDays||"—","#7F77DD"],["Sessions",log.length,"#BA7517"]].map(([l,v,ac,suf]) => (
               <div key={l} style={{ borderRadius:14, padding:"12px 14px", background:`linear-gradient(155deg, ${hexA(ac, dark?0.24:0.14)}, ${hexA(ac, dark?0.08:0.05)})`, border:`1px solid ${hexA(ac, dark?0.34:0.2)}`, boxShadow:shadowCard }}>
                 <div style={{ fontSize:10, color:txtT, marginBottom:4, textTransform:"uppercase", letterSpacing:0.5, fontWeight:600 }}>{l}</div>
@@ -1425,7 +1444,23 @@ export default function App() {
       )}
 
       {/* ── FRONTIER (read-only) ── */}
-      {tab==="frontier" && (
+      {/* ── RESEARCH = Frontier digest + curated papers, one tab ── */}
+      {tab==="research" && (
+        <div style={{ display:"flex", gap:6, marginBottom:14 }}>
+          {[["frontier","🔬 Frontier — this week"],["papers","📚 Papers to read"]].map(([id,label]) => {
+            const on = researchView === id;
+            return (
+              <button key={id} onClick={() => setResearchView(id)}
+                style={{ fontSize:12.5, fontWeight:600, padding:"7px 14px", borderRadius:999, cursor:"pointer",
+                         border:`1px solid ${on?"#7F77DD":brd}`, background:on?hexA("#7F77DD",dark?0.2:0.1):surface, color:on?"#7F77DD":txtS, whiteSpace:"nowrap" }}>
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {tab==="research" && researchView==="frontier" && (
         <div>
           <ContentCard
             title="Frontier digest"
@@ -1445,8 +1480,8 @@ export default function App() {
         </div>
       )}
 
-      {/* ── RESEARCH (curated reading list) ── */}
-      {tab==="research" && (() => {
+      {/* ── RESEARCH · papers (curated reading list) ── */}
+      {tab==="research" && researchView==="papers" && (() => {
         const papers = [...(cur?.research || [])].sort((a,b) => (a.year||0) - (b.year||0));
         const readCount = papers.filter(p => readPapers.includes(p.id)).length;
         const catColor = { Foundational:"#185FA5", LLMs:"#1D9E75", "RAG & Retrieval":"#7F77DD", Agents:"#BA7517", Evaluation:"#A35BBA", "Data Integration":"#0D9488", Efficiency:"#A32D2D", Vision:"#C2410C", "Sequence & Attention":"#185FA5", Generative:"#BE185D", "Representation Learning":"#0D9488", Optimization:"#3B6D11" };
@@ -1798,8 +1833,8 @@ export default function App() {
         );
       })()}
 
-      {/* ── ROLES — scraped + scored job leads ── */}
-      {tab==="roles" && (() => {
+      {/* ── JOBS · scraped + scored job leads ── */}
+      {tab==="jobs" && jobsView==="leads" && (() => {
         const rows = postings
           .map(p => ({ ...p, st: postingOverride[p.id] ?? p.status ?? "new",
                        sk: Array.isArray(p.skills) ? p.skills : (() => { try { return JSON.parse(p.skills || "[]"); } catch { return []; } })() }))
