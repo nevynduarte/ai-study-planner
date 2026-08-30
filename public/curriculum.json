@@ -4014,17 +4014,19 @@
         "window": "Sep 15–28",
         "title": "Atlas Agent — tool calling with receipts",
         "tagline": "Turn /ask into an agent that chooses between a SQL tool and RAG retrieval, with every step traced and failures handled.",
-        "why": "Agent reliability is the interview topic of 2026: tool schemas, when to route to structured data vs retrieval, and what happens when a tool fails. A traced agent over your own gold tables beats any framework demo.",
+        "why": "Agent reliability is the single most-demanded skill in the target market (54% of 277 analyzed JDs), and safety/guardrails sit right behind it (34%). A traced agent over your own gold tables that also survives prompt injection beats any framework demo.",
         "skills": [
           "Fine-tune vs prompt vs retrieve",
           "Serving architecture",
-          "Failure modes & tradeoffs"
+          "Failure modes & tradeoffs",
+          "RAG failure modes"
         ],
         "tools": [
           "Claude tool use (raw API, no framework)",
           "structured outputs",
           "trace table (Postgres)",
-          "OpenTelemetry concepts"
+          "OpenTelemetry concepts",
+          "OWASP LLM Top 10"
         ],
         "week1": [
           "Define two tools with JSON schemas: query_funds (SQL over gold tables) and search_documents (existing retrieval)",
@@ -4033,6 +4035,7 @@
         ],
         "week2": [
           "Failure recovery: on tool error, retry once, then degrade to a cited 'here's what I could verify' answer — never hallucinate",
+          "Guardrail the agent: a prompt-injection test suite (10 adversarial inputs seeded in documents), out-of-scope refusal behavior, and the numeric guardrail extended to tool outputs",
           "Force-fail tests: break each tool and assert graceful degradation",
           "Run the sprint-1 eval harness against agentic /ask vs plain RAG and publish the comparison"
         ],
@@ -4052,6 +4055,10 @@
           {
             "name": "instructor — structured outputs",
             "url": "https://python.useinstructor.com/"
+          },
+          {
+            "name": "OWASP Top 10 for LLM applications",
+            "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
           }
         ],
         "prompt": "You're my project coach for a 2-week sprint: converting my RAG endpoint into a tool-calling agent (raw LLM API calls, no LangChain) that chooses between a SQL tool over trusted Postgres tables and a document-retrieval tool — with full tracing and failure recovery.\n\nTeach me as we build, one step at a time, and make me explain each design choice back to you. Sequence: (1) quiz me on the ReAct loop and tool schemas so we share vocabulary, (2) help me design the two tool schemas and critique them, (3) the agent loop with a hop limit, (4) a traces table logging every step, (5) failure injection and graceful degradation, (6) running my existing eval harness over the agent vs plain RAG.\n\nDon't write large code blocks unless I ask — give me the shape, let me implement, then review what I wrote like a staff engineer would."
@@ -4244,7 +4251,74 @@
           }
         ],
         "prompt": "You're my project coach for a 2-week sprint: turning my real job-search data pipeline (nightly scraper over 5 job boards + 41 ATS APIs, curriculum-based scoring, Cloudflare D1 storage, a briefing consumer, and an application funnel with stall diagnostics) into a polished public case study and a rehearsed system-design narrative.\n\nWork with me like a staff engineer prepping me for interviews: (1) interrogate my design — make me justify dedup strategy, scoring weights, failure handling, and storage choices, (2) help me write the system-design doc and diagram to the standard of a design review, (3) pick ONE production gap (observability or dead-lettering) and coach me through closing it, (4) then run me through the 15-minute walkthrough twice — once friendly, once adversarial ('what breaks at 100x? why not a queue? why D1?').\n\nInterrupt me whenever my narration hides a number I should know."
+      },
+      {
+        "id": "voice-agent",
+        "n": 7,
+        "start": "2026-11-24",
+        "end": "2026-12-07",
+        "window": "Nov 24–Dec 7 (optional)",
+        "title": "Say It — a realtime voice agent",
+        "tagline": "Put a voice on the Atlas agent: speech in, tool-calling reasoning in the middle, natural speech out, under a strict latency budget.",
+        "why": "Voice/speech shows up in 23% of analyzed JDs and demos better than anything else you can build — a recruiter who talks to your agent for 30 seconds remembers you. Optional: run it when applications are out and interviews are quiet; skip it in a busy week.",
+        "skills": [
+          "Serving architecture",
+          "Failure modes & tradeoffs",
+          "Scale (sharding, replication, p99)"
+        ],
+        "tools": [
+          "streaming STT (Deepgram or Whisper)",
+          "TTS (ElevenLabs or open)",
+          "WebSockets",
+          "your sprint-2 agent"
+        ],
+        "week1": [
+          "Wire streaming speech-to-text → the sprint-2 agent → text-to-speech behind one WebSocket endpoint",
+          "Set and measure a latency budget: time-to-first-audio under 1.5s, and know where every 100ms goes",
+          "Handle barge-in (user interrupts mid-answer) without losing agent state"
+        ],
+        "week2": [
+          "Failure modes: garbled audio, STT confidence thresholds, the agent falling back to 'let me show you instead' with a citation",
+          "A one-page web client (mic button + live transcript + spoken answer)",
+          "Record the 60-second demo video — this is the portfolio's front door"
+        ],
+        "stretch": [
+          "Phone-number front end (Twilio) so anyone can call your agent",
+          "Latency writeup: the full budget breakdown and what you traded to hit it"
+        ],
+        "resources": [
+          {
+            "name": "Pipecat — voice agent patterns",
+            "url": "https://docs.pipecat.ai/"
+          },
+          {
+            "name": "Deepgram docs (streaming STT)",
+            "url": "https://developers.deepgram.com/docs"
+          },
+          {
+            "name": "ElevenLabs docs (TTS)",
+            "url": "https://elevenlabs.io/docs"
+          }
+        ],
+        "prompt": "You're my project coach for a 2-week sprint: giving my existing tool-calling agent a realtime voice interface — streaming STT in, agent reasoning in the middle, streaming TTS out, over WebSockets, with a hard time-to-first-audio budget of 1.5 seconds.\n\nTeach me the realtime concepts before we build each piece: why streaming beats request/response here, where latency actually accumulates (VAD, STT finalization, LLM first token, TTS first byte), what barge-in requires. Then build with me step by step — one component at a time, measuring latency after each addition so I always know my budget.\n\nMake me handle the ugly parts: interruptions, low-confidence transcripts, and what the agent says when a tool fails mid-conversation. Finish by helping me script a 60-second demo video that shows one question, one tool call, and one graceful interruption."
       }
-    ]
+    ],
+    "evidence": {
+      "date": "2026-08-30",
+      "method": "Frequency analysis of 277 AI/ML-titled job descriptions pulled from the 41 ATS boards in config/ats-boards.txt (last 60 days), cross-checked against hiring-manager guidance on portfolio quality.",
+      "top_demands": [
+        "agents / tool use — 54%",
+        "serving & inference — 39%",
+        "observability / tracing — 34%",
+        "safety & guardrails — 34%",
+        "evals — 32%",
+        "voice / speech — 23%",
+        "A/B & experimentation — 19%",
+        "RAG / retrieval — 17%",
+        "multimodal — 16%",
+        "fine-tuning — 16%"
+      ],
+      "notes": "LangChain named in only 5% — raw-API fluency reads better. 'Forward deployed engineer' is a fast-growing title (customer-facing, full-stack + LLM, demo-heavy) that maps to the Equi founding-engineer role. Qualitative consensus: 2-4 deep projects with evals, failure handling, deployment, and an honest writeup beat any number of tutorial clones; a generic chatbot is an anti-signal."
+    }
   }
 }

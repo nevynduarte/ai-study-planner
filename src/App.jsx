@@ -1721,6 +1721,14 @@ export default function App() {
               {cur?.projects?.cadence} Each sprint is deep enough to demo, shows tools recruiters screen for, and carries stretch goals
               that turn it into an advanced public showpiece when you want to go further.
             </div>
+            {cur?.projects?.evidence && (
+              <div style={{ marginTop:10, paddingTop:10, borderTop:`1px dashed ${brd}` }}>
+                <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, marginBottom:6 }}>What the market actually asks for <span style={{ fontWeight:500, textTransform:"none", letterSpacing:0 }}>— {cur.projects.evidence.method}</span></div>
+                <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
+                  {(cur.projects.evidence.top_demands || []).map(d => <span key={d} style={pill("#7F77DD", { fontSize:10.5 })}>{d}</span>)}
+                </div>
+              </div>
+            )}
           </div>
           {projs.map((p, pi) => {
             const ac = projAc[pi % projAc.length];
