@@ -55,3 +55,55 @@ ashby ramp
 # ── Quant / data-heavy ──
 lever palantir
 lever voleon
+greenhouse jumptrading
+
+# ── More AI-native / infra / dev tools (added 2026-08-30) ──
+ashby writer
+ashby decagon
+ashby mercor
+ashby abridge
+ashby suno
+ashby pika
+ashby fireworks
+ashby deepgram
+ashby langchain
+ashby browserbase
+ashby weaviate
+ashby pinecone
+ashby temporal
+ashby zapier
+ashby n8n
+greenhouse assemblyai
+greenhouse stabilityai
+greenhouse neo4j
+
+# ── More product / ML orgs (added 2026-08-30) ──
+greenhouse airbnb
+greenhouse lyft
+greenhouse coinbase
+greenhouse brex
+greenhouse chime
+greenhouse sofi
+greenhouse betterment
+greenhouse gusto
+greenhouse flexport
+greenhouse doordashusa
+greenhouse airtable
+greenhouse amplitude
+greenhouse mixpanel
+greenhouse gitlab
+greenhouse cloudflare
+greenhouse webflow
+greenhouse pathai
+greenhouse abnormalsecurity
+greenhouse nuro
+
+# ── Austin TX presence — target market for relocation (added 2026-08-30) ──
+# Austin HQ or a large Austin office; the location scorer boosts Austin roles
+# from ANY board, but these concentrate them.
+greenhouse indeed        # Austin HQ
+greenhouse homeward      # Austin HQ
+greenhouse disco         # Austin HQ (legal AI)
+greenhouse everlaw       # strong Austin presence (legal AI)
+greenhouse spycloud      # Austin HQ
+greenhouse icon          # Austin HQ (construction robotics/AI)

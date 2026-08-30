@@ -145,14 +145,44 @@ def target_band(curr: dict) -> tuple[int, int]:
     return 200_000, 300_000    # v2 plan default
 
 
-def score_posting(row: dict, skills: list[str], band: tuple[int, int]) -> dict:
+# Location preference. Austin is the relocation target, so Austin roles get a
+# score boost and remote (US) roles a smaller one — a role you can actually take
+# should outrank an equally-matched one in a city you'd have to say no to.
+_REMOTE = re.compile(r"\bremote\b|distributed|anywhere", re.I)
+
+
+def location_pref(curr: dict) -> list[str]:
+    student = curr.get("student") or {}
+    raw = student.get("location_targets")
+    if isinstance(raw, list):
+        return [str(x).lower() for x in raw]
+    return ["austin", "atx", "remote"]      # default: Austin + remote
+
+
+def location_score(location: str, prefs: list[str]) -> float:
+    loc = (location or "").lower()
+    if not loc:
+        return 0.0
+    for p in prefs:
+        if p in ("remote", "anywhere"):
+            if _REMOTE.search(loc):
+                return 0.5
+        elif p and p in loc:
+            return 1.0                        # a named target city (e.g. Austin)
+    return 0.0
+
+
+def score_posting(row: dict, skills: list[str], band: tuple[int, int], loc_prefs: list[str] | None = None) -> dict:
     matched = match_skills(row.get("description") or "", skills)
     sk = round(len(matched) / len(skills), 4) if skills else 0.0
     cs = comp_score(row.get("salary_min"), row.get("salary_max"), *band)
-    # Skills weighted above comp: the point of the shortlist is "does this match
-    # what I am actually building", not "what pays most".
-    combined = round(0.7 * sk + 0.3 * cs, 4)
-    return {"skills": matched, "skill_score": sk, "comp_score": cs, "score": combined}
+    ls = location_score(row.get("location") or "", loc_prefs or ["austin", "atx", "remote"])
+    # Skills weighted above comp; location is a lighter thumb on the scale so a
+    # great Austin/remote match rises but a weak local role never outranks a
+    # strong one elsewhere.
+    combined = round(min(1.0, 0.6 * sk + 0.25 * cs + 0.15 * ls), 4)
+    return {"skills": matched, "skill_score": sk, "comp_score": cs,
+            "loc_score": ls, "score": combined}
 
 
 def external_id(url: str) -> str:
@@ -431,6 +461,7 @@ def main() -> int:
     curr = load_curriculum()
     skills = tracked_skills(curr)
     band = target_band(curr)
+    loc_prefs = location_pref(curr)
     terms = [t.strip() for t in a.terms.split(",") if t.strip()]
     boards = load_ats_boards(pathlib.Path(a.ats_file)) if a.ats_file else []
 
@@ -438,7 +469,7 @@ def main() -> int:
         json.dump({"dry_run": True, "terms": terms, "sites": SITES,
                    "ats_boards": len(boards), "ats_days": a.ats_days,
                    "tracked_skills": len(skills), "sample_skills": skills[:8],
-                   "target_band": band}, sys.stdout, indent=2)
+                   "target_band": band, "location_targets": loc_prefs}, sys.stdout, indent=2)
         print()
         return 0
 
@@ -452,7 +483,7 @@ def main() -> int:
     # Score only the relevant rows (those are D1/shortlist candidates)…
     for r in rows:
         if r.get("relevant"):
-            r.update(score_posting(r, skills, band))
+            r.update(score_posting(r, skills, band, loc_prefs))
 
     # …but archive EVERYTHING, descriptions included, to the local SQLite file.
     if a.db:

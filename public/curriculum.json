@@ -6,7 +6,12 @@
     "commitment": "10 focused hours/week alongside Bridges AI client work (~2h/day, 5 days)",
     "income_target": "$200K-$300K TC",
     "thesis": "Not under-skilled for this band — under-legible and under-drilled. The production systems already clear the technical bar for tier-two AI companies. Missing: a coherent public story, DSA sharpness for the coding screen, and a systematic pipeline instead of reactive recruiter outreach.",
-    "dominant_risk": "Time-to-first-offer, not skill. Every month consulting is a month not compounding inside a company with a comp ladder."
+    "dominant_risk": "Time-to-first-offer, not skill. Every month consulting is a month not compounding inside a company with a comp ladder.",
+    "location_targets": [
+      "austin",
+      "atx",
+      "remote"
+    ]
   },
   "roles": [
     {

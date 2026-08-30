@@ -1836,8 +1836,8 @@ export default function App() {
                       {p.company ? `${p.company} — ` : ""}{p.title}
                       {p.st !== "new" && <span style={{ ...pill(stAccent[p.st] || txtT), marginLeft:8, verticalAlign:"1px" }}>{p.st}</span>}
                     </div>
-                    <div style={{ fontSize:11.5, color:txtT, marginTop:3, display:"flex", gap:8, flexWrap:"wrap" }}>
-                      {p.location && <span>{p.location}</span>}
+                    <div style={{ fontSize:11.5, color:txtT, marginTop:3, display:"flex", gap:8, flexWrap:"wrap", alignItems:"center" }}>
+                      {p.location && <span style={/austin|atx/i.test(p.location) ? { color:"#1D9E75", fontWeight:700 } : undefined}>{/austin|atx/i.test(p.location) ? "★ " : ""}{p.location}</span>}
                       {p.source && <span>via {p.source}</span>}
                       {p.date_posted && <span>posted {fmtDate(p.date_posted)}</span>}
                       {comp(p) && <span style={{ fontWeight:600, color:txtS }}>{comp(p)}</span>}
