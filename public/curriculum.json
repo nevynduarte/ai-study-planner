@@ -6,7 +6,12 @@
     "commitment": "10 focused hours/week alongside Bridges AI client work (~2h/day, 5 days)",
     "income_target": "$200K-$300K TC",
     "thesis": "Not under-skilled for this band — under-legible and under-drilled. The production systems already clear the technical bar for tier-two AI companies. Missing: a coherent public story, DSA sharpness for the coding screen, and a systematic pipeline instead of reactive recruiter outreach.",
-    "dominant_risk": "Time-to-first-offer, not skill. Every month consulting is a month not compounding inside a company with a comp ladder."
+    "dominant_risk": "Time-to-first-offer, not skill. Every month consulting is a month not compounding inside a company with a comp ladder.",
+    "location_targets": [
+      "austin",
+      "atx",
+      "remote"
+    ]
   },
   "roles": [
     {
@@ -3098,7 +3103,8 @@
           "roi": 10,
           "focus": "Off."
         }
-      ]
+      ],
+      "why": "The coding screen is the first gate at every target company; calm pattern recall under a 30-minute clock is what decides whether the rest of your background ever gets seen."
     },
     "ml-recall": {
       "name": "ML Fundamentals Recall",
@@ -3196,7 +3202,8 @@
           "roi": 50,
           "focus": "Same lane. If nothing at work is forcing depth, that's a signal to take harder problems at work, not to invent coursework."
         }
-      ]
+      ],
+      "why": "ML breadth rounds probe tradeoffs, not definitions. The deck keeps ~30 concepts one confident sentence deep so no fundamental catches you cold mid-interview."
     },
     "sys-design": {
       "name": "ML System Design",
@@ -3292,7 +3299,8 @@
           "roi": 10,
           "focus": "Off."
         }
-      ]
+      ],
+      "why": "The system-design round is where level and comp get decided — it's the proof you can own a production ML system end to end, not just train a model."
     },
     "search": {
       "name": "Positioning & Search",
@@ -3388,7 +3396,8 @@
           "roi": 60,
           "focus": "The artifact track opens: reproductions, OSS PRs, writing. This is the years-2–4 compounding lane, started only now, on purpose."
         }
-      ]
+      ],
+      "why": "Converting skill into offers is its own skill: targeting, a legible resume and GitHub, steady application cadence, and negotiating on data instead of hope."
     }
   },
   "not_doing": [
@@ -3946,6 +3955,375 @@
       "background": "BS Mathematics (UT Austin), MS Data Science CU Boulder (GPA 3.84). Co-Founder/CTO Bridges AI. Ex-quantitative equity researcher (M Science / Jefferies). Strong Python, RAG systems, LLM workflows, agentic systems.",
       "commitment": "3 focused hours/day (~21h/week), 12-month elite curriculum across 4 parallel tracks",
       "income_target": "$300K–$600K+"
+    }
+  },
+  "projects": {
+    "_comment": "Biweekly portfolio sprints, Sep-Nov 2026. Each is deep enough to demo, shows skills+tools recruiters screen for in applied-AI/MLE roles, and carries stretch goals that turn it into an advanced public showpiece. Rendered by the Projects tab; milestone completion is tracked client-side.",
+    "cadence": "One project every two weeks. Weekday build blocks (Tue implementation, Thu ship-to-GitHub) plus the Saturday long block — roughly 12 focused hours per sprint on top of track study.",
+    "list": [
+      {
+        "id": "atlas-evals",
+        "n": 1,
+        "start": "2026-09-01",
+        "end": "2026-09-14",
+        "window": "Sep 1–14",
+        "title": "Atlas Evals — a real eval harness",
+        "tagline": "Give the Atlas-FoF RAG pipeline a 3-layer eval harness with an LLM judge you can prove agrees with humans.",
+        "why": "Evals are the #1 screened-for 2026 applied-AI skill and almost nobody has evidence. A calibrated judge + CI gate on a real system answers 'how do you know your RAG is good?' with numbers instead of adjectives.",
+        "skills": [
+          "Eval design",
+          "RAG failure modes",
+          "Evaluation design"
+        ],
+        "tools": [
+          "pytest",
+          "GitHub Actions",
+          "instructor (structured outputs)",
+          "Ragas-style metrics"
+        ],
+        "week1": [
+          "Build a 30-question golden set from the fund documents (answerable + unanswerable + numeric)",
+          "Hand-roll faithfulness, answer-relevancy, and context-recall metrics over /ask",
+          "Wire the metric run into pytest so `pytest -m eval` prints a scorecard"
+        ],
+        "week2": [
+          "Add an LLM-as-judge grader with structured outputs; grade 30 answers yourself and measure judge–human agreement (target ≥80%)",
+          "Gate CI on the scorecard: a PR that drops faithfulness fails",
+          "Write EVALS.md: method, numbers, one failure the harness caught"
+        ],
+        "stretch": [
+          "Package the harness as a small pip-installable library with a README demo",
+          "Blog post: 'Calibrating an LLM judge against 30 human labels'"
+        ],
+        "resources": [
+          {
+            "name": "Hamel Husain — Your AI Product Needs Evals",
+            "url": "https://hamel.dev/blog/posts/evals/"
+          },
+          {
+            "name": "Ragas docs (metric definitions)",
+            "url": "https://docs.ragas.io/"
+          },
+          {
+            "name": "instructor — structured outputs",
+            "url": "https://python.useinstructor.com/"
+          }
+        ],
+        "prompt": "You're my project coach for a 2-week sprint: adding a 3-layer eval harness (offline CI / online / human) to my existing RAG app (FastAPI + pgvector, /ask endpoint with citations). I want to LEARN this, not have it done for me — so go step by step, one task at a time, checking my work before moving on.\n\nStart by: (1) asking me to describe my /ask pipeline so you know what we're evaluating, (2) helping me design a 30-question golden set with the right mix of answerable, unanswerable, and numeric questions, (3) then walking me through implementing faithfulness, answer relevancy, and context recall by hand — explain each metric's intuition before we code it.\n\nAfter that: LLM-as-judge with structured outputs, calibrating it against my own 30 human grades, and a CI gate. Keep each step small, quiz me on the concepts as we go, and flag anything I build that wouldn't survive an interviewer's follow-up questions."
+      },
+      {
+        "id": "atlas-agent",
+        "n": 2,
+        "start": "2026-09-15",
+        "end": "2026-09-28",
+        "window": "Sep 15–28",
+        "title": "Atlas Agent — tool calling with receipts",
+        "tagline": "Turn /ask into an agent that chooses between a SQL tool and RAG retrieval, with every step traced and failures handled.",
+        "why": "Agent reliability is the single most-demanded skill in the target market (54% of 277 analyzed JDs), and safety/guardrails sit right behind it (34%). A traced agent over your own gold tables that also survives prompt injection beats any framework demo.",
+        "skills": [
+          "Fine-tune vs prompt vs retrieve",
+          "Serving architecture",
+          "Failure modes & tradeoffs",
+          "RAG failure modes"
+        ],
+        "tools": [
+          "Claude tool use (raw API, no framework)",
+          "structured outputs",
+          "trace table (Postgres)",
+          "OpenTelemetry concepts",
+          "OWASP LLM Top 10"
+        ],
+        "week1": [
+          "Define two tools with JSON schemas: query_funds (SQL over gold tables) and search_documents (existing retrieval)",
+          "Implement the agent loop: model picks a tool, executes, observes, answers — max 3 hops",
+          "Log every step (inputs, tool calls, outputs, latency) to an agent_traces table"
+        ],
+        "week2": [
+          "Failure recovery: on tool error, retry once, then degrade to a cited 'here's what I could verify' answer — never hallucinate",
+          "Guardrail the agent: a prompt-injection test suite (10 adversarial inputs seeded in documents), out-of-scope refusal behavior, and the numeric guardrail extended to tool outputs",
+          "Force-fail tests: break each tool and assert graceful degradation",
+          "Run the sprint-1 eval harness against agentic /ask vs plain RAG and publish the comparison"
+        ],
+        "stretch": [
+          "A /traces debug view rendering any answer's full reasoning chain",
+          "Short screen-recorded demo: one question, two tools, one recovered failure"
+        ],
+        "resources": [
+          {
+            "name": "ReAct paper",
+            "url": "https://arxiv.org/abs/2210.03629"
+          },
+          {
+            "name": "OpenTelemetry — traces",
+            "url": "https://opentelemetry.io/docs/concepts/signals/traces/"
+          },
+          {
+            "name": "instructor — structured outputs",
+            "url": "https://python.useinstructor.com/"
+          },
+          {
+            "name": "OWASP Top 10 for LLM applications",
+            "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
+          }
+        ],
+        "prompt": "You're my project coach for a 2-week sprint: converting my RAG endpoint into a tool-calling agent (raw LLM API calls, no LangChain) that chooses between a SQL tool over trusted Postgres tables and a document-retrieval tool — with full tracing and failure recovery.\n\nTeach me as we build, one step at a time, and make me explain each design choice back to you. Sequence: (1) quiz me on the ReAct loop and tool schemas so we share vocabulary, (2) help me design the two tool schemas and critique them, (3) the agent loop with a hop limit, (4) a traces table logging every step, (5) failure injection and graceful degradation, (6) running my existing eval harness over the agent vs plain RAG.\n\nDon't write large code blocks unless I ask — give me the shape, let me implement, then review what I wrote like a staff engineer would."
+      },
+      {
+        "id": "serve-it",
+        "n": 3,
+        "start": "2026-09-29",
+        "end": "2026-10-12",
+        "window": "Sep 29–Oct 12",
+        "title": "Serve It — inference under load",
+        "tagline": "Put an open-weights model behind your own streaming API and make p95 latency a number you measured, not a guess.",
+        "why": "Serving/inference questions (batching, streaming, KV cache, p95 under load) separate MLE candidates from API-callers. Owning one deployment end to end gives you war stories for every serving question.",
+        "skills": [
+          "Serving architecture",
+          "Scale (sharding, replication, p99)",
+          "Metric definition"
+        ],
+        "tools": [
+          "vLLM",
+          "FastAPI (SSE streaming)",
+          "Docker",
+          "Locust"
+        ],
+        "week1": [
+          "Stand up vLLM with a small open model; understand continuous batching + KV cache well enough to explain them",
+          "Wrap it in your own FastAPI endpoint with token streaming",
+          "Containerize; document cold-start time and memory footprint"
+        ],
+        "week2": [
+          "Locust load test: p50/p95/p99 latency and throughput at increasing concurrency; find the knee",
+          "One optimization pass (max batch size, quantized weights, or context cap) and measure the delta",
+          "SERVING.md: architecture diagram, numbers table, what you'd change at 10x scale"
+        ],
+        "stretch": [
+          "Quantization shootout (fp16 vs int8/awq): quality vs latency vs memory, with the eval harness scoring quality",
+          "Grafana-style latency dashboard screenshot for the README"
+        ],
+        "resources": [
+          {
+            "name": "vLLM docs",
+            "url": "https://docs.vllm.ai/en/latest/"
+          },
+          {
+            "name": "Chip Huyen — ML Systems Design",
+            "url": "https://huyenchip.com/machine-learning-systems-design/toc.html"
+          },
+          {
+            "name": "Locust",
+            "url": "https://locust.io/"
+          }
+        ],
+        "prompt": "You're my project coach for a 2-week sprint: serving an open-weights LLM with vLLM behind my own streaming FastAPI endpoint, then load-testing it properly with Locust.\n\nI want to genuinely understand serving, so before each build step, teach the concept and quiz me: continuous batching, KV cache, why p95 ≠ average, where throughput/latency tradeoffs come from. Then guide me hands-on: (1) vLLM up with a small model, (2) my own API wrapper with SSE streaming, (3) Docker, (4) Locust scenarios and reading the latency distribution, (5) one measured optimization.\n\nHold me to writing down real numbers at every step — if I report a vibe instead of a measurement, call it out. End the sprint by mock-interviewing me: 'design a model-serving platform' using what I just built as my material."
+      },
+      {
+        "id": "tune-it",
+        "n": 4,
+        "start": "2026-10-13",
+        "end": "2026-10-26",
+        "window": "Oct 13–26",
+        "title": "Tune It — LoRA with an honest verdict",
+        "tagline": "Fine-tune a small model with LoRA on one narrow task and let the eval harness say whether it beat prompting and RAG.",
+        "why": "'Fine-tune vs prompt vs retrieve' is a guaranteed interview question. Having run the experiment — with training curves, an eval, and an honest conclusion either way — puts you above almost everyone who answers from a blog post.",
+        "skills": [
+          "Fine-tune vs prompt vs retrieve",
+          "Eval design",
+          "Convergence failures"
+        ],
+        "tools": [
+          "HF PEFT (LoRA)",
+          "Weights & Biases",
+          "your sprint-1 eval harness"
+        ],
+        "week1": [
+          "Pick one narrow task from Atlas (e.g. extracting structured fund terms from document snippets); build a ~500-example train set + held-out test set",
+          "Establish the baselines first: zero-shot, few-shot, and RAG on the test set",
+          "LoRA training run with W&B tracking; babysit the loss curve and document one thing that went wrong"
+        ],
+        "week2": [
+          "Evaluate the tuned model vs all baselines on the held-out set with sprint-1 metrics",
+          "Ablate one knob (rank, LR, or data size) and record the effect",
+          "TUNING.md: setup, curves, results table, and an honest verdict — 'when was this worth it?'"
+        ],
+        "stretch": [
+          "Model card + weights published on HF Hub",
+          "Blog post: 'I fine-tuned so you don't have to (here's when you should)'"
+        ],
+        "resources": [
+          {
+            "name": "HF PEFT docs",
+            "url": "https://huggingface.co/docs/peft/index"
+          },
+          {
+            "name": "LoRA paper",
+            "url": "https://arxiv.org/abs/2106.09685"
+          },
+          {
+            "name": "W&B docs",
+            "url": "https://docs.wandb.ai/"
+          }
+        ],
+        "prompt": "You're my project coach for a 2-week sprint: LoRA fine-tuning a small open model on one narrow extraction task, benchmarked honestly against zero-shot, few-shot, and RAG baselines using my own eval harness.\n\nCoach me step by step and make me predict before I run: before every experiment, ask me what I expect and why; after, make me reconcile prediction vs result. Sequence: (1) task selection and dataset design — teach me what makes a fine-tuning dataset good, (2) baselines FIRST, (3) LoRA concepts quiz (what the low-rank update actually is, why it's cheap), (4) the training run with W&B, reading loss curves, debugging one convergence issue, (5) evaluation and an ablation, (6) writing the honest verdict.\n\nIf my tuned model loses to few-shot prompting, help me write THAT up well — the honest negative result is the interview gold."
+      },
+      {
+        "id": "show-it",
+        "n": 5,
+        "start": "2026-10-27",
+        "end": "2026-11-09",
+        "window": "Oct 27–Nov 9",
+        "title": "Show It — the public proof layer",
+        "tagline": "Turn four sprints of work into the portfolio a recruiter actually sees: site, writeups, demos, and a resume that matches.",
+        "why": "This sprint spans the Oct 31 gate and the Nov 1 application open. Work only counts if a screener can find and grasp it in 90 seconds; this converts private repos into public, skimmable evidence exactly when applications go live.",
+        "skills": [
+          "GitHub legibility",
+          "Canonical resume",
+          "Behavioral narratives"
+        ],
+        "tools": [
+          "GitHub Pages / Vercel",
+          "screen recording",
+          "the writeups from sprints 1–4"
+        ],
+        "week1": [
+          "Portfolio page: one screen, four projects, each with a 2-sentence claim + numbers + links",
+          "Polish the four READMEs to a standard template: what/why/architecture/numbers/run-it",
+          "Record a 2-minute demo video for the two strongest projects"
+        ],
+        "week2": [
+          "Rewrite the resume's project section so every bullet has a number from a sprint",
+          "Draft the three behavioral stories (build, debug, tradeoff) anchored in sprint incidents",
+          "Dry-run: someone (or Claude) plays recruiter for 90 seconds per project and reports what landed"
+        ],
+        "stretch": [
+          "Cross-post the two best writeups as blog posts",
+          "A 'systems I've built' architecture-diagram page that doubles as a system-design portfolio"
+        ],
+        "resources": [
+          {
+            "name": "GitHub Pages",
+            "url": "https://pages.github.com/"
+          },
+          {
+            "name": "Tech Interview Handbook — resume",
+            "url": "https://www.techinterviewhandbook.org/resume/"
+          }
+        ],
+        "prompt": "You're my project coach for a 2-week sprint: packaging four completed technical sprints (eval harness, traced agent, model serving, LoRA experiment) into a public portfolio, timed to my Nov 1 application launch.\n\nBe my editor and my recruiter simulator. Sequence: (1) help me write a one-screen portfolio page — challenge every sentence that doesn't carry a number or a claim, (2) README template pass over all four repos, (3) script and critique my two demo videos, (4) resume bullets — rewrite each until it's metric-first, (5) three behavioral stories in STAR shape drawn from real sprint incidents, (6) finish by role-playing a recruiter who has 90 seconds per project: tell me what you retained, then what to cut.\n\nPush back hard on jargon. The audience is a screener who is smart but has 90 seconds."
+      },
+      {
+        "id": "pipeline-proof",
+        "n": 6,
+        "start": "2026-11-10",
+        "end": "2026-11-23",
+        "window": "Nov 10–23",
+        "title": "Pipeline Proof — the job funnel as a case study",
+        "tagline": "Open up the study planner's own scraping + scoring + funnel system as a public data-engineering case study.",
+        "why": "You built a real system: multi-source ingestion (5 boards + 41 ATS APIs), scoring, D1, a funnel with stall diagnostics. Applications are live by now and interviews want a 'walk me through a system you own' — this one you can narrate for an hour.",
+        "skills": [
+          "Data & training loop",
+          "Requirements interrogation",
+          "Multi-tenancy & cost attribution"
+        ],
+        "tools": [
+          "the ai-study-planner repo itself",
+          "Cloudflare Workers + D1",
+          "cron pipelines"
+        ],
+        "week1": [
+          "Write the system-design doc: sources, dedup, scoring, storage, consumers (briefing/app), failure handling",
+          "Add one missing production nicety end to end (per-board yield metrics, or a dead-letter log)",
+          "Diagram it properly — this is your 'design a data pipeline' interview answer"
+        ],
+        "week2": [
+          "Public case-study writeup with real numbers: postings/day, dedup rate, score distribution, funnel conversion so far",
+          "Practice the narration: 15-minute walkthrough answering 'what breaks first at 100x?'",
+          "Fold what you learned into applications — this doc IS an interview artifact"
+        ],
+        "stretch": [
+          "Open-source a cleaned template version of the pipeline",
+          "Comparison post: scraping boards vs polling ATS APIs, with your yield data"
+        ],
+        "resources": [
+          {
+            "name": "Google Cloud — MLOps pipeline levels",
+            "url": "https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning"
+          },
+          {
+            "name": "System Design Primer",
+            "url": "https://github.com/donnemartin/system-design-primer"
+          }
+        ],
+        "prompt": "You're my project coach for a 2-week sprint: turning my real job-search data pipeline (nightly scraper over 5 job boards + 41 ATS APIs, curriculum-based scoring, Cloudflare D1 storage, a briefing consumer, and an application funnel with stall diagnostics) into a polished public case study and a rehearsed system-design narrative.\n\nWork with me like a staff engineer prepping me for interviews: (1) interrogate my design — make me justify dedup strategy, scoring weights, failure handling, and storage choices, (2) help me write the system-design doc and diagram to the standard of a design review, (3) pick ONE production gap (observability or dead-lettering) and coach me through closing it, (4) then run me through the 15-minute walkthrough twice — once friendly, once adversarial ('what breaks at 100x? why not a queue? why D1?').\n\nInterrupt me whenever my narration hides a number I should know."
+      },
+      {
+        "id": "voice-agent",
+        "n": 7,
+        "start": "2026-11-24",
+        "end": "2026-12-07",
+        "window": "Nov 24–Dec 7 (optional)",
+        "title": "Say It — a realtime voice agent",
+        "tagline": "Put a voice on the Atlas agent: speech in, tool-calling reasoning in the middle, natural speech out, under a strict latency budget.",
+        "why": "Voice/speech shows up in 23% of analyzed JDs and demos better than anything else you can build — a recruiter who talks to your agent for 30 seconds remembers you. Optional: run it when applications are out and interviews are quiet; skip it in a busy week.",
+        "skills": [
+          "Serving architecture",
+          "Failure modes & tradeoffs",
+          "Scale (sharding, replication, p99)"
+        ],
+        "tools": [
+          "streaming STT (Deepgram or Whisper)",
+          "TTS (ElevenLabs or open)",
+          "WebSockets",
+          "your sprint-2 agent"
+        ],
+        "week1": [
+          "Wire streaming speech-to-text → the sprint-2 agent → text-to-speech behind one WebSocket endpoint",
+          "Set and measure a latency budget: time-to-first-audio under 1.5s, and know where every 100ms goes",
+          "Handle barge-in (user interrupts mid-answer) without losing agent state"
+        ],
+        "week2": [
+          "Failure modes: garbled audio, STT confidence thresholds, the agent falling back to 'let me show you instead' with a citation",
+          "A one-page web client (mic button + live transcript + spoken answer)",
+          "Record the 60-second demo video — this is the portfolio's front door"
+        ],
+        "stretch": [
+          "Phone-number front end (Twilio) so anyone can call your agent",
+          "Latency writeup: the full budget breakdown and what you traded to hit it"
+        ],
+        "resources": [
+          {
+            "name": "Pipecat — voice agent patterns",
+            "url": "https://docs.pipecat.ai/"
+          },
+          {
+            "name": "Deepgram docs (streaming STT)",
+            "url": "https://developers.deepgram.com/docs"
+          },
+          {
+            "name": "ElevenLabs docs (TTS)",
+            "url": "https://elevenlabs.io/docs"
+          }
+        ],
+        "prompt": "You're my project coach for a 2-week sprint: giving my existing tool-calling agent a realtime voice interface — streaming STT in, agent reasoning in the middle, streaming TTS out, over WebSockets, with a hard time-to-first-audio budget of 1.5 seconds.\n\nTeach me the realtime concepts before we build each piece: why streaming beats request/response here, where latency actually accumulates (VAD, STT finalization, LLM first token, TTS first byte), what barge-in requires. Then build with me step by step — one component at a time, measuring latency after each addition so I always know my budget.\n\nMake me handle the ugly parts: interruptions, low-confidence transcripts, and what the agent says when a tool fails mid-conversation. Finish by helping me script a 60-second demo video that shows one question, one tool call, and one graceful interruption."
+      }
+    ],
+    "evidence": {
+      "date": "2026-08-30",
+      "method": "Frequency analysis of 277 AI/ML-titled job descriptions pulled from the 41 ATS boards in config/ats-boards.txt (last 60 days), cross-checked against hiring-manager guidance on portfolio quality.",
+      "top_demands": [
+        "agents / tool use — 54%",
+        "serving & inference — 39%",
+        "observability / tracing — 34%",
+        "safety & guardrails — 34%",
+        "evals — 32%",
+        "voice / speech — 23%",
+        "A/B & experimentation — 19%",
+        "RAG / retrieval — 17%",
+        "multimodal — 16%",
+        "fine-tuning — 16%"
+      ],
+      "notes": "LangChain named in only 5% — raw-API fluency reads better. 'Forward deployed engineer' is a fast-growing title (customer-facing, full-stack + LLM, demo-heavy) that maps to the Equi founding-engineer role. Qualitative consensus: 2-4 deep projects with evals, failure handling, deployment, and an honest writeup beat any number of tutorial clones; a generic chatbot is an anti-signal."
     }
   }
 }

@@ -22,14 +22,21 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html
 import json
 import pathlib
+import random
 import re
+import sqlite3
 import sys
-from datetime import datetime, timezone
+import time
+import urllib.request
+from datetime import datetime, timedelta, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CURRICULUM = ROOT / "public" / "curriculum.json"
+ATS_BOARDS = ROOT / "config" / "ats-boards.txt"
+JOBS_DB = ROOT / "data" / "jobs.db"
 
 # Boards jobspy supports that are worth the request budget. bayt/bdjobs were in
 # the prototype's list but return nothing useful for US MLE roles.
@@ -138,29 +145,287 @@ def target_band(curr: dict) -> tuple[int, int]:
     return 200_000, 300_000    # v2 plan default
 
 
-def score_posting(row: dict, skills: list[str], band: tuple[int, int]) -> dict:
+# Location preference. Austin is the relocation target, so Austin roles get a
+# score boost and remote (US) roles a smaller one — a role you can actually take
+# should outrank an equally-matched one in a city you'd have to say no to.
+_REMOTE = re.compile(r"\bremote\b|distributed|anywhere", re.I)
+
+
+def location_pref(curr: dict) -> list[str]:
+    student = curr.get("student") or {}
+    raw = student.get("location_targets")
+    if isinstance(raw, list):
+        return [str(x).lower() for x in raw]
+    return ["austin", "atx", "remote"]      # default: Austin + remote
+
+
+def location_score(location: str, prefs: list[str]) -> float:
+    loc = (location or "").lower()
+    if not loc:
+        return 0.0
+    for p in prefs:
+        if p in ("remote", "anywhere"):
+            if _REMOTE.search(loc):
+                return 0.5
+        elif p and p in loc:
+            return 1.0                        # a named target city (e.g. Austin)
+    return 0.0
+
+
+def score_posting(row: dict, skills: list[str], band: tuple[int, int], loc_prefs: list[str] | None = None) -> dict:
     matched = match_skills(row.get("description") or "", skills)
     sk = round(len(matched) / len(skills), 4) if skills else 0.0
     cs = comp_score(row.get("salary_min"), row.get("salary_max"), *band)
-    # Skills weighted above comp: the point of the shortlist is "does this match
-    # what I am actually building", not "what pays most".
-    combined = round(0.7 * sk + 0.3 * cs, 4)
-    return {"skills": matched, "skill_score": sk, "comp_score": cs, "score": combined}
+    ls = location_score(row.get("location") or "", loc_prefs or ["austin", "atx", "remote"])
+    # Skills weighted above comp; location is a lighter thumb on the scale so a
+    # great Austin/remote match rises but a weak local role never outranks a
+    # strong one elsewhere.
+    combined = round(min(1.0, 0.6 * sk + 0.25 * cs + 0.15 * ls), 4)
+    return {"skills": matched, "skill_score": sk, "comp_score": cs,
+            "loc_score": ls, "score": combined}
 
 
 def external_id(url: str) -> str:
     return hashlib.sha256((url or "").encode()).hexdigest()[:16]
 
 
-def scrape(terms: list[str], location: str, limit: int, hours_old: int) -> list[dict]:
+# ─── ATS boards — free public JSON, no scraping, no blocking ─────────────────
+# Greenhouse/Lever/Ashby all publish every customer's job board as an open API.
+# This is where volume comes from: the five jobspy boards above get throttled at
+# scale, while these endpoints are designed to be polled.
+
+# Postings worth storing. Broad on purpose — scoring ranks them; this only
+# keeps obviously irrelevant roles (sales, recruiting, legal) out of D1.
+# Covers the full family of titles worth targeting: AI/ML engineering, data
+# science/analytics, MLOps/infra, quant, research, and the software roles
+# adjacent to them. Order doesn't matter; any single hit marks a posting
+# relevant (and thus scored + eligible for the D1 shortlist).
+AI_TITLE = re.compile(
+    r"machine learning|\bml\b|\bai\b|artificial intelligence|applied scientist"
+    r"|applied ai|research (engineer|scientist)|research scientist"
+    # data science / analytics family
+    r"|data scientist|data science|data analyst|data analytics|analytics engineer"
+    r"|business intelligence|\bbi\b (analyst|engineer|developer)|decision scientist"
+    r"|product analyst|quantitative analyst|quant(itative)? (developer|researcher|analyst|engineer)"
+    r"|quant\b|statistician"
+    # LLM / GenAI / applied
+    r"|\bllm\b|\bgenai\b|generative ai|deep learning|\bnlp\b|computer vision|\bcv\b"
+    r"|forward deployed|solutions? engineer|solutions? architect|prompt engineer"
+    # engineering / infra / platform
+    r"|inference|model serving|software engineer|data engineer|analytics? engineer"
+    r"|ml(ops)?|mlops|ai infrastructure|ai platform|infrastructure engineer"
+    r"|platform engineer|backend engineer|full[- ]?stack|data (platform|infrastructure)"
+    r"|search engineer|recommendation|ranking|personalization|quantitative", re.I)
+
+_COMP = re.compile(r"\$\s*(\d{2,3})(?:[.,](\d{3}))?\s*([kK])?")
+
+
+def parse_comp(text: str) -> tuple[int | None, int | None]:
+    """Pull a salary band out of freeform text ('$165K – $330K', '$150,000')."""
+    amounts = []
+    for m in _COMP.finditer(text or ""):
+        n = int(m.group(1)) * (1000 if (m.group(3) or m.group(2)) else 1)
+        if m.group(2) and not m.group(3):
+            n = int(m.group(1) + m.group(2))
+        if 50_000 <= n <= 1_500_000:
+            amounts.append(n)
+    if not amounts:
+        return None, None
+    return min(amounts), max(amounts)
+
+
+def _get_json(url: str, timeout: int = 20):
+    req = urllib.request.Request(url, headers={"User-Agent": "ai-study-planner/1.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+
+def load_ats_boards(path: pathlib.Path) -> list[tuple[str, str]]:
+    boards = []
+    if not path.exists():
+        return boards
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        parts = line.split()
+        if len(parts) == 2 and parts[0] in ("greenhouse", "lever", "ashby"):
+            boards.append((parts[0], parts[1]))
+    return boards
+
+
+def fetch_ats(boards: list[tuple[str, str]], days: int, per_company: int) -> list[dict]:
+    """One row per relevant recent posting across all configured boards."""
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    rows: list[dict] = []
+    for ats, slug in boards:
+        try:
+            if ats == "greenhouse":
+                rows.extend(_gh_board(slug, cutoff, per_company))
+            elif ats == "lever":
+                rows.extend(_lever_board(slug, cutoff, per_company))
+            elif ats == "ashby":
+                rows.extend(_ashby_board(slug, cutoff, per_company))
+        except Exception as exc:                     # noqa: BLE001
+            print(f"[scan-jobs] ats {ats}:{slug} failed: {str(exc)[:120]}", file=sys.stderr)
+        time.sleep(random.uniform(0.5, 1.5))        # polite even to open APIs
+    return rows
+
+
+def _row(title, company, location, url, source, posted, description, relevant=True):
+    lo, hi = parse_comp(description[:6000])
+    return {"external_id": external_id(url), "title": title, "company": company,
+            "location": location, "job_url": url, "source": source,
+            "salary_min": lo, "salary_max": hi,
+            "date_posted": posted, "description": description, "relevant": relevant}
+
+
+def _fresh(posted_iso: str | None, cutoff) -> bool:
+    try:
+        return datetime.fromisoformat((posted_iso or "")[:10]).replace(tzinfo=timezone.utc) >= cutoff
+    except ValueError:
+        return True                                  # unknown date is not a reason to skip
+
+
+def _gh_board(slug: str, cutoff, per_company: int) -> list[dict]:
+    # Every listed job is archived (title/metadata only for non-relevant ones —
+    # the list endpoint carries no descriptions). Relevant jobs — AI-titled,
+    # recent, within the per-company cap — additionally get a detail fetch for
+    # the full description so they can be scored for the D1 shortlist.
+    data = _get_json(f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs")
+    out, picked = [], 0
+    for j in data.get("jobs", []):
+        ts = (j.get("first_published") or j.get("updated_at") or "")[:10]
+        rel = bool(AI_TITLE.search(j.get("title") or "")) and _fresh(ts, cutoff) and picked < per_company
+        desc = ""
+        if rel:
+            picked += 1
+            try:
+                detail = _get_json(f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs/{j['id']}")
+                # content arrives HTML-escaped (&lt;p&gt;…) — unescape before stripping tags
+                desc = re.sub(r"<[^>]+>", " ", html.unescape(detail.get("content") or ""))
+            except Exception:                        # noqa: BLE001
+                pass
+        out.append(_row(j.get("title") or "", data.get("name") or slug,
+                        (j.get("location") or {}).get("name"), j.get("absolute_url") or "",
+                        f"ats:{slug}", ts or None, desc, rel))
+    return out
+
+
+def _lever_board(slug: str, cutoff, per_company: int) -> list[dict]:
+    # Descriptions come inline, so archiving every listed job costs nothing.
+    data = _get_json(f"https://api.lever.co/v0/postings/{slug}?mode=json")
+    out, picked = [], 0
+    for j in data:
+        posted = None
+        try:
+            posted = datetime.fromtimestamp(int(j.get("createdAt") or 0) / 1000, tz=timezone.utc).strftime("%Y-%m-%d")
+        except (ValueError, OSError):
+            pass
+        rel = bool(AI_TITLE.search(j.get("title") or j.get("text") or "")) and _fresh(posted, cutoff) and picked < per_company
+        if rel:
+            picked += 1
+        cat = j.get("categories") or {}
+        out.append(_row(j.get("text") or "", slug, cat.get("location"),
+                        j.get("hostedUrl") or "", f"ats:{slug}", posted,
+                        j.get("descriptionPlain") or "", rel))
+    return out
+
+
+def _ashby_board(slug: str, cutoff, per_company: int) -> list[dict]:
+    data = _get_json(f"https://api.ashbyhq.com/posting-api/job-board/{slug}?includeCompensation=true")
+    out, picked = [], 0
+    for j in data.get("jobs", []):
+        if not j.get("isListed", True):
+            continue
+        posted = None
+        try:
+            posted = datetime.fromisoformat(j.get("publishedAt") or "").strftime("%Y-%m-%d")
+        except ValueError:
+            pass
+        rel = bool(AI_TITLE.search(j.get("title") or "")) and _fresh(posted, cutoff) and picked < per_company
+        if rel:
+            picked += 1
+        comp = ((j.get("compensation") or {}).get("compensationTierSummary")) or ""
+        out.append(_row(j.get("title") or "", slug, j.get("location"),
+                        j.get("jobUrl") or "", f"ats:{slug}", posted,
+                        f"{comp}\n{j.get('descriptionPlain') or ''}", rel))
+    return out
+
+
+# ─── Local archive — every scraped posting, full info, one SQLite file ───────
+# D1 holds the scored shortlist the app reads; this holds EVERYTHING the scan
+# has ever seen (descriptions included) for offline analysis. Query it with:
+#   sqlite3 data/jobs.db "SELECT company,title,salary_max FROM postings
+#                         WHERE relevant=1 ORDER BY score DESC LIMIT 20"
+#   sqlite3 data/jobs.db "SELECT source, SUM(fetched), SUM(new) FROM runs
+#                         GROUP BY source ORDER BY 2 DESC"
+
+def archive_rows(rows: list[dict], db_path: pathlib.Path, now: str) -> tuple[int, int]:
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    con = sqlite3.connect(db_path)
+    con.execute("PRAGMA journal_mode=WAL")
+    con.execute("""CREATE TABLE IF NOT EXISTS postings (
+        external_id TEXT PRIMARY KEY, title TEXT, company TEXT, location TEXT,
+        job_url TEXT, source TEXT, salary_min INTEGER, salary_max INTEGER,
+        date_posted TEXT, description TEXT, relevant INTEGER,
+        skills TEXT, skill_score REAL, comp_score REAL, score REAL,
+        first_seen TEXT, last_seen TEXT, times_seen INTEGER DEFAULT 1)""")
+    con.execute("""CREATE TABLE IF NOT EXISTS runs (
+        ts TEXT, source TEXT, fetched INTEGER, relevant INTEGER, new INTEGER)""")
+    new = 0
+    per_source: dict[str, list[int]] = {}
+    for r in rows:
+        s = per_source.setdefault(r.get("source") or "?", [0, 0, 0])
+        s[0] += 1
+        s[1] += 1 if r.get("relevant") else 0
+        exists = con.execute("SELECT 1 FROM postings WHERE external_id=?", (r["external_id"],)).fetchone()
+        if not exists:
+            s[2] += 1
+        con.execute(
+            """INSERT INTO postings (external_id,title,company,location,job_url,source,
+                 salary_min,salary_max,date_posted,description,relevant,
+                 skills,skill_score,comp_score,score,first_seen,last_seen)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+               ON CONFLICT(external_id) DO UPDATE SET
+                 last_seen=excluded.last_seen, times_seen=times_seen+1,
+                 relevant=MAX(relevant, excluded.relevant),
+                 salary_min=COALESCE(excluded.salary_min, salary_min),
+                 salary_max=COALESCE(excluded.salary_max, salary_max),
+                 description=CASE WHEN excluded.description != '' THEN excluded.description ELSE description END,
+                 skills=CASE WHEN excluded.skills IS NOT NULL THEN excluded.skills ELSE skills END,
+                 skill_score=COALESCE(excluded.skill_score, skill_score),
+                 comp_score=COALESCE(excluded.comp_score, comp_score),
+                 score=COALESCE(excluded.score, score)""",
+            (r["external_id"], r.get("title"), r.get("company"), r.get("location"),
+             r.get("job_url"), r.get("source"), r.get("salary_min"), r.get("salary_max"),
+             r.get("date_posted"), r.get("description") or "", 1 if r.get("relevant") else 0,
+             json.dumps(r["skills"]) if r.get("skills") is not None else None,
+             r.get("skill_score"), r.get("comp_score"), r.get("score"), now, now))
+    for src, (f, rel, nw) in per_source.items():
+        con.execute("INSERT INTO runs (ts,source,fetched,relevant,new) VALUES (?,?,?,?,?)", (now, src, f, rel, nw))
+        new += nw
+    con.commit()
+    con.close()
+    return new, len(rows)
+
+
+def scrape(terms: list[str], locations, limit: int, hours_old: int) -> list[dict]:
     try:
         from jobspy import scrape_jobs
     except ImportError:
         print("jobspy not installed — pip install python-jobspy", file=sys.stderr)
         return []
 
+    if isinstance(locations, str):
+        locations = [locations]
+    # term × location sweeps. Austin is included so the big boards (which DO
+    # geo-filter, unlike the ATS APIs) surface Austin-local roles directly.
+    pairs = [(t, loc) for loc in locations for t in terms]
     rows: list[dict] = []
-    for term in terms:
+    for i, (term, location) in enumerate(pairs):
+        if i:
+            time.sleep(random.uniform(15, 45))   # jitter between sweeps; boards notice bursts
         try:
             df = scrape_jobs(site_name=SITES, search_term=term, location=location,
                              results_wanted=limit, hours_old=hours_old,
@@ -202,31 +467,64 @@ def _int(v):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--limit", type=int, default=25, help="results per search term")
+    ap.add_argument("--limit", type=int, default=50, help="results per search term")
     ap.add_argument("--hours-old", type=int, default=72)
-    ap.add_argument("--location", default="USA")
-    ap.add_argument("--terms", default="machine learning engineer,ML engineer,applied scientist")
+    ap.add_argument("--location", default="USA;Austin, TX", help="semicolon-separated jobspy locations; each is swept for every term")
+    ap.add_argument("--terms", default=(
+        "machine learning engineer,ML engineer,AI engineer,applied scientist,"
+        "data scientist,data engineer,data analyst,analytics engineer,"
+        "quantitative developer,quantitative analyst,MLOps engineer,applied AI"))
+    ap.add_argument("--ats-file", default=str(ATS_BOARDS), help="ATS board list; '' disables")
+    ap.add_argument("--ats-days", type=int, default=30, help="ATS: score postings newer than this (everything is archived regardless)")
+    ap.add_argument("--ats-cap", type=int, default=75, help="ATS: max scored postings per company")
+    ap.add_argument("--db", default=str(JOBS_DB), help="SQLite archive of every scraped posting; '' disables")
     ap.add_argument("--dry-run", action="store_true", help="no network; print config and exit")
     a = ap.parse_args()
 
     curr = load_curriculum()
     skills = tracked_skills(curr)
     band = target_band(curr)
+    loc_prefs = location_pref(curr)
     terms = [t.strip() for t in a.terms.split(",") if t.strip()]
+    locations = [l.strip() for l in a.location.split(";") if l.strip()]
+    boards = load_ats_boards(pathlib.Path(a.ats_file)) if a.ats_file else []
 
     if a.dry_run:
-        json.dump({"dry_run": True, "terms": terms, "sites": SITES,
+        json.dump({"dry_run": True, "terms": terms, "sites": SITES, "locations": locations,
+                   "jobspy_sweeps": len(terms) * len(locations),
+                   "ats_boards": len(boards), "ats_days": a.ats_days,
                    "tracked_skills": len(skills), "sample_skills": skills[:8],
-                   "target_band": band}, sys.stdout, indent=2)
+                   "target_band": band, "location_targets": loc_prefs}, sys.stdout, indent=2)
         print()
         return 0
 
-    rows = scrape(terms, a.location, a.limit, a.hours_old)
+    board_rows = [dict(r, relevant=True) for r in scrape(terms, locations, a.limit, a.hours_old)]
+    rows = board_rows + fetch_ats(boards, a.ats_days, a.ats_cap)
+    # Boards + ATS can list the same posting under different URLs; the URL-hash
+    # dedup in scrape() can't catch that, so postings from ATS keep their own
+    # rows — the ATS row wins on score because it carries the full description.
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # Score only the relevant rows (those are D1/shortlist candidates)…
+    for r in rows:
+        if r.get("relevant"):
+            r.update(score_posting(r, skills, band, loc_prefs))
+
+    # …but archive EVERYTHING, descriptions included, to the local SQLite file.
+    if a.db:
+        try:
+            fresh, total = archive_rows(rows, pathlib.Path(a.db), now)
+            print(f"[scan-jobs] archived {total} postings to {a.db} ({fresh} never seen before)", file=sys.stderr)
+        except Exception as exc:                     # noqa: BLE001 — archive failure must not kill the D1 path
+            print(f"[scan-jobs] WARN: archive failed: {str(exc)[:150]}", file=sys.stderr)
+
     out = []
     for r in rows:
-        r.update(score_posting(r, skills, band))
-        r.pop("description", None)       # never stored; only used for matching
+        if not r.get("relevant"):
+            continue
+        r = dict(r)
+        r.pop("description", None)       # never sent to D1; only used for matching
+        r.pop("relevant", None)
         r["first_seen"] = r["last_seen"] = now
         out.append(r)
     out.sort(key=lambda x: x["score"], reverse=True)
@@ -235,7 +533,7 @@ def main() -> int:
                "tracked_skills": len(skills), "target_band": band,
                "postings": out}, sys.stdout, indent=2)
     print()
-    print(f"[scan-jobs] {len(out)} unique postings, "
+    print(f"[scan-jobs] {len(out)} scored postings, "
           f"{sum(1 for p in out if p['score'] >= 0.15)} above the shortlist bar",
           file=sys.stderr)
     return 0
