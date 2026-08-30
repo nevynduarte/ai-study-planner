@@ -16,3 +16,8 @@ files(*).zip
 # personal browser bookmarks export (scraped for the research list; not for the repo)
 bookmarks.html
 __pycache__/
+
+# local scraped-jobs archive (SQLite, lives on the runner box)
+data/jobs.db
+data/jobs.db-wal
+data/jobs.db-shm

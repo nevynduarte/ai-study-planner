@@ -27,6 +27,7 @@ import json
 import pathlib
 import random
 import re
+import sqlite3
 import sys
 import time
 import urllib.request
@@ -35,6 +36,7 @@ from datetime import datetime, timedelta, timezone
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CURRICULUM = ROOT / "public" / "curriculum.json"
 ATS_BOARDS = ROOT / "config" / "ats-boards.txt"
+JOBS_DB = ROOT / "data" / "jobs.db"
 
 # Boards jobspy supports that are worth the request budget. bayt/bdjobs were in
 # the prototype's list but return nothing useful for US MLE roles.
@@ -225,90 +227,142 @@ def fetch_ats(boards: list[tuple[str, str]], days: int, per_company: int) -> lis
     return rows
 
 
-def _row(title, company, location, url, source, posted, description):
+def _row(title, company, location, url, source, posted, description, relevant=True):
     lo, hi = parse_comp(description[:6000])
     return {"external_id": external_id(url), "title": title, "company": company,
             "location": location, "job_url": url, "source": source,
             "salary_min": lo, "salary_max": hi,
-            "date_posted": posted, "description": description}
+            "date_posted": posted, "description": description, "relevant": relevant}
+
+
+def _fresh(posted_iso: str | None, cutoff) -> bool:
+    try:
+        return datetime.fromisoformat((posted_iso or "")[:10]).replace(tzinfo=timezone.utc) >= cutoff
+    except ValueError:
+        return True                                  # unknown date is not a reason to skip
 
 
 def _gh_board(slug: str, cutoff, per_company: int) -> list[dict]:
-    # The board list has no descriptions; fetch details only for the postings
-    # that pass the title + recency filter, capped per company.
+    # Every listed job is archived (title/metadata only for non-relevant ones —
+    # the list endpoint carries no descriptions). Relevant jobs — AI-titled,
+    # recent, within the per-company cap — additionally get a detail fetch for
+    # the full description so they can be scored for the D1 shortlist.
     data = _get_json(f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs")
-    picked = []
+    out, picked = [], 0
     for j in data.get("jobs", []):
         ts = (j.get("first_published") or j.get("updated_at") or "")[:10]
-        if not AI_TITLE.search(j.get("title") or ""):
-            continue
-        try:
-            if datetime.fromisoformat(ts).replace(tzinfo=timezone.utc) < cutoff:
-                continue
-        except ValueError:
-            pass
-        picked.append(j)
-        if len(picked) >= per_company:
-            break
-    out = []
-    for j in picked:
-        try:
-            detail = _get_json(f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs/{j['id']}")
-            # content arrives HTML-escaped (&lt;p&gt;…) — unescape before stripping tags
-            desc = re.sub(r"<[^>]+>", " ", html.unescape(detail.get("content") or ""))
-        except Exception:                            # noqa: BLE001
-            desc = ""
-        ts = (j.get("first_published") or j.get("updated_at") or "")[:10]
+        rel = bool(AI_TITLE.search(j.get("title") or "")) and _fresh(ts, cutoff) and picked < per_company
+        desc = ""
+        if rel:
+            picked += 1
+            try:
+                detail = _get_json(f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs/{j['id']}")
+                # content arrives HTML-escaped (&lt;p&gt;…) — unescape before stripping tags
+                desc = re.sub(r"<[^>]+>", " ", html.unescape(detail.get("content") or ""))
+            except Exception:                        # noqa: BLE001
+                pass
         out.append(_row(j.get("title") or "", data.get("name") or slug,
                         (j.get("location") or {}).get("name"), j.get("absolute_url") or "",
-                        f"ats:{slug}", ts or None, desc))
+                        f"ats:{slug}", ts or None, desc, rel))
     return out
 
 
 def _lever_board(slug: str, cutoff, per_company: int) -> list[dict]:
+    # Descriptions come inline, so archiving every listed job costs nothing.
     data = _get_json(f"https://api.lever.co/v0/postings/{slug}?mode=json")
-    out = []
+    out, picked = [], 0
     for j in data:
-        if not AI_TITLE.search(j.get("title") or j.get("text") or ""):
-            continue
         posted = None
         try:
-            dt = datetime.fromtimestamp(int(j.get("createdAt") or 0) / 1000, tz=timezone.utc)
-            if dt < cutoff:
-                continue
-            posted = dt.strftime("%Y-%m-%d")
+            posted = datetime.fromtimestamp(int(j.get("createdAt") or 0) / 1000, tz=timezone.utc).strftime("%Y-%m-%d")
         except (ValueError, OSError):
             pass
+        rel = bool(AI_TITLE.search(j.get("title") or j.get("text") or "")) and _fresh(posted, cutoff) and picked < per_company
+        if rel:
+            picked += 1
         cat = j.get("categories") or {}
         out.append(_row(j.get("text") or "", slug, cat.get("location"),
                         j.get("hostedUrl") or "", f"ats:{slug}", posted,
-                        j.get("descriptionPlain") or ""))
-        if len(out) >= per_company:
-            break
+                        j.get("descriptionPlain") or "", rel))
     return out
 
 
 def _ashby_board(slug: str, cutoff, per_company: int) -> list[dict]:
     data = _get_json(f"https://api.ashbyhq.com/posting-api/job-board/{slug}?includeCompensation=true")
-    out = []
+    out, picked = [], 0
     for j in data.get("jobs", []):
-        if not j.get("isListed", True) or not AI_TITLE.search(j.get("title") or ""):
+        if not j.get("isListed", True):
             continue
         posted = None
         try:
-            dt = datetime.fromisoformat(j.get("publishedAt") or "")
-            if dt < cutoff:
-                continue
-            posted = dt.strftime("%Y-%m-%d")
+            posted = datetime.fromisoformat(j.get("publishedAt") or "").strftime("%Y-%m-%d")
         except ValueError:
             pass
+        rel = bool(AI_TITLE.search(j.get("title") or "")) and _fresh(posted, cutoff) and picked < per_company
+        if rel:
+            picked += 1
         comp = ((j.get("compensation") or {}).get("compensationTierSummary")) or ""
         out.append(_row(j.get("title") or "", slug, j.get("location"),
                         j.get("jobUrl") or "", f"ats:{slug}", posted,
-                        f"{comp}\n{j.get('descriptionPlain') or ''}"))
-        if len(out) >= per_company:
-            break
+                        f"{comp}\n{j.get('descriptionPlain') or ''}", rel))
     return out
+
+
+# ─── Local archive — every scraped posting, full info, one SQLite file ───────
+# D1 holds the scored shortlist the app reads; this holds EVERYTHING the scan
+# has ever seen (descriptions included) for offline analysis. Query it with:
+#   sqlite3 data/jobs.db "SELECT company,title,salary_max FROM postings
+#                         WHERE relevant=1 ORDER BY score DESC LIMIT 20"
+#   sqlite3 data/jobs.db "SELECT source, SUM(fetched), SUM(new) FROM runs
+#                         GROUP BY source ORDER BY 2 DESC"
+
+def archive_rows(rows: list[dict], db_path: pathlib.Path, now: str) -> tuple[int, int]:
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    con = sqlite3.connect(db_path)
+    con.execute("PRAGMA journal_mode=WAL")
+    con.execute("""CREATE TABLE IF NOT EXISTS postings (
+        external_id TEXT PRIMARY KEY, title TEXT, company TEXT, location TEXT,
+        job_url TEXT, source TEXT, salary_min INTEGER, salary_max INTEGER,
+        date_posted TEXT, description TEXT, relevant INTEGER,
+        skills TEXT, skill_score REAL, comp_score REAL, score REAL,
+        first_seen TEXT, last_seen TEXT, times_seen INTEGER DEFAULT 1)""")
+    con.execute("""CREATE TABLE IF NOT EXISTS runs (
+        ts TEXT, source TEXT, fetched INTEGER, relevant INTEGER, new INTEGER)""")
+    new = 0
+    per_source: dict[str, list[int]] = {}
+    for r in rows:
+        s = per_source.setdefault(r.get("source") or "?", [0, 0, 0])
+        s[0] += 1
+        s[1] += 1 if r.get("relevant") else 0
+        exists = con.execute("SELECT 1 FROM postings WHERE external_id=?", (r["external_id"],)).fetchone()
+        if not exists:
+            s[2] += 1
+        con.execute(
+            """INSERT INTO postings (external_id,title,company,location,job_url,source,
+                 salary_min,salary_max,date_posted,description,relevant,
+                 skills,skill_score,comp_score,score,first_seen,last_seen)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+               ON CONFLICT(external_id) DO UPDATE SET
+                 last_seen=excluded.last_seen, times_seen=times_seen+1,
+                 relevant=MAX(relevant, excluded.relevant),
+                 salary_min=COALESCE(excluded.salary_min, salary_min),
+                 salary_max=COALESCE(excluded.salary_max, salary_max),
+                 description=CASE WHEN excluded.description != '' THEN excluded.description ELSE description END,
+                 skills=CASE WHEN excluded.skills IS NOT NULL THEN excluded.skills ELSE skills END,
+                 skill_score=COALESCE(excluded.skill_score, skill_score),
+                 comp_score=COALESCE(excluded.comp_score, comp_score),
+                 score=COALESCE(excluded.score, score)""",
+            (r["external_id"], r.get("title"), r.get("company"), r.get("location"),
+             r.get("job_url"), r.get("source"), r.get("salary_min"), r.get("salary_max"),
+             r.get("date_posted"), r.get("description") or "", 1 if r.get("relevant") else 0,
+             json.dumps(r["skills"]) if r.get("skills") is not None else None,
+             r.get("skill_score"), r.get("comp_score"), r.get("score"), now, now))
+    for src, (f, rel, nw) in per_source.items():
+        con.execute("INSERT INTO runs (ts,source,fetched,relevant,new) VALUES (?,?,?,?,?)", (now, src, f, rel, nw))
+        new += nw
+    con.commit()
+    con.close()
+    return new, len(rows)
 
 
 def scrape(terms: list[str], location: str, limit: int, hours_old: int) -> list[dict]:
@@ -363,13 +417,14 @@ def _int(v):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--limit", type=int, default=40, help="results per search term")
+    ap.add_argument("--limit", type=int, default=50, help="results per search term")
     ap.add_argument("--hours-old", type=int, default=72)
     ap.add_argument("--location", default="USA")
-    ap.add_argument("--terms", default="machine learning engineer,ML engineer,AI engineer,applied scientist")
+    ap.add_argument("--terms", default="machine learning engineer,ML engineer,AI engineer,applied scientist,data engineer,applied AI")
     ap.add_argument("--ats-file", default=str(ATS_BOARDS), help="ATS board list; '' disables")
-    ap.add_argument("--ats-days", type=int, default=21, help="ATS: keep postings newer than this")
-    ap.add_argument("--ats-cap", type=int, default=40, help="ATS: max postings per company")
+    ap.add_argument("--ats-days", type=int, default=30, help="ATS: score postings newer than this (everything is archived regardless)")
+    ap.add_argument("--ats-cap", type=int, default=75, help="ATS: max scored postings per company")
+    ap.add_argument("--db", default=str(JOBS_DB), help="SQLite archive of every scraped posting; '' disables")
     ap.add_argument("--dry-run", action="store_true", help="no network; print config and exit")
     a = ap.parse_args()
 
@@ -387,15 +442,33 @@ def main() -> int:
         print()
         return 0
 
-    rows = scrape(terms, a.location, a.limit, a.hours_old) + fetch_ats(boards, a.ats_days, a.ats_cap)
+    board_rows = [dict(r, relevant=True) for r in scrape(terms, a.location, a.limit, a.hours_old)]
+    rows = board_rows + fetch_ats(boards, a.ats_days, a.ats_cap)
     # Boards + ATS can list the same posting under different URLs; the URL-hash
     # dedup in scrape() can't catch that, so postings from ATS keep their own
     # rows — the ATS row wins on score because it carries the full description.
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # Score only the relevant rows (those are D1/shortlist candidates)…
+    for r in rows:
+        if r.get("relevant"):
+            r.update(score_posting(r, skills, band))
+
+    # …but archive EVERYTHING, descriptions included, to the local SQLite file.
+    if a.db:
+        try:
+            fresh, total = archive_rows(rows, pathlib.Path(a.db), now)
+            print(f"[scan-jobs] archived {total} postings to {a.db} ({fresh} never seen before)", file=sys.stderr)
+        except Exception as exc:                     # noqa: BLE001 — archive failure must not kill the D1 path
+            print(f"[scan-jobs] WARN: archive failed: {str(exc)[:150]}", file=sys.stderr)
+
     out = []
     for r in rows:
-        r.update(score_posting(r, skills, band))
-        r.pop("description", None)       # never stored; only used for matching
+        if not r.get("relevant"):
+            continue
+        r = dict(r)
+        r.pop("description", None)       # never sent to D1; only used for matching
+        r.pop("relevant", None)
         r["first_seen"] = r["last_seen"] = now
         out.append(r)
     out.sort(key=lambda x: x["score"], reverse=True)
@@ -404,7 +477,7 @@ def main() -> int:
                "tracked_skills": len(skills), "target_band": band,
                "postings": out}, sys.stdout, indent=2)
     print()
-    print(f"[scan-jobs] {len(out)} unique postings, "
+    print(f"[scan-jobs] {len(out)} scored postings, "
           f"{sum(1 for p in out if p['score'] >= 0.15)} above the shortlist bar",
           file=sys.stderr)
     return 0
