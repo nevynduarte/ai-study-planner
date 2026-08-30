@@ -22,14 +22,19 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html
 import json
 import pathlib
+import random
 import re
 import sys
-from datetime import datetime, timezone
+import time
+import urllib.request
+from datetime import datetime, timedelta, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CURRICULUM = ROOT / "public" / "curriculum.json"
+ATS_BOARDS = ROOT / "config" / "ats-boards.txt"
 
 # Boards jobspy supports that are worth the request budget. bayt/bdjobs were in
 # the prototype's list but return nothing useful for US MLE roles.
@@ -152,6 +157,160 @@ def external_id(url: str) -> str:
     return hashlib.sha256((url or "").encode()).hexdigest()[:16]
 
 
+# ─── ATS boards — free public JSON, no scraping, no blocking ─────────────────
+# Greenhouse/Lever/Ashby all publish every customer's job board as an open API.
+# This is where volume comes from: the five jobspy boards above get throttled at
+# scale, while these endpoints are designed to be polled.
+
+# Postings worth storing. Broad on purpose — scoring ranks them; this only
+# keeps obviously irrelevant roles (sales, recruiting, legal) out of D1.
+AI_TITLE = re.compile(
+    r"machine learning|\bml\b|\bai\b|artificial intelligence|applied scientist"
+    r"|research (engineer|scientist)|data scientist|\bllm\b|deep learning|\bnlp\b"
+    r"|computer vision|inference|model serving|software engineer|data engineer"
+    r"|infrastructure|platform engineer|quantitative", re.I)
+
+_COMP = re.compile(r"\$\s*(\d{2,3})(?:[.,](\d{3}))?\s*([kK])?")
+
+
+def parse_comp(text: str) -> tuple[int | None, int | None]:
+    """Pull a salary band out of freeform text ('$165K – $330K', '$150,000')."""
+    amounts = []
+    for m in _COMP.finditer(text or ""):
+        n = int(m.group(1)) * (1000 if (m.group(3) or m.group(2)) else 1)
+        if m.group(2) and not m.group(3):
+            n = int(m.group(1) + m.group(2))
+        if 50_000 <= n <= 1_500_000:
+            amounts.append(n)
+    if not amounts:
+        return None, None
+    return min(amounts), max(amounts)
+
+
+def _get_json(url: str, timeout: int = 20):
+    req = urllib.request.Request(url, headers={"User-Agent": "ai-study-planner/1.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+
+def load_ats_boards(path: pathlib.Path) -> list[tuple[str, str]]:
+    boards = []
+    if not path.exists():
+        return boards
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        parts = line.split()
+        if len(parts) == 2 and parts[0] in ("greenhouse", "lever", "ashby"):
+            boards.append((parts[0], parts[1]))
+    return boards
+
+
+def fetch_ats(boards: list[tuple[str, str]], days: int, per_company: int) -> list[dict]:
+    """One row per relevant recent posting across all configured boards."""
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    rows: list[dict] = []
+    for ats, slug in boards:
+        try:
+            if ats == "greenhouse":
+                rows.extend(_gh_board(slug, cutoff, per_company))
+            elif ats == "lever":
+                rows.extend(_lever_board(slug, cutoff, per_company))
+            elif ats == "ashby":
+                rows.extend(_ashby_board(slug, cutoff, per_company))
+        except Exception as exc:                     # noqa: BLE001
+            print(f"[scan-jobs] ats {ats}:{slug} failed: {str(exc)[:120]}", file=sys.stderr)
+        time.sleep(random.uniform(0.5, 1.5))        # polite even to open APIs
+    return rows
+
+
+def _row(title, company, location, url, source, posted, description):
+    lo, hi = parse_comp(description[:6000])
+    return {"external_id": external_id(url), "title": title, "company": company,
+            "location": location, "job_url": url, "source": source,
+            "salary_min": lo, "salary_max": hi,
+            "date_posted": posted, "description": description}
+
+
+def _gh_board(slug: str, cutoff, per_company: int) -> list[dict]:
+    # The board list has no descriptions; fetch details only for the postings
+    # that pass the title + recency filter, capped per company.
+    data = _get_json(f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs")
+    picked = []
+    for j in data.get("jobs", []):
+        ts = (j.get("first_published") or j.get("updated_at") or "")[:10]
+        if not AI_TITLE.search(j.get("title") or ""):
+            continue
+        try:
+            if datetime.fromisoformat(ts).replace(tzinfo=timezone.utc) < cutoff:
+                continue
+        except ValueError:
+            pass
+        picked.append(j)
+        if len(picked) >= per_company:
+            break
+    out = []
+    for j in picked:
+        try:
+            detail = _get_json(f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs/{j['id']}")
+            # content arrives HTML-escaped (&lt;p&gt;…) — unescape before stripping tags
+            desc = re.sub(r"<[^>]+>", " ", html.unescape(detail.get("content") or ""))
+        except Exception:                            # noqa: BLE001
+            desc = ""
+        ts = (j.get("first_published") or j.get("updated_at") or "")[:10]
+        out.append(_row(j.get("title") or "", data.get("name") or slug,
+                        (j.get("location") or {}).get("name"), j.get("absolute_url") or "",
+                        f"ats:{slug}", ts or None, desc))
+    return out
+
+
+def _lever_board(slug: str, cutoff, per_company: int) -> list[dict]:
+    data = _get_json(f"https://api.lever.co/v0/postings/{slug}?mode=json")
+    out = []
+    for j in data:
+        if not AI_TITLE.search(j.get("title") or j.get("text") or ""):
+            continue
+        posted = None
+        try:
+            dt = datetime.fromtimestamp(int(j.get("createdAt") or 0) / 1000, tz=timezone.utc)
+            if dt < cutoff:
+                continue
+            posted = dt.strftime("%Y-%m-%d")
+        except (ValueError, OSError):
+            pass
+        cat = j.get("categories") or {}
+        out.append(_row(j.get("text") or "", slug, cat.get("location"),
+                        j.get("hostedUrl") or "", f"ats:{slug}", posted,
+                        j.get("descriptionPlain") or ""))
+        if len(out) >= per_company:
+            break
+    return out
+
+
+def _ashby_board(slug: str, cutoff, per_company: int) -> list[dict]:
+    data = _get_json(f"https://api.ashbyhq.com/posting-api/job-board/{slug}?includeCompensation=true")
+    out = []
+    for j in data.get("jobs", []):
+        if not j.get("isListed", True) or not AI_TITLE.search(j.get("title") or ""):
+            continue
+        posted = None
+        try:
+            dt = datetime.fromisoformat(j.get("publishedAt") or "")
+            if dt < cutoff:
+                continue
+            posted = dt.strftime("%Y-%m-%d")
+        except ValueError:
+            pass
+        comp = ((j.get("compensation") or {}).get("compensationTierSummary")) or ""
+        out.append(_row(j.get("title") or "", slug, j.get("location"),
+                        j.get("jobUrl") or "", f"ats:{slug}", posted,
+                        f"{comp}\n{j.get('descriptionPlain') or ''}"))
+        if len(out) >= per_company:
+            break
+    return out
+
+
 def scrape(terms: list[str], location: str, limit: int, hours_old: int) -> list[dict]:
     try:
         from jobspy import scrape_jobs
@@ -160,7 +319,9 @@ def scrape(terms: list[str], location: str, limit: int, hours_old: int) -> list[
         return []
 
     rows: list[dict] = []
-    for term in terms:
+    for i, term in enumerate(terms):
+        if i:
+            time.sleep(random.uniform(15, 45))   # jitter between term sweeps; boards notice bursts
         try:
             df = scrape_jobs(site_name=SITES, search_term=term, location=location,
                              results_wanted=limit, hours_old=hours_old,
@@ -202,10 +363,13 @@ def _int(v):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--limit", type=int, default=25, help="results per search term")
+    ap.add_argument("--limit", type=int, default=40, help="results per search term")
     ap.add_argument("--hours-old", type=int, default=72)
     ap.add_argument("--location", default="USA")
-    ap.add_argument("--terms", default="machine learning engineer,ML engineer,applied scientist")
+    ap.add_argument("--terms", default="machine learning engineer,ML engineer,AI engineer,applied scientist")
+    ap.add_argument("--ats-file", default=str(ATS_BOARDS), help="ATS board list; '' disables")
+    ap.add_argument("--ats-days", type=int, default=21, help="ATS: keep postings newer than this")
+    ap.add_argument("--ats-cap", type=int, default=40, help="ATS: max postings per company")
     ap.add_argument("--dry-run", action="store_true", help="no network; print config and exit")
     a = ap.parse_args()
 
@@ -213,15 +377,20 @@ def main() -> int:
     skills = tracked_skills(curr)
     band = target_band(curr)
     terms = [t.strip() for t in a.terms.split(",") if t.strip()]
+    boards = load_ats_boards(pathlib.Path(a.ats_file)) if a.ats_file else []
 
     if a.dry_run:
         json.dump({"dry_run": True, "terms": terms, "sites": SITES,
+                   "ats_boards": len(boards), "ats_days": a.ats_days,
                    "tracked_skills": len(skills), "sample_skills": skills[:8],
                    "target_band": band}, sys.stdout, indent=2)
         print()
         return 0
 
-    rows = scrape(terms, a.location, a.limit, a.hours_old)
+    rows = scrape(terms, a.location, a.limit, a.hours_old) + fetch_ats(boards, a.ats_days, a.ats_cap)
+    # Boards + ATS can list the same posting under different URLs; the URL-hash
+    # dedup in scrape() can't catch that, so postings from ATS keep their own
+    # rows — the ATS row wins on score because it carries the full description.
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     out = []
     for r in rows:

@@ -2,9 +2,13 @@
 # ─────────────────────────────────────────────────────────────
 # Nightly job scan → D1 job_postings.
 #
-# Folded in from the bracketlens prototype (archived 2026-08). Scrapes several
-# boards, scores each posting against public/curriculum.json, and upserts into
-# D1. The 6am briefing reads the shortlist from v_posting_shortlist.
+# Folded in from the bracketlens prototype (archived 2026-08). Two sources:
+# jobspy over the big boards (indeed/linkedin/glassdoor/ziprecruiter/google)
+# for breadth, and the free public ATS JSON APIs (greenhouse/lever/ashby, see
+# config/ats-boards.txt) for volume — the boards throttle at scale, the ATS
+# endpoints are built to be polled. Scores each posting against
+# public/curriculum.json and upserts into D1. The 6am briefing reads the
+# shortlist from v_posting_shortlist.
 #
 # Postings are NOT applications. They land in job_postings and only become an
 # `applications` row when you actually apply — otherwise v_funnel would report
