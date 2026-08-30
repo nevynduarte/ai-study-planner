@@ -10,11 +10,16 @@ Sweep the four tracks and surface the most important recent development per trac
 Then add ONE "adjacent field" wildcard — something outside the current month focuses that a strong MLE candidate should know about this week.
 
 For each item (5 total) give:
-1) [TRACK] one-sentence description with a Markdown source link: [title](https://real-url)
+1) [TRACK] one-sentence description with the primary source woven in as a Markdown link: [title](https://real-url)
 2) why it matters for the primary target role (MLE at a Series B–D applied-AI/infra company) or another target role
 3) which skill in the coverage matrix it advances, and whether it should change this week's plan (yes/no + reason)
 4) priority: READ NOW / this week / bookmark
 
+REFERENCES — the reader learns from this section, so every item must be self-serve:
+- Weave 2-3 inline Markdown links into the prose of each item, not just the primary source: the paper/announcement itself, plus an approachable explainer (a blog post or a YouTube video from a reputable channel — StatQuest, 3Blue1Brown, Karpathy, official engineering blogs). Label video links with a leading ▶, e.g. ▶ [Karpathy on X](https://...).
+- Only link URLs you found in your web search this run and are confident resolve — arxiv abstract pages, official docs/blogs, YouTube watch pages. Never construct a URL from memory.
+- If (and only if) a figure genuinely aids understanding AND you found a stable, directly-loadable image URL (an official blog's asset, an arxiv figure mirror), embed it with ![caption](https://image-url) right after the item. At most one image total; skip images entirely rather than guess a URL.
+
 Respect the phase in the context: in Phase 1 nothing here should push toward applying early or toward items on the EXPLICITLY NOT DOING list.
 
-End with: ONE finding (if any) that should trigger a plan adjustment, and for which track. Use real working URLs. Plain text, no preamble.
+End with: ONE finding (if any) that should trigger a plan adjustment, and for which track. Use real working URLs found this run. Markdown output (links, bold, the optional image), no preamble.

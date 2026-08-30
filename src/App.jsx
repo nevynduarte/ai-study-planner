@@ -10,6 +10,7 @@ import { slugify, nodeText, READER_ACCENT } from "./lib/text.js";
 import { getJSON, postJSON, patchJSON } from "./lib/api.js";
 import { hexA, todayFmt, fmtDate, fmtTs, roiColor } from "./lib/format.js";
 import { findIntro } from "./lib/intros.js";
+import { coachPrompt } from "./lib/coach.js";
 
 export default function App() {
   const [tab,     setTab]     = useState("today");
@@ -23,6 +24,20 @@ export default function App() {
   const [logTr, setLogTr] = useState(""); const [logN, setLogN] = useState(""); const [logMsg, setLogMsg] = useState("");
   // Tutor question form
   const [q, setQ] = useState(""); const [asking, setAsking] = useState(false); const [askMsg, setAskMsg] = useState("");
+  // Today-plan study guides + Projects tab + roadmap day selector
+  const [guideFor,  setGuideFor]  = useState(null);   // plan-block label with guide open
+  const [copiedKey, setCopiedKey] = useState(null);   // which copy button just fired
+  const [projOpen,  setProjOpen]  = useState(null);   // expanded project id
+  const [rhythmDay, setRhythmDay] = useState(null);   // selected weekday on the roadmap
+  const [projDone,  setProjDone]  = usePersisted("asp.projects.done", {});  // { projectId: [milestone labels] }
+  const toggleMilestone = (pid, label) => setProjDone(prev => {
+    const cur = prev[pid] || [];
+    return { ...prev, [pid]: cur.includes(label) ? cur.filter(x => x !== label) : [...cur, label] };
+  });
+  const copyText = async (key, text) => {
+    try { await navigator.clipboard.writeText(text); setCopiedKey(key); setTimeout(() => setCopiedKey(null), 1800); }
+    catch { /* clipboard blocked — the text is visible to select manually */ }
+  };
   // Roles tab — optimistic status overrides (id -> status) while PATCHes land
   const [postingOverride, setPostingOverride] = useState({});
   const [postingBusy, setPostingBusy] = useState(null);
@@ -269,6 +284,7 @@ export default function App() {
     strong: (p) => <strong style={{ fontWeight:700, color:txt }} {...p} />,
     em: (p) => <em style={{ fontStyle:"italic" }} {...p} />,
     a:  (p) => <a style={{ color:linkC, textDecoration:"underline", textUnderlineOffset:2, textDecorationThickness:"1px", wordBreak:"break-word" }} target="_blank" rel="noreferrer" {...p} />,
+    img: (p) => <img alt="" loading="lazy" style={{ maxWidth:"100%", borderRadius:10, border:`1px solid ${brd}`, margin:"4px 0 10px", display:"block" }} {...p} />,
     hr: () => <hr style={{ border:"none", borderTop:`1px solid ${brd}`, margin:"14px 0" }} />,
     code: (p) => <code style={{ fontFamily:"ui-monospace,SFMono-Regular,Menlo,monospace", fontSize:12, background:bgS, padding:"1.5px 6px", borderRadius:6, border:`1px solid ${brd}` }} {...p} />,
     pre: (p) => <pre style={{ background:bgS, border:`1px solid ${brd}`, borderRadius:10, padding:"12px 14px", overflowX:"auto", fontSize:12, lineHeight:1.55, margin:"0 0 12px" }} {...p} />,
@@ -408,7 +424,7 @@ export default function App() {
   );
 
   const TAB_LABELS = {};
-  const TABS = ["today","gate","interviews","roles","plan","calendar","tutor","research","practice","frontier","advisory","coverage","log"];
+  const TABS = ["today","plan","projects","progress","interviews","roles","tutor","research","practice","frontier","advisory","log"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
@@ -859,9 +875,14 @@ export default function App() {
               const checked = planCheckedSet.has(b.label);
               const ac = (b.track && tracks[b.track]?.color?.border) || txtT;
               const intro = findIntro(cur, b.track, `${b.task || b.label} ${b.doneWhen || ""}`);
+              const t = b.track ? tracks[b.track] : null;
+              const md = b.track ? monthData(b.track) : null;
+              const guideOpen = guideFor === b.label;
+              const prompt = coachPrompt({ task: b.task || b.label, doneWhen: b.doneWhen, trackName: t?.name, skill: intro?.skill, time: b.time });
               return (
-                <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start", padding:"11px 0 11px 12px", borderTop: i>0 ? `1px solid ${brd}` : "none",
+                <div key={i} style={{ padding:"11px 0 11px 12px", borderTop: i>0 ? `1px solid ${brd}` : "none",
                     borderLeft:`3px solid ${checked ? hexA(ac,0.35) : ac}`, marginLeft:-2, opacity: checked ? 0.62 : 1 }}>
+                  <div style={{ display:"flex", gap:12, alignItems:"flex-start" }}>
                   <CheckBox checked={checked} onToggle={() => togglePlanItem(b.label)} color={ac} label={b.task || b.label} />
                   <div style={{ minWidth:0, flex:1 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap", marginBottom:3 }}>
@@ -874,6 +895,11 @@ export default function App() {
                           {intro.kind === "video" ? "▶" : "↗"} intro
                         </a>
                       )}
+                      <button onClick={() => setGuideFor(guideOpen ? null : b.label)}
+                        style={{ fontSize:10.5, color: guideOpen ? "#fff" : txtS, background: guideOpen ? ac : "transparent", cursor:"pointer",
+                                 border:`1px solid ${guideOpen ? ac : brd}`, borderRadius:6, padding:"1px 7px", whiteSpace:"nowrap" }}>
+                        ⓘ guide
+                      </button>
                     </div>
                     <div style={{ fontSize:13.5, lineHeight:1.55, color: checked ? txtT : txt, textDecoration: checked ? "line-through" : "none", textDecorationColor: hexA(ac, 0.6) }}>{b.task}</div>
                     {b.doneWhen && (
@@ -882,6 +908,41 @@ export default function App() {
                       </div>
                     )}
                   </div>
+                  </div>
+                  {guideOpen && (
+                    <div style={{ margin:"10px 0 2px 30px", padding:"12px 14px", borderRadius:12, background:hexA(ac, dark?0.09:0.05), border:`1px solid ${hexA(ac, dark?0.28:0.16)}`, fontSize:12.5, lineHeight:1.6 }}>
+                      <div style={{ marginBottom:8 }}>
+                        <span style={{ fontWeight:700, color:ac }}>What — </span>
+                        <span style={{ color:txtS }}>{b.task}{b.mode ? ` (${b.mode === "THEORY" ? "a learning block: understand before you build" : "a building block: something must run by the end"})` : ""}{b.doneWhen ? ` You're done when: ${b.doneWhen}` : ""}</span>
+                      </div>
+                      {t?.why && (
+                        <div style={{ marginBottom:8 }}>
+                          <span style={{ fontWeight:700, color:ac }}>Why — </span>
+                          <span style={{ color:txtS }}>{t.why}</span>
+                        </div>
+                      )}
+                      {md?.title && (
+                        <div style={{ marginBottom:8 }}>
+                          <span style={{ fontWeight:700, color:ac }}>Where you are — </span>
+                          <span style={{ color:txtS }}>Month {monthOf(b.track)}: {md.title}.{md.focus ? ` ${md.focus}` : ""} All of it feeds the {gateDate} readiness gate before applications open in November.</span>
+                        </div>
+                      )}
+                      <div style={{ marginBottom:10 }}>
+                        <span style={{ fontWeight:700, color:ac }}>Learn — </span>
+                        {intro
+                          ? <a href={intro.url} target="_blank" rel="noreferrer" style={{ color:linkC, textDecoration:"underline", textUnderlineOffset:2 }}>{intro.kind === "video" ? "▶ " : ""}{intro.skill} — {intro.source}</a>
+                          : <span style={{ color:txtS }}>ask the tutor below — that's what it's for.</span>}
+                      </div>
+                      <div style={{ borderTop:`1px dashed ${hexA(ac,0.35)}`, paddingTop:10 }}>
+                        <div style={{ fontWeight:700, color:ac, marginBottom:6 }}>Claude coach prompt <span style={{ fontWeight:500, color:txtT }}>— paste into Claude, or send to the tutor</span></div>
+                        <pre style={{ whiteSpace:"pre-wrap", fontFamily:"inherit", fontSize:11.5, lineHeight:1.55, color:txtS, background:bgS, border:`1px solid ${brd}`, borderRadius:10, padding:"10px 12px", margin:"0 0 8px", maxHeight:180, overflowY:"auto" }}>{prompt}</pre>
+                        <div style={{ display:"flex", gap:8 }}>
+                          <button style={{ ...S.btn(false), fontSize:12 }} onClick={() => copyText(`plan-${i}`, prompt)}>{copiedKey === `plan-${i}` ? "Copied ✓" : "Copy prompt"}</button>
+                          <button style={{ ...S.btn(true), fontSize:12 }} onClick={() => { setQ(prompt); setTab("tutor"); }}>Ask the tutor →</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -926,8 +987,9 @@ export default function App() {
       )}
 
       {/* ── GATE — the Month 3 checkpoint. Four criteria, one deadline. ── */}
-      {tab==="gate" && (
+      {tab==="progress" && (
         <div>
+          <div style={{ ...S.lbl, margin:"0 0 8px 2px" }}>The gate — ready to apply?</div>
           {!gateDef && <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No gate in curriculum.json — run the v2 migration first.</div>}
           {gateDef && (() => {
             const startIso = status.started_date || "2026-08-06";
@@ -1022,11 +1084,12 @@ export default function App() {
         </div>
       )}
 
-      {/* ── CALENDAR (next 30 days) ── */}
-      {tab==="calendar" && (
+      {/* ── CALENDAR (next 30 days) — part of the Progress tab ── */}
+      {tab==="progress" && (
         <div>
+          <div style={{ ...S.lbl, margin:"18px 0 8px 2px" }}>The next 30 days</div>
           <div style={S.card}>
-            <div style={{ fontSize:13, fontWeight:600, marginBottom:4 }}>Next 30 days</div>
+            <div style={{ fontSize:13, fontWeight:600, marginBottom:4 }}>Next 30 days <span style={{ fontWeight:500, color:txtT }}>— hover a day for detail</span></div>
             <div style={{ fontSize:12, color:txtT, lineHeight:1.55 }}>Study &amp; work plan at a glance — the 2-week crash course and interview days take priority; regular track study resumes after.</div>
             <div style={{ display:"flex", gap:16, flexWrap:"wrap", marginTop:11 }}>
               <span style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, color:txtS }}><span style={{ width:11, height:11, borderRadius:3, background:"#A32D2D", display:"inline-block" }} />Interview</span>
@@ -1057,6 +1120,22 @@ export default function App() {
                     const dnum = d.getDate();
                     if (!inRange) return <div key={i} style={{ minHeight:60, borderRadius:8, border:`1px solid ${brd}`, opacity:0.3, padding:"5px 7px", fontSize:11, color:txtT }}>{dnum}</div>;
                     const cls = classifyDay(d);
+                    const wd = d.toLocaleDateString("en-US", { weekday: "long" });
+                    const dateLabel = d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+                    const cd0 = crashProjFor(d);
+                    const hoverLines = [dateLabel];
+                    if (cls.type === "interview")      hoverLines.push(`🎯 Interview — ${cls.iv.company}${cls.iv.role ? ` (${cls.iv.role})` : ""}`);
+                    else if (cls.type === "prep")      hoverLines.push(`Prep day for the ${cls.iv.company} interview — everything else pauses`);
+                    else if (cd0)                      hoverLines.push(`Crash course day ${cd0.n}: ${cd0.title || ""}`, cd0.build ? `Build: ${cd0.build}` : null, cd0.drill ? `Drill: ${cd0.drill}` : null);
+                    else {
+                      hoverLines.push(cur?.day_of_week?.[wd] ? `${wd}: ${cur.day_of_week[wd]}` : `${wd} — regular track study`);
+                      hoverLines.push(trackIds.map(id => `${tracks[id].name} ${((tracks[id].weight||0)*DAILY_HOURS).toFixed(1)}h`).join(" · "));
+                      if (gateDaysLeft >= 0) {
+                        const dLeft = gateDaysLeft - off;
+                        if (dLeft >= 0) hoverLines.push(`${dLeft} day${dLeft === 1 ? "" : "s"} to the ${gateDate} gate`);
+                      }
+                    }
+                    const hoverTitle = hoverLines.filter(Boolean).join("\n");
                     let cellBg = surface, cellBrd = brd, body = null, numColor = txtS;
                     if (cls.type === "interview") {
                       const a = ivAccent(cls.iv); cellBg = a; cellBrd = a; numColor = "#fff";
@@ -1071,7 +1150,7 @@ export default function App() {
                       body = <div style={{ marginTop:6, display:"flex", gap:3, flexWrap:"wrap" }}>{trackIds.map(id => <span key={id} style={{ width:7, height:7, borderRadius:2, background:tracks[id]?.color?.border||brdS }} />)}</div>;
                     }
                     return (
-                      <div key={i} style={{ minHeight:60, borderRadius:8, border:`${isToday?1.5:0.5}px solid ${isToday?txt:cellBrd}`, background:cellBg, padding:"5px 7px", overflow:"hidden" }}>
+                      <div key={i} title={hoverTitle} style={{ minHeight:60, borderRadius:8, border:`${isToday?1.5:0.5}px solid ${isToday?txt:cellBrd}`, background:cellBg, padding:"5px 7px", overflow:"hidden", cursor:"default" }}>
                         <div style={{ fontSize:11, fontWeight:isToday?700:500, color:numColor }}>{dnum}{isToday ? " · today" : ""}</div>
                         {body}
                       </div>
@@ -1087,8 +1166,68 @@ export default function App() {
       {/* ── PLAN (progress · crash course · roadmap) ── */}
       {tab==="plan" && (
         <div>
+          {/* ── The roadmap: phases → gate → weekly rhythm ── */}
+          <div style={{ ...S.lbl, margin:"0 0 8px 2px" }}>The roadmap</div>
+          {(cur?.phases || []).length > 0 && (() => {
+            const phaseEnds = ["2026-10-31", "2027-01-31", "2027-04-30", "2027-07-31"];
+            const curPhaseIdx = phaseEnds.findIndex(e => today0 <= new Date(e + "T23:59:59"));
+            const phAc = ["#185FA5", "#1D9E75", "#7F77DD", "#BA7517"];
+            const dows = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+            const todayWd = today0.toLocaleDateString("en-US", { weekday: "long" });
+            return (
+              <>
+                <div style={{ ...S.card, padding:"1rem 1.15rem" }}>
+                  <div style={{ display:"grid", gridTemplateColumns:`repeat(${cur.phases.length},1fr)`, gap:0, borderRadius:12, overflow:"hidden", border:`1px solid ${brd}` }}>
+                    {cur.phases.map((ph, i) => {
+                      const on = i === (curPhaseIdx === -1 ? cur.phases.length - 1 : curPhaseIdx);
+                      const ac = phAc[i % phAc.length];
+                      return (
+                        <div key={ph.n} title={`${ph.name} (${ph.window})\n${ph.goal}${ph.note ? `\n\n${ph.note}` : ""}`}
+                             style={{ padding:"10px 10px 12px", background: on ? hexA(ac, dark?0.22:0.12) : "transparent",
+                                      borderLeft: i>0 ? `1px solid ${brd}` : "none", borderTop:`3px solid ${on ? ac : hexA(ac, 0.35)}`, cursor:"default", minWidth:0 }}>
+                          <div style={{ fontSize:10, fontWeight:700, color: on ? ac : txtT, letterSpacing:0.4 }}>PHASE {ph.n}{on ? " · NOW" : ""}</div>
+                          <div style={{ fontSize:12.5, fontWeight:700, margin:"3px 0 2px", lineHeight:1.3 }}>{ph.name}</div>
+                          <div style={{ fontSize:10.5, color:txtT }}>{ph.window}</div>
+                          <div style={{ fontSize:11, color:txtS, marginTop:5, lineHeight:1.45, display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{ph.goal}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:10, fontSize:11.5, color:txtS }}>
+                    <span style={{ width:9, height:9, borderRadius:99, background: gateDaysLeft >= 0 ? "#BA7517" : "#A32D2D", display:"inline-block", flexShrink:0 }} />
+                    <span><b>The gate:</b> {gateDate} — {gateDaysLeft >= 0 ? `${gateDaysLeft} days out` : `${-gateDaysLeft} days overdue`}. Pass it and applications open; the phases only advance through it. Hover a phase for the reasoning.</span>
+                  </div>
+                </div>
+
+                <div style={{ ...S.card, padding:"1rem 1.15rem" }}>
+                  <div style={{ fontSize:13, fontWeight:600, marginBottom:2 }}>Weekly rhythm <span style={{ fontWeight:500, color:txtT }}>— every week runs this shape; tap a day</span></div>
+                  <div style={{ display:"flex", gap:5, marginTop:9, flexWrap:"wrap" }}>
+                    {dows.map(dw => {
+                      const on = rhythmDay === dw, isTd = dw === todayWd;
+                      return (
+                        <button key={dw} onClick={() => setRhythmDay(on ? null : dw)} title={cur?.day_of_week?.[dw] || ""}
+                          style={{ flex:"1 1 0", minWidth:52, fontSize:11.5, fontWeight: isTd ? 800 : 600, padding:"7px 4px", borderRadius:9, cursor:"pointer",
+                                   border:`1px solid ${on || isTd ? "#7F77DD" : brd}`, background: on ? hexA("#7F77DD", dark?0.24:0.12) : surface, color: on ? "#7F77DD" : isTd ? txt : txtS }}>
+                          {dw.slice(0,3)}{isTd ? " ·" : ""}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {rhythmDay && (
+                    <div style={{ marginTop:10, padding:"10px 13px", borderRadius:10, background:hexA("#7F77DD", dark?0.1:0.05), border:`1px solid ${hexA("#7F77DD", dark?0.3:0.16)}`, fontSize:12.5, lineHeight:1.6, color:txtS }}>
+                      <b style={{ color:"#7F77DD" }}>{rhythmDay}</b> — {cur?.day_of_week?.[rhythmDay] || "regular track study"}
+                      <div style={{ marginTop:6, fontSize:11.5, color:txtT }}>
+                        Typical split: {trackIds.map(id => `${tracks[id].name} ~${((tracks[id].weight||0)*DAILY_HOURS).toFixed(1)}h`).join(" · ")} — the Today tab turns this into concrete tasks each morning.
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          })()}
+
           {/* Progress overview */}
-          <div style={{ ...S.lbl, margin:"0 0 8px 2px" }}>This week · {DAILY_HOURS}h/day target</div>
+          <div style={{ ...S.lbl, margin:"18px 0 8px 2px" }}>This week · {DAILY_HOURS}h/day target</div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10, marginBottom:"0.875rem" }}>
             {[["Total hours",totalHrs,"#1D9E75"],["This week",`${weekHrs}`,"#185FA5",`/ ${WEEKLY_TARGET}h`],["Day",startDays||"—","#7F77DD"],["Sessions",log.length,"#BA7517"]].map(([l,v,ac,suf]) => (
               <div key={l} style={{ borderRadius:14, padding:"12px 14px", background:`linear-gradient(155deg, ${hexA(ac, dark?0.24:0.14)}, ${hexA(ac, dark?0.08:0.05)})`, border:`1px solid ${hexA(ac, dark?0.34:0.2)}`, boxShadow:shadowCard }}>
@@ -1428,7 +1567,9 @@ export default function App() {
                         {url ? <a href={url} target="_blank" rel="noreferrer" style={{ color:"inherit", textDecoration:"none" }}>{p.n}</a> : p.n}
                       </span>
                       {dm && <span style={{ fontSize:10.5, fontWeight:600, color:dm[1], background:hexA(dm[1],dark?0.18:0.1), border:`1px solid ${hexA(dm[1],dark?0.3:0.2)}`, padding:"2px 8px", borderRadius:999, flexShrink:0 }}>{dm[0]}</span>}
-                      {url && <a href={url} target="_blank" rel="noreferrer" title="Open" style={{ fontSize:12, color:txtT, textDecoration:"none", flexShrink:0 }}>↗</a>}
+                      {sel.id === "dsa" && p.u && <a href={`https://neetcode.io/solutions/${p.u}`} target="_blank" rel="noreferrer" title="NeetCode solution + video"
+                        style={{ fontSize:10, fontWeight:700, color:txtT, textDecoration:"none", flexShrink:0, border:`1px solid ${brd}`, borderRadius:5, padding:"1px 5px" }}>NC</a>}
+                      {url && <a href={url} target="_blank" rel="noreferrer" title="Open on LeetCode" style={{ fontSize:12, color:txtT, textDecoration:"none", flexShrink:0 }}>↗</a>}
                     </div>
                   );
                 })}
@@ -1462,8 +1603,8 @@ export default function App() {
         </div>
       )}
 
-      {/* ── COVERAGE — strata of skills filling in over months ── */}
-      {tab==="coverage" && (() => {
+      {/* ── COVERAGE — strata of skills filling in over months (Progress tab) ── */}
+      {tab==="progress" && (() => {
         const STATUSES = ["not-started","learning","built","interview-ready"];
         // A skill cell: hollow → half amber → full blue → starred green.
         const cell = (st, size = 13) => ({
@@ -1549,6 +1690,97 @@ export default function App() {
                         </div>
                       );
                     })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        );
+      })()}
+
+      {/* ── PROJECTS — biweekly portfolio sprints ── */}
+      {tab==="projects" && (() => {
+        const projs = cur?.projects?.list || [];
+        if (!projs.length) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No projects in curriculum.json yet.</div>;
+        const projAc = ["#185FA5", "#7F77DD", "#1D9E75", "#BA7517", "#A32D2D", "#0D9488"];
+        const statusOf = (p) => {
+          const s = new Date(p.start + "T00:00:00"), e = new Date(p.end + "T23:59:59");
+          const items = [...(p.week1||[]), ...(p.week2||[])];
+          const done = (projDone[p.id] || []).filter(l => items.includes(l)).length;
+          if (items.length && done === items.length) return ["shipped", "#1D9E75"];
+          if (today0 >= s && today0 <= e) return ["current", "#BA7517"];
+          if (today0 > e) return [done > 0 ? "in progress" : "overdue", "#A32D2D"];
+          return ["upcoming", null];
+        };
+        return (
+        <div>
+          <div style={S.card}>
+            <div style={{ fontSize:14, fontWeight:600 }}>Portfolio sprints <span style={{ fontWeight:500, color:txtT }}>— one every two weeks, Sep → Nov</span></div>
+            <div style={{ fontSize:12, color:txtT, marginTop:4, lineHeight:1.6 }}>
+              {cur?.projects?.cadence} Each sprint is deep enough to demo, shows tools recruiters screen for, and carries stretch goals
+              that turn it into an advanced public showpiece when you want to go further.
+            </div>
+          </div>
+          {projs.map((p, pi) => {
+            const ac = projAc[pi % projAc.length];
+            const [st, stC] = statusOf(p);
+            const open = projOpen === p.id;
+            const items = [...(p.week1||[]), ...(p.week2||[])];
+            const doneN = (projDone[p.id] || []).filter(l => items.includes(l)).length;
+            const Milestones = ({ label, list }) => (
+              <div style={{ marginBottom:10 }}>
+                <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, marginBottom:5 }}>{label}</div>
+                {list.map(m => {
+                  const on = (projDone[p.id] || []).includes(m);
+                  return (
+                    <div key={m} onClick={() => toggleMilestone(p.id, m)} style={{ display:"flex", gap:9, alignItems:"flex-start", padding:"4px 0", cursor:"pointer" }}>
+                      <span style={{ flexShrink:0, marginTop:2, width:15, height:15, borderRadius:4, border:`1.5px solid ${on?ac:brdS}`, background:on?ac:"transparent", color:"#fff", fontSize:10, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>{on?"✓":""}</span>
+                      <span style={{ fontSize:12.5, lineHeight:1.5, color: on ? txtT : txtS, textDecoration: on ? "line-through" : "none" }}>{m}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+            return (
+              <div key={p.id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
+                <button onClick={() => setProjOpen(open ? null : p.id)}
+                  style={{ display:"block", width:"100%", textAlign:"left", background:"transparent", border:"none", cursor:"pointer", color:txt, padding:"0.95rem 1.1rem", fontFamily:"inherit" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                    <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>SPRINT {p.n}</span>
+                    <span style={{ fontSize:11, color:txtT }}>{p.window}</span>
+                    {stC && <span style={pill(stC, { fontSize:10.5 })}>{st}</span>}
+                    <span style={{ marginLeft:"auto", fontSize:11, color:txtT, fontVariantNumeric:"tabular-nums" }}>{doneN}/{items.length} <span style={{ display:"inline-block", transform:open?"rotate(180deg)":"none" }}>▾</span></span>
+                  </div>
+                  <div style={{ fontSize:14.5, fontWeight:700, margin:"5px 0 3px", letterSpacing:-0.2 }}>{p.title}</div>
+                  <div style={{ fontSize:12.5, color:txtS, lineHeight:1.55 }}>{p.tagline}</div>
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginTop:8 }}>
+                    {(p.tools||[]).map(tl => <span key={tl} style={pill(ac, { fontSize:10.5 })}>{tl}</span>)}
+                  </div>
+                </button>
+                {open && (
+                  <div style={{ padding:"0 1.1rem 1rem", borderTop:`1px solid ${brd}` }}>
+                    <div style={{ fontSize:12.5, color:txtS, lineHeight:1.65, padding:"10px 0", borderBottom:`1px dashed ${brd}`, marginBottom:10 }}>
+                      <b style={{ color:ac }}>Why this sprint — </b>{p.why}
+                    </div>
+                    <Milestones label="Week 1" list={p.week1 || []} />
+                    <Milestones label="Week 2" list={p.week2 || []} />
+                    {(p.stretch||[]).length > 0 && (
+                      <div style={{ marginBottom:10 }}>
+                        <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, marginBottom:5 }}>Take it further</div>
+                        {p.stretch.map(s => <div key={s} style={{ fontSize:12.5, color:txtS, lineHeight:1.55, padding:"2px 0" }}>◆ {s}</div>)}
+                      </div>
+                    )}
+                    {(p.resources||[]).length > 0 && (
+                      <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:12 }}>
+                        {p.resources.map(r => <a key={r.url} href={r.url} target="_blank" rel="noreferrer" style={{ fontSize:11.5, color:linkC, textDecoration:"none", border:`1px solid ${brd}`, borderRadius:8, padding:"3px 10px" }}>↗ {r.name}</a>)}
+                      </div>
+                    )}
+                    <div style={{ borderTop:`1px dashed ${brd}`, paddingTop:10 }}>
+                      <div style={{ fontSize:12, fontWeight:700, color:ac, marginBottom:6 }}>Kickoff coach prompt <span style={{ fontWeight:500, color:txtT }}>— paste into Claude to be walked through the sprint</span></div>
+                      <pre style={{ whiteSpace:"pre-wrap", fontFamily:"inherit", fontSize:11.5, lineHeight:1.55, color:txtS, background:bgS, border:`1px solid ${brd}`, borderRadius:10, padding:"10px 12px", margin:"0 0 8px", maxHeight:170, overflowY:"auto" }}>{p.prompt}</pre>
+                      <button style={{ ...S.btn(false), fontSize:12 }} onClick={() => copyText(`proj-${p.id}`, p.prompt)}>{copiedKey === `proj-${p.id}` ? "Copied ✓" : "Copy prompt"}</button>
+                    </div>
                   </div>
                 )}
               </div>
