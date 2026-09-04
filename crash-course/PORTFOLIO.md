@@ -39,6 +39,8 @@ it a property address, company, or document set; planner and specialist agents
 retrieve, run SQL, call tools over MCP, calculate, and produce an evidence-backed
 memo, with approval gates, audit trail, evals, traces, and cost per tenant.
 
+**Week goal:** a public URL where a stranger logs in as a demo tenant, asks a question, watches the agent plan and call tools step by step, approves an action, and gets a memo where every number cites its source. Behind it: tenant isolation the database enforces, a Kafka-backed worker that survives being killed, one trace per run with cost, and a benchmark table proving retrieval quality.
+
 **Stack:** Python 3.12 · FastAPI · Pydantic v2 · Go gateway (`chi`) · Anthropic SDK runtime + LangGraph adapter · MCP · Postgres 16 + pgvector (RLS) · Redis · Kafka (Redpanda local, Upstash/MSK cloud) · Keycloak OIDC → Cognito later · OpenTelemetry → Tempo/Prometheus/Grafana · Arize Phoenix · Next.js 15 · Docker Compose · GitHub Actions · Fly.io (Day 7) → EKS (Day 15).
 
 | Day | Build (exact) | Run | Done when |
@@ -58,6 +60,8 @@ memo, with approval gates, audit trail, evals, traces, and cost per tenant.
 **One sentence:** an enterprise ingestion + retrieval backbone that takes streams
 and files of any type through bronze/silver/gold on Delta Lake and serves
 hybrid search over millions of chunks, and becomes Week 1's `search_docs`.
+
+**Week goal:** one `docker compose up` brings up Kafka, Spark, MinIO, Dagster, OpenSearch and Postgres; three datasets stream through bronze → silver → gold with lineage; 5 million chunks are indexed in two search stores; a benchmark matrix compares six retrieval modes; six break-it drills have postmortems; and Week 1's agent now searches through this system.
 
 **Stack:** Kafka (Redpanda) · PySpark structured streaming · Delta Lake · Dagster · MinIO (S3 API) · OpenSearch + pgvector (benchmarked) · `bge-reranker-base` · FastAPI · Docker Compose · GitHub Actions. Databricks Free edition for one notebook-based Spark UI comparison on Day 11.
 
@@ -80,6 +84,8 @@ full ML lifecycle: features from Week 2 gold → training → registry → valid
 gates → GPU inference on your own NVIDIA machines and AWS → drift → retrain,
 with model routing back into Week 1.
 
+**Week goal:** the whole platform created by `terraform apply` and removed by `terraform destroy`; Weeks 1–2 running on EKS with GitOps deploys and a working rollback; a property-value model with tracked lineage, a validation gate that rejects leakage, drift detection that triggers retraining and a canary that can roll back; a GPU benchmark matrix (runtime × precision × batch); and Week 1's agent using your own hosted 7B model with the cost delta measured.
+
 **Stack:** Terraform · EKS (spot) + your local GPU machines joined as workers (k3s agent or `kubeadm join` over Tailscale) · Helm · ArgoCD + Argo Rollouts · KEDA · ECR · Secrets Manager · Cognito · MLflow · LightGBM/XGBoost · PyTorch · Ray Train · KServe with Triton · ONNX Runtime · TensorRT · vLLM · Evidently · Prometheus/Grafana.
 
 | Day | Build (exact) | Run | Done when |
@@ -100,6 +106,8 @@ with model routing back into Week 1.
 using indexed code, planning, sandboxed execution, review, and budgets, measured
 on SWE-bench, and registered as an agent inside Week 1.
 
+**Week goal:** label an issue `agent` on one of your repos and a reviewed, tested PR appears with its cost in the footer; a SWE-bench Lite table over 100 tasks; an ablation table (topology, context strategy, model, reviewer); and Week 1's agent able to ask Week 4 to change code.
+
 **Stack:** GitHub App (webhooks, installation tokens) · tree-sitter + `pyright`/LSP · Postgres + pgvector (code index) · Kafka (from Week 1) · Docker-in-Kubernetes sandboxes (one Job per task, gVisor if available) · Anthropic SDK + Week 3 local model via router · MCP (exposes itself as a tool to Week 1).
 
 | Day | Build (exact) | Run | Done when |
@@ -119,6 +127,8 @@ on SWE-bench, and registered as an agent inside Week 1.
 **One sentence:** a GPT built from scratch, trained on your GPUs with the real
 training stack, post-trained, served two ways and benchmarked, then plugged
 into Week 3 and Week 1 so all five systems are one platform.
+
+**Week goal:** a from-scratch transformer whose modules match a reference in tests; a real training run (loss curve, tokens/sec, VRAM breakdown, one crash-and-resume); an instruction-following model after SFT and DPO with a judged before/after; a three-way serving benchmark (your server vs vLLM vs Triton); `docs/why.md` in your own words; and one trace where Week 1 uses this model through Week 3's router, so all five systems are one platform.
 
 **Stack:** PyTorch · FlashAttention 2 · DDP across your local GPUs (FSDP if 2+ cards) · `sentencepiece` or your own BPE · W&B · bf16 · LoRA (`peft`) · DPO (`trl`) · vLLM · Triton · `lm-eval-harness`.
 

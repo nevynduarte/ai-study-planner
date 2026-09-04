@@ -42,6 +42,11 @@ for (let i = 0; i < lines.length; i++) {
     let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
     cur.sentence = s; continue;
   }
+  if (cur && l.startsWith("**Week goal:**")) {
+    let s = strip(l.replace("**Week goal:**", ""));
+    let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
+    cur.goal = s; continue;
+  }
   if (cur && l.startsWith("**Stack:**")) {
     let s = strip(l.replace("**Stack:**", ""));
     let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
@@ -66,6 +71,46 @@ for (let i = 0; i < lines.length; i++) {
 }
 
 for (const p of projects) { p.title = p.id; p.proves = proves[p.n] || ""; p.start = p.days[0]?.date; p.end = p.days[p.days.length - 1]?.date; }
+
+// ── Hour-by-hour schedule per day, derived from the row (deterministic, no LLM) ──
+const hhmm = m => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+const splitSteps = text => {
+  const parts = text.split(/(?<=[.;])\s+(?=[A-Z0-9`“"(])/).map(x => x.trim()).filter(x => x.length > 3);
+  if (parts.length <= 6) return parts;
+  const head = parts.slice(0, 5), tail = parts.slice(5).join(" ");
+  return [...head, tail];
+};
+for (const p of projects) for (const d of p.days) {
+  const isMWF = [1, 3, 5].includes(new Date(d.date + "T12:00:00").getDay());
+  const raw = splitSteps(d.build.replace(new RegExp("^" + d.title.replace(/[.*+?^${}()|[]\]/g, "\const raw = splitSteps(d.build)") + "\.?\s*"), "")).filter(x => !/^Send applications|^\*\*Applications|^Applications \d/.test(x));
+  const appStep = /applications? \d|Send applications|Applications \d/i.test(d.build);
+  const n = Math.max(1, raw.length);
+  const slot = Math.max(30, Math.round((300 / n) / 15) * 15);
+  let t = 9 * 60, lunch = false;
+  const steps = [];
+  const push = (kind, mins, text, coach) => {
+    if (!lunch && t >= 12 * 60) { steps.push({ time: `${hhmm(t)}–${hhmm(t + 30)}`, kind: "BREAK", text: "Lunch. Step away from the screen." }); t += 30; lunch = true; }
+    steps.push({ time: `${hhmm(t)}–${hhmm(t + mins)}`, kind, text, coach }); t += mins;
+  };
+  const ctx = `I am on Week ${p.n}, Day ${d.n} ("${d.title}") of my ${p.id} repo. Today's row says: BUILD — ${d.build} RUN — ${d.run} DONE WHEN — ${d.done}.`;
+  raw.forEach((s, i) => push("BUILD", slot, s,
+    `${ctx}\n\nWalk me through step ${i + 1} of ${n}: "${s}". First explain in plain words what each file or tool in this step is for and how data flows through it. Then help me build it in small pieces, running something after each piece. Stop and quiz me on why we made each choice before moving on.`));
+  push("RUN", 45, `Run and verify: ${d.run}`, `${ctx}\n\nHelp me run today's command and verify the done-when condition. If anything fails, help me debug it and then write a FAILURES.md line in the format "date · tried · saw · changed to · result".`);
+  const adr = d.build.match(/ADR-\d+[^.;]*/g);
+  push("DEFEND", 30, adr ? `Write ${adr.join(", ").replace(/\s+/g, " ")} and any FAILURES.md lines from today.` : "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
+    `${ctx}\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write ${adr ? adr.join(" and ") : "the FAILURES.md lines"} with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if.`);
+  if (appStep) push("APPLY", 45, "Send today's applications (see the row) and log them in applications.md with date, role, link, status, materials.", `${ctx}\n\nHelp me tailor my résumé summary and a 4-sentence note for each application named in today's row, using measured numbers from BENCHMARKS.md and the live URL.`);
+  if (isMWF) push("DRILL", 25, "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on.");
+  d.steps = steps;
+}
+
+// ── Project briefs: crash-course/projects/<id>.md → public/projects/<id>.md ──
+const briefDir = path.join(ROOT, "public", "projects");
+fs.mkdirSync(briefDir, { recursive: true });
+for (const p of projects) {
+  const src = path.join(ROOT, "crash-course", "projects", `${p.id}.md`);
+  if (fs.existsSync(src)) { fs.copyFileSync(src, path.join(briefDir, `${p.id}.md`)); p.brief = `/projects/${p.id}.md`; }
+}
 
 // Applications list (## Austin applications ...)
 let applications = [];

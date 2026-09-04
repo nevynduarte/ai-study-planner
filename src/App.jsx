@@ -17,6 +17,10 @@ export default function App() {
   const [data,    setData]    = useState(null);
   const [cur,     setCur]     = useState(null);   // curriculum.json
   const [portfolio, setPortfolio] = useState(null); // public/portfolio.json (built from crash-course/PORTFOLIO.md)
+  const [briefOpen, setBriefOpen] = useState(false);   // project brief expanded on Today
+  const [briefMd,   setBriefMd]   = useState({});      // project id -> brief markdown
+  const [briefReadIds, setBriefReadIds] = usePersisted("asp.brief.read", []);   // project ids whose brief was read
+  const [stepsDone, setStepsDone] = usePersisted("asp.day.steps", {});          // { dayN: [step indexes] }
   const [loading, setLoading] = useState(true);
   const [err,     setErr]     = useState("");
 
@@ -824,39 +828,133 @@ export default function App() {
             );
           })()}
 
-          {/* Crash-course day — the active 2-week sprint */}
-          {crashActive && (
-            <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${CRASH_AC}`, marginBottom:"0.875rem" }}>
-              <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(CRASH_AC, dark?0.2:0.11)}, transparent 72%)` }}>
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12, flexWrap:"wrap" }}>
-                  <div style={{ minWidth:0 }}>
-                    <div style={{ fontSize:14.5, fontWeight:700, display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-                      <span>⚡</span>{crashProject ? crashProject.id : "Crash course"} · Day {crashToday.n} of {crashDays.length}
-                      <span style={pill(CRASH_AC, { padding:"1px 8px" })}>Week {crashToday.week}{crashProject ? ` · project day ${crashProject.days.filter(d => crashDone.has(d.n)).length + 1} of ${crashProject.days.length}` : ""}</span>
+          {/* Portfolio day — understand the project, then an hour-by-hour walk through today's row */}
+          {crashActive && (() => {
+            const p = crashProject;
+            const day = p ? p.days.find(d => d.n === crashToday.n) : null;
+            const ac = p ? PROJ_AC[(p.n - 1) % PROJ_AC.length] : CRASH_AC;
+            const pdone = p ? p.days.filter(d => crashDone.has(d.n)).length : 0;
+            const doneSteps = stepsDone[crashToday.n] || [];
+            const toggleStep = (i) => setStepsDone(prev => { const c = prev[crashToday.n] || []; return { ...prev, [crashToday.n]: c.includes(i) ? c.filter(x => x !== i) : [...c, i] }; });
+            const openBrief = async () => {
+              setBriefOpen(o => !o);
+              if (p?.brief && briefMd[p.id] === undefined) {
+                try { const r = await fetch(p.brief); const t = await r.text(); setBriefMd(m => ({ ...m, [p.id]: t })); }
+                catch { setBriefMd(m => ({ ...m, [p.id]: "_Could not load the brief._" })); }
+              }
+            };
+            const kindC = { BUILD: ac, RUN: "#185FA5", DEFEND: "#7F77DD", APPLY: "#BA7517", DRILL: "#0D9488", BREAK: "#888888" };
+            const steps = day?.steps || [];
+            const workSteps = steps.filter(s => s.kind !== "BREAK");
+            const briefRead = !!briefReadIds.includes(p?.id);
+            return (
+              <>
+                {/* 1 · The project you are inside */}
+                {p && (
+                  <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, marginBottom:"0.875rem" }}>
+                    <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(ac, dark?0.2:0.11)}, transparent 72%)` }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                        <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>WEEK {p.n} OF 5 · PROJECT {p.n}</span>
+                        <a href={p.repo} target="_blank" rel="noreferrer" style={{ fontSize:11, color:linkC, textDecoration:"none", marginLeft:"auto" }}>↗ {p.repo.replace("https://github.com/", "")}</a>
+                      </div>
+                      <div style={{ fontSize:20, fontWeight:800, letterSpacing:-0.4, margin:"4px 0 4px" }}>{p.id}</div>
+                      <div style={{ fontSize:13, color:txtS, lineHeight:1.6, maxWidth:720 }}>{p.sentence}</div>
+                      {p.goal && (
+                        <div style={{ marginTop:11, padding:"10px 13px", borderRadius:10, background:hexA(ac, dark?0.12:0.06), border:`1px solid ${hexA(ac, dark?0.35:0.2)}` }}>
+                          <div style={{ fontSize:10.5, fontWeight:700, color:ac, textTransform:"uppercase", letterSpacing:0.5, marginBottom:4 }}>By Day {p.days[p.days.length-1].n} you will have</div>
+                          <div style={{ fontSize:12.5, color:txtS, lineHeight:1.6 }}>{p.goal}</div>
+                        </div>
+                      )}
+                      <div style={{ display:"flex", justifyContent:"space-between", fontSize:11.5, color:txtT, margin:"12px 0 5px", fontVariantNumeric:"tabular-nums" }}>
+                        <span><b style={{ color:txt }}>Project progress</b> — day {pdone + 1} of {p.days.length}</span><span>{pdone}/{p.days.length} done</span>
+                      </div>
+                      <ProgressBar done={pdone} total={p.days.length} color={ac} height={9} />
+                      <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginTop:10 }}>
+                        {p.days.map(d => {
+                          const isD = crashDone.has(d.n), isT = d.n === crashToday.n;
+                          return <span key={d.n} title={`Day ${d.n}: ${d.title}`} style={{ fontSize:10.5, padding:"2px 8px", borderRadius:99, border:`1px solid ${isT ? ac : isD ? hexA(ac, 0.5) : brd}`, background: isT ? ac : isD ? hexA(ac, dark?0.2:0.1) : "transparent", color: isT ? "#fff" : isD ? ac : txtT, fontWeight: isT ? 700 : 500 }}>{isD ? "✓ " : ""}D{d.n} {d.title.length > 22 ? d.title.slice(0, 21) + "…" : d.title}</span>;
+                        })}
+                      </div>
+                      <div style={{ marginTop:13, display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
+                        <button style={{ ...S.btn(!briefRead), fontSize:12.5 }} onClick={openBrief}>
+                          {briefOpen ? "Hide the project brief ▴" : briefRead ? "Re-read the project brief ▾" : "Understand this project first — 10-min read ▾"}
+                        </button>
+                        {!briefRead && <span style={{ fontSize:11.5, color:txtT }}>Read this once before Day {p.days[0].n}: what it is, the data-flow picture, every tool and why it is there.</span>}
+                        {briefRead && <span style={{ fontSize:11.5, color:"#1D9E75", fontWeight:600 }}>✓ brief read</span>}
+                      </div>
+                      {briefOpen && (
+                        <div style={{ marginTop:12, padding:"4px 14px 10px", borderRadius:10, background:bgS, border:`1px solid ${brd}`, fontSize:13, lineHeight:1.65 }}>
+                          <Md>{briefMd[p.id] ?? "Loading…"}</Md>
+                          {!briefRead && <button style={{ ...S.btn(true), fontSize:12.5, marginTop:6 }} onClick={() => { setBriefReadIds(prev => [...prev, p.id]); setBriefOpen(false); }}>I understand the picture — mark brief read ✓</button>}
+                        </div>
+                      )}
                     </div>
-                    {crashProject && (
-                      <div style={{ marginTop:8, maxWidth:420 }}>
-                        <ProgressBar done={crashProject.days.filter(d => crashDone.has(d.n)).length} total={crashProject.days.length} color={CRASH_AC} height={7} />
+                  </div>
+                )}
+
+                {/* 2 · Today, hour by hour */}
+                <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${CRASH_AC}`, marginBottom:"0.875rem" }}>
+                  <div style={{ padding:"1rem 1.125rem" }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12, flexWrap:"wrap" }}>
+                      <div style={{ minWidth:0 }}>
+                        <div style={{ fontSize:10.5, fontWeight:800, color:CRASH_AC, letterSpacing:0.4 }}>TODAY · DAY {crashToday.n} OF {crashDays.length}{day ? ` · ${fmtDate(day.date)}` : ""}</div>
+                        <div style={{ fontSize:17, fontWeight:700, letterSpacing:-0.3, marginTop:3 }}>{day ? day.title : crashToday.title}</div>
+                      </div>
+                      <div style={{ display:"flex", flexDirection:"column", gap:7, flexShrink:0 }}>
+                        <button style={S.btn(true)} onClick={() => toggleCrashDay(crashToday.n)}>✓ Mark day done</button>
+                        <button style={S.btn(false)} onClick={() => setTab("plan")}>Full plan →</button>
+                      </div>
+                    </div>
+                    <div style={{ marginTop:10, padding:"10px 13px", borderRadius:10, background:hexA(CRASH_AC, dark?0.12:0.06), border:`1px solid ${hexA(CRASH_AC, dark?0.35:0.2)}` }}>
+                      <div style={{ fontSize:10.5, fontWeight:700, color:CRASH_AC, textTransform:"uppercase", letterSpacing:0.5, marginBottom:4 }}>Today's goal — you are done when</div>
+                      <div style={{ fontSize:13, color:txt, lineHeight:1.6, fontWeight:500 }}>{crashToday.done}</div>
+                    </div>
+
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", margin:"16px 0 6px" }}>
+                      <div style={S.lbl}>Hour by hour</div>
+                      {workSteps.length > 0 && <div style={{ fontSize:11.5, color: doneSteps.length >= workSteps.length ? "#1D9E75" : txtT, fontVariantNumeric:"tabular-nums" }}>{Math.min(doneSteps.length, workSteps.length)}/{workSteps.length} steps</div>}
+                    </div>
+                    {steps.length === 0 && <div style={{ fontSize:12.5, color:txtS, lineHeight:1.6 }}><strong>Build:</strong> {crashToday.build}</div>}
+                    {steps.map((s, i) => {
+                      const isBreak = s.kind === "BREAK", isDone = doneSteps.includes(i), c = kindC[s.kind] || txtT;
+                      return (
+                        <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start", padding:"9px 0", borderTop:`1px solid ${brd}`, opacity: isDone ? 0.55 : 1 }}>
+                          <div style={{ flexShrink:0, width:92, fontSize:11.5, fontWeight:700, color:txtT, fontVariantNumeric:"tabular-nums", paddingTop:2 }}>{s.time}</div>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:7, flexWrap:"wrap" }}>
+                              <span style={pill(c, { fontSize:10, padding:"1px 7px" })}>{s.kind}</span>
+                              <span style={{ fontSize:13, lineHeight:1.55, color: isBreak ? txtT : txt, textDecoration: isDone ? "line-through" : "none" }}>{s.text}</span>
+                            </div>
+                            {s.coach && !isBreak && (
+                              <button onClick={() => copyText(`step-${crashToday.n}-${i}`, s.coach)}
+                                style={{ marginTop:5, fontSize:11.5, color:linkC, background:"transparent", border:`1px solid ${brd}`, borderRadius:7, padding:"2px 9px", cursor:"pointer", fontFamily:"inherit" }}>
+                                {copiedKey === `step-${crashToday.n}-${i}` ? "Copied ✓ — paste into Claude Code in the repo" : "Copy coach prompt for this step"}
+                              </button>
+                            )}
+                          </div>
+                          {!isBreak && (
+                            <button onClick={() => toggleStep(i)} title={isDone ? "Mark not done" : "Mark done"}
+                              style={{ flexShrink:0, width:24, height:24, borderRadius:7, border:`1.5px solid ${isDone ? c : brdS}`, background: isDone ? c : "transparent", color:"#fff", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>{isDone ? "✓" : ""}</button>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {day && (
+                      <div style={{ marginTop:12, borderTop:`1px dashed ${brd}`, paddingTop:10 }}>
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:8 }}>
+                          <div style={S.lbl}>The command that proves it</div>
+                          <button style={{ ...S.btn(false), fontSize:11.5 }} onClick={() => copyText(`run-${day.n}`, day.run)}>{copiedKey === `run-${day.n}` ? "Copied ✓" : "Copy"}</button>
+                        </div>
+                        <pre style={{ whiteSpace:"pre-wrap", wordBreak:"break-word", fontSize:11.5, lineHeight:1.55, background:bgS, border:`1px solid ${brd}`, borderRadius:8, padding:"8px 11px", margin:"6px 0 0", color:txtS }}>{day.run}</pre>
                       </div>
                     )}
-                    <div style={{ fontSize:13.5, fontWeight:600, marginTop:6 }}>{crashToday.title}</div>
-                    <div style={{ fontSize:12.5, color:txtS, marginTop:4, lineHeight:1.6 }}><strong style={{ color:txt }}>Build:</strong> {crashToday.build}</div>
-                    <div style={{ fontSize:12, color:txtS, marginTop:3, lineHeight:1.6 }}><strong style={{ color:txt }}>Run:</strong> <code style={{ fontSize:11.5 }}>{crashToday.drill}</code></div>
-                    <div style={{ fontSize:12, color:txtS, marginTop:3, lineHeight:1.6 }}><strong style={{ color:txt }}>Done when:</strong> {crashToday.done}</div>
-                  </div>
-                  <div style={{ display:"flex", flexDirection:"column", gap:7, flexShrink:0 }}>
-                    <button style={S.btn(true)} onClick={() => toggleCrashDay(crashToday.n)}>✓ Mark done</button>
-                    <button style={S.btn(false)} onClick={() => setTab("plan")}>Full plan →</button>
                   </div>
                 </div>
-                <div style={{ fontSize:11, color:txtT, padding:"0 1.125rem 0.9rem", lineHeight:1.5 }}>
-                  Don't finish today? It stays here tomorrow — days roll forward as you complete them, they're never skipped.
-                </div>
-              </div>
-            </div>
-          )}
+              </>
+            );
+          })()}
 
-          {/* Sprint finished — tracks resume */}
           {crashAllDone && !focusMode && (
             <div style={{ ...S.card, borderLeft:`3px solid ${CRASH_AC}`, marginBottom:"0.875rem", display:"flex", justifyContent:"space-between", alignItems:"center", gap:12, flexWrap:"wrap" }}>
               <div style={{ fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:8 }}>
@@ -907,7 +1005,7 @@ export default function App() {
           {/* ── Today's plan — parsed into tickable blocks ── */}
           <div style={{ ...S.card, marginBottom:"0.875rem" }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", gap:10, marginBottom: plan?.content ? 12 : 4 }}>
-              <div style={S.lbl}>Today's plan{plan?.date ? ` · ${fmtDate(plan.date)}` : ""}</div>
+              <div style={S.lbl}>{portfolio ? "Coach's checklist" : "Today's plan"}{plan?.date ? ` · ${fmtDate(plan.date)}` : ""}{portfolio && plan?.date && plan.date !== new Date().toISOString().slice(0,10) ? <span style={{ fontWeight:500, textTransform:"none", letterSpacing:0, color:"#BA7517" }}> — from an earlier day; run daily-briefing.sh --plan-only to refresh</span> : null}</div>
               {planTotal > 0 && <div style={{ fontSize:11.5, color: planDone === planTotal ? "#1D9E75" : txtT, fontWeight: planDone === planTotal ? 700 : 400, fontVariantNumeric:"tabular-nums" }}>{planDone}/{planTotal} done</div>}
             </div>
             {!plan?.content && (
