@@ -16,6 +16,7 @@ export default function App() {
   const [tab,     setTab]     = useState("today");
   const [data,    setData]    = useState(null);
   const [cur,     setCur]     = useState(null);   // curriculum.json
+  const [portfolio, setPortfolio] = useState(null); // public/portfolio.json (built from crash-course/PORTFOLIO.md)
   const [loading, setLoading] = useState(true);
   const [err,     setErr]     = useState("");
 
@@ -79,12 +80,14 @@ export default function App() {
   const load = useCallback(async () => {
     try {
       setErr("");
-      const [d, c] = await Promise.all([
+      const [d, c, pf] = await Promise.all([
         getJSON("/api/data"),
         getJSON("/curriculum.json").catch(() => null),
+        getJSON("/portfolio.json").catch(() => null),
       ]);
       setData(d);
       if (c) setCur(c);
+      if (pf) setPortfolio(pf);
     } catch (e) { setErr(e.message); }
     finally { setLoading(false); }
   }, []);
@@ -166,13 +169,22 @@ export default function App() {
   // ─── Crash course: a 2-week intensive sprint that overrides regular track
   // study. Day N is derived from start_date; covers a 14-day window. ────────
   const CRASH_AC    = "#0D9488";
-  const crashCourse = cur?.crash_course || null;
+  const PROJ_AC     = ["#185FA5", "#7F77DD", "#1D9E75", "#BA7517", "#A32D2D"];
+  const crashCourse = portfolio?.crash_course || cur?.crash_course || null;
   const crashDays   = crashCourse?.days || [];
   const crashStart  = crashCourse?.start_date ? startOfDay(new Date(crashCourse.start_date + "T12:00:00")) : null;
   // Progression is completion-driven, not calendar-driven: an unfinished day
   // rolls forward instead of being lost. "Today" is always the first day not
   // yet marked complete, once the sprint has started.
-  const crashDone     = new Set(completedDays);
+  const logDoneDays   = log.flatMap(e => { const m = String(e.topic || "").match(/day\s*(\d+)\s*(done|complete|finished|✓)/i); return m ? [Number(m[1])] : []; });
+  const mdDoneDays    = crashDays.filter(d => d.checked).map(d => d.n);
+  const crashDone     = new Set([...completedDays, ...logDoneDays, ...mdDoneDays]);
+  const crashProject  = portfolio?.projects?.find(p => p.n === (crashDays.find(d => !crashDone.has(d.n))?.week)) || null;
+  const ProgressBar   = ({ done, total, color, height = 8 }) => (
+    <div style={{ height, borderRadius:99, background:hexA(color, dark?0.22:0.14), overflow:"hidden" }}>
+      <div style={{ width:`${total ? Math.round(done/total*100) : 0}%`, height:"100%", background:color, borderRadius:99, transition:"width .3s" }} />
+    </div>
+  );
   const crashStarted  = !!crashStart && today0 >= crashStart;
   const orderedDays   = [...crashDays].sort((a,b) => a.n - b.n);
   const remainingDays = orderedDays.filter(d => !crashDone.has(d.n));
@@ -819,12 +831,18 @@ export default function App() {
                 <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12, flexWrap:"wrap" }}>
                   <div style={{ minWidth:0 }}>
                     <div style={{ fontSize:14.5, fontWeight:700, display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-                      <span>⚡</span>Crash course · Day {crashToday.n} of {crashDays.length}
-                      <span style={pill(CRASH_AC, { padding:"1px 8px" })}>Week {crashToday.week}</span>
+                      <span>⚡</span>{crashProject ? crashProject.id : "Crash course"} · Day {crashToday.n} of {crashDays.length}
+                      <span style={pill(CRASH_AC, { padding:"1px 8px" })}>Week {crashToday.week}{crashProject ? ` · project day ${crashProject.days.filter(d => crashDone.has(d.n)).length + 1} of ${crashProject.days.length}` : ""}</span>
                     </div>
+                    {crashProject && (
+                      <div style={{ marginTop:8, maxWidth:420 }}>
+                        <ProgressBar done={crashProject.days.filter(d => crashDone.has(d.n)).length} total={crashProject.days.length} color={CRASH_AC} height={7} />
+                      </div>
+                    )}
                     <div style={{ fontSize:13.5, fontWeight:600, marginTop:6 }}>{crashToday.title}</div>
                     <div style={{ fontSize:12.5, color:txtS, marginTop:4, lineHeight:1.6 }}><strong style={{ color:txt }}>Build:</strong> {crashToday.build}</div>
-                    <div style={{ fontSize:12, color:txtS, marginTop:3, lineHeight:1.6 }}><strong style={{ color:txt }}>Drill:</strong> {crashToday.drill} &nbsp;·&nbsp; <strong style={{ color:txt }}>Done when:</strong> {crashToday.done}</div>
+                    <div style={{ fontSize:12, color:txtS, marginTop:3, lineHeight:1.6 }}><strong style={{ color:txt }}>Run:</strong> <code style={{ fontSize:11.5 }}>{crashToday.drill}</code></div>
+                    <div style={{ fontSize:12, color:txtS, marginTop:3, lineHeight:1.6 }}><strong style={{ color:txt }}>Done when:</strong> {crashToday.done}</div>
                   </div>
                   <div style={{ display:"flex", flexDirection:"column", gap:7, flexShrink:0 }}>
                     <button style={S.btn(true)} onClick={() => toggleCrashDay(crashToday.n)}>✓ Mark done</button>
@@ -1183,185 +1201,93 @@ export default function App() {
       )}
 
       {/* ── PLAN (progress · crash course · roadmap) ── */}
-      {tab==="plan" && (
-        <div>
-          {/* ── The roadmap: phases → gate → weekly rhythm ── */}
-          <div style={{ ...S.lbl, margin:"0 0 8px 2px" }}>The roadmap</div>
-          {(cur?.phases || []).length > 0 && (() => {
-            const phaseEnds = ["2026-10-31", "2027-01-31", "2027-04-30", "2027-07-31"];
-            const curPhaseIdx = phaseEnds.findIndex(e => today0 <= new Date(e + "T23:59:59"));
-            const phAc = ["#185FA5", "#1D9E75", "#7F77DD", "#BA7517"];
-            const dows = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-            const todayWd = today0.toLocaleDateString("en-US", { weekday: "long" });
-            return (
-              <>
-                <div style={{ ...S.card, padding:"1rem 1.15rem" }}>
-                  <div className="asp-phase-grid" style={{ border:`1px solid ${brd}` }}>
-                    {cur.phases.map((ph, i) => {
-                      const on = i === (curPhaseIdx === -1 ? cur.phases.length - 1 : curPhaseIdx);
-                      const ac = phAc[i % phAc.length];
-                      return (
-                        <div key={ph.n} title={`${ph.name} (${ph.window})\n${ph.goal}${ph.note ? `\n\n${ph.note}` : ""}`}
-                             style={{ padding:"10px 10px 12px", background: on ? hexA(ac, dark?0.22:0.12) : "transparent",
-                                      borderLeft: i>0 ? `1px solid ${brd}` : "none", borderTop:`3px solid ${on ? ac : hexA(ac, 0.35)}`, cursor:"default", minWidth:0 }}>
-                          <div style={{ fontSize:10, fontWeight:700, color: on ? ac : txtT, letterSpacing:0.4 }}>PHASE {ph.n}{on ? " · NOW" : ""}</div>
-                          <div style={{ fontSize:12.5, fontWeight:700, margin:"3px 0 2px", lineHeight:1.3 }}>{ph.name}</div>
-                          <div style={{ fontSize:10.5, color:txtT }}>{ph.window}</div>
-                          <div style={{ fontSize:11, color:txtS, marginTop:5, lineHeight:1.45, display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{ph.goal}</div>
-                        </div>
-                      );
-                    })}
+      {tab==="plan" && (() => {
+        const pf = portfolio;
+        if (!pf) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No portfolio plan found. Run <code>npm run portfolio</code> to build it from crash-course/PORTFOLIO.md.</div>;
+        const allDays = pf.projects.flatMap(p => p.days);
+        const totalDone = allDays.filter(d => crashDone.has(d.n)).length;
+        const nextDay = allDays.find(d => !crashDone.has(d.n)) || null;
+        const curProj = pf.projects.find(p => p.n === nextDay?.week) || pf.projects[pf.projects.length - 1];
+        const doneIn = (p) => p.days.filter(d => crashDone.has(d.n)).length;
+        return (
+          <div>
+            {/* ── Overall: which project, how far ── */}
+            <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${CRASH_AC}` }}>
+              <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(CRASH_AC, dark?0.18:0.1)}, transparent 72%)` }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12, flexWrap:"wrap" }}>
+                  <div style={{ minWidth:0 }}>
+                    <div style={{ fontSize:16, fontWeight:700, letterSpacing:-0.2, display:"flex", alignItems:"center", gap:8 }}><span>⚡</span>{pf.title}</div>
+                    <div style={{ fontSize:12.5, color:txtS, marginTop:5, lineHeight:1.6, maxWidth:640 }}>{pf.summary}</div>
                   </div>
-                  <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:10, fontSize:11.5, color:txtS }}>
-                    <span style={{ width:9, height:9, borderRadius:99, background: gateDaysLeft >= 0 ? "#BA7517" : "#A32D2D", display:"inline-block", flexShrink:0 }} />
-                    <span><b>The gate:</b> {gateDate} — {gateDaysLeft >= 0 ? `${gateDaysLeft} days out` : `${-gateDaysLeft} days overdue`}. Pass it and applications open; the phases only advance through it. Hover a phase for the reasoning.</span>
-                  </div>
+                  {nextDay
+                    ? <span style={{ fontSize:12, fontWeight:700, padding:"4px 12px", borderRadius:20, color:"#fff", background:CRASH_AC, whiteSpace:"nowrap" }}>Day {nextDay.n} / {allDays.length}</span>
+                    : <span style={pill(CRASH_AC)}>Complete ✓</span>}
                 </div>
-
-                <div style={{ ...S.card, padding:"1rem 1.15rem" }}>
-                  <div style={{ fontSize:13, fontWeight:600, marginBottom:2 }}>Weekly rhythm <span style={{ fontWeight:500, color:txtT }}>— every week runs this shape; tap a day</span></div>
-                  <div style={{ display:"flex", gap:5, marginTop:9, flexWrap:"wrap" }}>
-                    {dows.map(dw => {
-                      const on = rhythmDay === dw, isTd = dw === todayWd;
-                      return (
-                        <button key={dw} onClick={() => setRhythmDay(on ? null : dw)} title={cur?.day_of_week?.[dw] || ""}
-                          style={{ flex:"1 1 0", minWidth:52, fontSize:11.5, fontWeight: isTd ? 800 : 600, padding:"7px 4px", borderRadius:9, cursor:"pointer",
-                                   border:`1px solid ${on || isTd ? "#7F77DD" : brd}`, background: on ? hexA("#7F77DD", dark?0.24:0.12) : surface, color: on ? "#7F77DD" : isTd ? txt : txtS }}>
-                          {dw.slice(0,3)}{isTd ? " ·" : ""}
-                        </button>
-                      );
-                    })}
+                <div style={{ marginTop:14 }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", fontSize:11.5, color:txtT, marginBottom:5, fontVariantNumeric:"tabular-nums" }}>
+                    <span><b style={{ color:txt }}>Now: Week {curProj.n} · {curProj.id}</b>{nextDay ? ` — Day ${nextDay.n}: ${nextDay.title}` : ""}</span>
+                    <span>{totalDone}/{allDays.length} days · {Math.round(totalDone/allDays.length*100)}%</span>
                   </div>
-                  {rhythmDay && (
-                    <div style={{ marginTop:10, padding:"10px 13px", borderRadius:10, background:hexA("#7F77DD", dark?0.1:0.05), border:`1px solid ${hexA("#7F77DD", dark?0.3:0.16)}`, fontSize:12.5, lineHeight:1.6, color:txtS }}>
-                      <b style={{ color:"#7F77DD" }}>{rhythmDay}</b> — {cur?.day_of_week?.[rhythmDay] || "regular track study"}
-                      <div style={{ marginTop:6, fontSize:11.5, color:txtT }}>
-                        Typical split: {trackIds.map(id => `${tracks[id].name} ~${((tracks[id].weight||0)*DAILY_HOURS).toFixed(1)}h`).join(" · ")} — the Today tab turns this into concrete tasks each morning.
-                      </div>
-                    </div>
-                  )}
+                  <ProgressBar done={totalDone} total={allDays.length} color={CRASH_AC} height={10} />
                 </div>
-              </>
-            );
-          })()}
-
-          {/* Progress overview */}
-          <div style={{ ...S.lbl, margin:"18px 0 8px 2px" }}>This week · {DAILY_HOURS}h/day target</div>
-          <div className="asp-stat-grid" style={{ marginBottom:"0.875rem" }}>
-            {[["Total hours",totalHrs,"#1D9E75"],["This week",`${weekHrs}`,"#185FA5",`/ ${WEEKLY_TARGET}h`],["Day",startDays||"—","#7F77DD"],["Sessions",log.length,"#BA7517"]].map(([l,v,ac,suf]) => (
-              <div key={l} style={{ borderRadius:14, padding:"12px 14px", background:`linear-gradient(155deg, ${hexA(ac, dark?0.24:0.14)}, ${hexA(ac, dark?0.08:0.05)})`, border:`1px solid ${hexA(ac, dark?0.34:0.2)}`, boxShadow:shadowCard }}>
-                <div style={{ fontSize:10, color:txtT, marginBottom:4, textTransform:"uppercase", letterSpacing:0.5, fontWeight:600 }}>{l}</div>
-                <div style={{ fontSize:24, fontWeight:800, color:ac, lineHeight:1, letterSpacing:-0.6 }}>{v}<span style={{ fontSize:11, fontWeight:600, color:txtT, marginLeft:3 }}>{suf}</span></div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ ...S.card, marginBottom:"0.875rem", display:"flex", alignItems:"center", gap:16 }}>
-            <Ring pct={weekHrs/WEEKLY_TARGET*100} color={weekColor} size={58} stroke={6} />
-            <div style={{ flex:1 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-                <span style={{ fontSize:13, fontWeight:600 }}>Weekly progress</span>
-                <span style={{ fontSize:12, color:txtT }}>{weekHrs}h of {WEEKLY_TARGET}h</span>
-              </div>
-              <div style={{ height:8, borderRadius:5, background:bgS, overflow:"hidden" }}>
-                <div style={{ height:"100%", width:`${Math.min(100,weekHrs/WEEKLY_TARGET*100)}%`, borderRadius:5, background:"linear-gradient(90deg, #1D9E75, #185FA5, #7F77DD, #BA7517)" }} />
-              </div>
-              <div style={{ fontSize:12, color:txtT, marginTop:6 }}>{Math.max(0,WEEKLY_TARGET-weekHrs).toFixed(1)}h remaining this week</div>
-            </div>
-          </div>
-
-          {/* Per-track focus + weekly balance */}
-          <div style={{ fontSize:11, color:txtT, margin:"0 0 8px 2px" }}>
-            {focusMode
-              ? `Tracks paused for interview prep${resumeDate ? ` — resume ${resumeDate.toLocaleDateString("en-US",{ weekday:"short", month:"short", day:"numeric" })}` : ""}`
-              : crashActive
-              ? "Tracks paused — running the 2-week crash course (months-long plan resumes after)"
-              : "Active tracks — weights, current month, this week's balance"}
-          </div>
-          {trackIds.map(id => {
-            const t = tracks[id]; const md = monthData(id);
-            const target = (t.weight || 0) * WEEKLY_TARGET; const got = weekHrsByTrack(id);
-            const pct = target ? Math.min(100, got/target*100) : 0;
-            const ac = t.color?.border || brdS;
-            return (
-              <div key={id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, opacity:tracksPaused?0.6:1 }}>
-                <div style={{ display:"flex", gap:14, padding:"0.875rem 1rem", background:`linear-gradient(120deg, ${hexA(ac, dark?0.16:0.09)}, transparent 75%)` }}>
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, flexWrap:"wrap" }}>
-                      <span style={trackBadge(id)}>{t.name}</span>
-                      {tracksPaused && <span style={pill("#888888", { padding:"1px 7px" })}>⏸ paused</span>}
-                      <span style={{ fontSize:11, color:txtT }}>{Math.round((t.weight||0)*100)}% · ~{((t.weight||0)*DAILY_HOURS).toFixed(1)}h/day</span>
-                      <span style={{ ...S.roiBadge(md.roi||75), marginLeft:"auto" }}>ROI {md.roi||"—"}</span>
-                    </div>
-                    <div style={{ fontSize:13.5, fontWeight:600, marginBottom:2 }}>Month {monthOf(id)} — {md.title}</div>
-                    <div style={{ fontSize:12, color:txtS, lineHeight:1.55 }}>{md.focus}</div>
-                    <div style={{ fontSize:11, color:txtT, marginTop:8 }}>{got.toFixed(1)}h this week · target ~{target.toFixed(1)}h</div>
-                  </div>
-                  <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
-                    <Ring pct={pct} color={ac} size={50} stroke={5} />
-                    <div style={{ fontSize:9.5, color:txtT, marginTop:4 }}>of target</div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Crash course */}
-          <div style={{ ...S.lbl, margin:"22px 0 8px 2px" }}>2-week crash course</div>
-          {!crashCourse && <div style={{ fontSize:13, color:txtT, padding:"0.25rem 0.25rem 0.75rem" }}>No crash course configured in curriculum.json.</div>}
-          {crashCourse && (
-            <>
-              <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${CRASH_AC}` }}>
-                <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(CRASH_AC, dark?0.18:0.1)}, transparent 72%)` }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12, flexWrap:"wrap" }}>
-                    <div style={{ minWidth:0 }}>
-                      <div style={{ fontSize:16, fontWeight:700, letterSpacing:-0.2, display:"flex", alignItems:"center", gap:8 }}><span>⚡</span>{crashCourse.title}</div>
-                      <div style={{ fontSize:12.5, color:txtS, marginTop:5, lineHeight:1.6, maxWidth:580 }}>{crashCourse.summary}</div>
-                      {crashCourse.project && <div style={{ fontSize:11, color:txtT, marginTop:6, fontFamily:"ui-monospace,SFMono-Regular,Menlo,monospace" }}>{crashCourse.project}</div>}
-                    </div>
-                    {crashActive
-                      ? <span style={{ fontSize:12, fontWeight:700, padding:"4px 12px", borderRadius:20, color:"#fff", background:CRASH_AC, whiteSpace:"nowrap" }}>Day {crashToday.n} / {crashDays.length}</span>
-                      : <span style={pill(CRASH_AC)}>{crashAllDone ? "Complete ✓" : crashStart && today0 < crashStart ? `Starts ${fmtDate(crashCourse.start_date)}` : "Not started"}</span>}
-                  </div>
-                  <div style={{ fontSize:11, color:txtT, marginTop:9 }}>{crashDone.size} of {crashDays.length} days complete · tick days off as you finish — unfinished days roll forward.</div>
-                  {crashCourse.pillars?.length > 0 && (
-                    <div style={{ marginTop:13 }}>
-                      <div style={{ ...S.lbl, marginBottom:6 }}>Covers</div>
-                      <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-                        {crashCourse.pillars.map((p,i) => <span key={i} style={pill(CRASH_AC, { fontSize:12 })}>{p}</span>)}
-                      </div>
-                    </div>
-                  )}
-                  {crashCourse.not_doing?.length > 0 && (
-                    <div style={{ fontSize:11.5, color:txtT, marginTop:11, lineHeight:1.6 }}>
-                      <strong style={{ color:txtS }}>Not doing:</strong> {crashCourse.not_doing.join(" · ")}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {[1,2].map(wk => (
-                <div key={wk}>
-                  <div style={{ fontSize:11, color:txtT, margin:"14px 0 6px 2px", fontWeight:600, letterSpacing:0.3 }}>WEEK {wk}{wk===1?" — DATA + AI CORE":" — FULL-STACK + DESIGN + PROOF"}</div>
-                  {crashDays.filter(d => d.week === wk).map(d => {
-                    const isDone  = crashDone.has(d.n);
-                    const isToday = crashToday?.n === d.n;
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(110px, 1fr))", gap:6, marginTop:12 }}>
+                  {pf.projects.map((p, i) => {
+                    const d = doneIn(p), ac = PROJ_AC[i % PROJ_AC.length], on = p.n === curProj.n;
                     return (
-                      <div key={d.n} style={{ ...S.card, marginBottom:"0.5rem", padding:0, overflow:"hidden",
-                          borderLeft:`3px solid ${isToday?CRASH_AC:isDone?hexA(CRASH_AC,0.5):brd}`, opacity:isDone && !isToday?0.6:1 }}>
-                        <div style={{ display:"flex", gap:12, padding:"0.8rem 1rem", alignItems:"flex-start", background:isToday?`linear-gradient(120deg, ${hexA(CRASH_AC, dark?0.18:0.1)}, transparent 78%)`:"transparent" }}>
-                          <div style={{ flexShrink:0, width:30, height:30, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:"#fff", background:isDone||isToday?CRASH_AC:hexA(CRASH_AC,0.45) }}>{isDone?"✓":d.n}</div>
+                      <div key={p.id} style={{ padding:"8px 9px", borderRadius:9, border:`1px solid ${on ? ac : brd}`, background: on ? hexA(ac, dark?0.18:0.08) : "transparent", minWidth:0 }}>
+                        <div style={{ fontSize:10, fontWeight:800, color:ac, letterSpacing:0.4 }}>WEEK {p.n}{on ? " · NOW" : d === p.days.length ? " · DONE" : ""}</div>
+                        <div style={{ fontSize:11.5, fontWeight:700, margin:"2px 0 6px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.id}</div>
+                        <ProgressBar done={d} total={p.days.length} color={ac} height={6} />
+                        <div style={{ fontSize:10.5, color:txtT, marginTop:4, fontVariantNumeric:"tabular-nums" }}>{d}/{p.days.length} days</div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{ fontSize:11, color:txtT, marginTop:10 }}>Tick a day off below, or log a session whose topic says “Day N done” — both count. Unfinished days roll forward; the Today tab always shows the first unfinished day.</div>
+              </div>
+            </div>
+
+            {/* ── Per project: header + progress + the day rows ── */}
+            {pf.projects.map((p, i) => {
+              const ac = PROJ_AC[i % PROJ_AC.length];
+              const d = doneIn(p), on = p.n === curProj.n;
+              return (
+                <div key={p.id}>
+                  <div style={{ ...S.card, marginTop:18, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
+                    <div style={{ padding:"0.9rem 1.1rem", background: on ? `linear-gradient(120deg, ${hexA(ac, dark?0.16:0.08)}, transparent 78%)` : "transparent" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                        <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>WEEK {p.n}{on ? " · NOW" : ""}</span>
+                        <span style={{ fontSize:11, color:txtT }}>{fmtDate(p.start)} – {fmtDate(p.end)}</span>
+                        <a href={p.repo} target="_blank" rel="noreferrer" style={{ fontSize:11, color:linkC, textDecoration:"none", marginLeft:"auto" }}>↗ {p.repo.replace("https://github.com/", "")}</a>
+                      </div>
+                      <div style={{ fontSize:15, fontWeight:700, margin:"5px 0 2px", letterSpacing:-0.2 }}>{p.id} <span style={{ fontWeight:500, color:txtT, fontSize:12.5 }}>— {p.proves}</span></div>
+                      <div style={{ fontSize:12.5, color:txtS, lineHeight:1.55 }}>{p.sentence}</div>
+                      <div style={{ display:"flex", justifyContent:"space-between", fontSize:11.5, color:txtT, margin:"10px 0 5px", fontVariantNumeric:"tabular-nums" }}>
+                        <span>Progress</span><span>{d}/{p.days.length} days · {Math.round(d/p.days.length*100)}%</span>
+                      </div>
+                      <ProgressBar done={d} total={p.days.length} color={ac} />
+                    </div>
+                  </div>
+                  {p.days.map(day => {
+                    const isDone = crashDone.has(day.n), isToday = nextDay?.n === day.n;
+                    return (
+                      <div key={day.n} style={{ ...S.card, marginBottom:"0.5rem", padding:0, overflow:"hidden",
+                          borderLeft:`3px solid ${isToday ? ac : isDone ? hexA(ac, 0.5) : brd}`, opacity: isDone && !isToday ? 0.6 : 1 }}>
+                        <div style={{ display:"flex", gap:12, padding:"0.8rem 1rem", alignItems:"flex-start", background: isToday ? `linear-gradient(120deg, ${hexA(ac, dark?0.18:0.1)}, transparent 78%)` : "transparent" }}>
+                          <div style={{ flexShrink:0, width:30, height:30, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:"#fff", background: isDone || isToday ? ac : hexA(ac, 0.45) }}>{isDone ? "✓" : day.n}</div>
                           <div style={{ flex:1, minWidth:0 }}>
                             <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-                              <span style={{ fontSize:13.5, fontWeight:600 }}>{d.title}</span>
-                              {isToday && <span style={pill(CRASH_AC, { padding:"1px 7px" })}>today</span>}
+                              <span style={{ fontSize:13.5, fontWeight:600 }}>Day {day.n} · {day.title}</span>
+                              <span style={{ fontSize:11, color:txtT }}>{fmtDate(day.date)}</span>
+                              {isToday && <span style={pill(ac, { padding:"1px 7px" })}>next</span>}
                             </div>
-                            <div style={{ fontSize:12, color:txtS, lineHeight:1.6, marginTop:3 }}><strong style={{ color:txt }}>Build:</strong> {d.build}</div>
-                            <div style={{ fontSize:11.5, color:txtS, lineHeight:1.6, marginTop:2 }}><strong style={{ color:txt }}>Drill:</strong> {d.drill} &nbsp;·&nbsp; <strong style={{ color:txt }}>Done:</strong> {d.done}</div>
+                            <div style={{ fontSize:12, color:txtS, lineHeight:1.6, marginTop:3 }}><strong style={{ color:txt }}>Build:</strong> {day.build}</div>
+                            <div style={{ fontSize:11.5, color:txtS, lineHeight:1.6, marginTop:2 }}><strong style={{ color:txt }}>Run:</strong> <code style={{ fontSize:11 }}>{day.run}</code></div>
+                            <div style={{ fontSize:11.5, color:txtS, lineHeight:1.6, marginTop:2 }}><strong style={{ color:txt }}>Done when:</strong> {day.done}</div>
                           </div>
-                          <button onClick={() => toggleCrashDay(d.n)} title={isDone?"Mark not done":"Mark done"}
+                          <button onClick={() => toggleCrashDay(day.n)} title={isDone ? "Mark not done" : "Mark done"}
                             style={{ flexShrink:0, alignSelf:"center", fontSize:11, fontWeight:600, padding:"5px 11px", borderRadius:8, cursor:"pointer", whiteSpace:"nowrap",
-                              border:`1px solid ${isDone?hexA(CRASH_AC,0.4):brdS}`, background:isDone?hexA(CRASH_AC, dark?0.18:0.1):surface, color:isDone?CRASH_AC:txtS }}>
+                              border:`1px solid ${isDone ? hexA(ac, 0.4) : brdS}`, background: isDone ? hexA(ac, dark?0.18:0.1) : surface, color: isDone ? ac : txtS }}>
                             {isDone ? "✓ Done" : "Mark done"}
                           </button>
                         </div>
@@ -1369,48 +1295,11 @@ export default function App() {
                     );
                   })}
                 </div>
-              ))}
-            </>
-          )}
-
-          {/* 12-month roadmap */}
-          <div style={{ ...S.lbl, margin:"22px 0 8px 2px" }}>12-month roadmap</div>
-          {trackIds.map(id => {
-            const t = tracks[id];
-            return (
-              <div key={id} style={{ marginBottom:"1.25rem" }}>
-                <div style={{ display:"flex", alignItems:"center", gap:10, margin:"0 0 8px 2px", flexWrap:"wrap" }}>
-                  <span style={trackBadge(id)}>{t.name}</span>
-                  <span style={{ fontSize:12, color:txtT }}>{Math.round((t.weight||0)*100)}% of day · {t.summary}</span>
-                </div>
-                {(t.months||[]).map(mo => {
-                  const ac = t.color?.border || brdS;
-                  const active = mo.n === monthOf(id);
-                  const done = mo.n < monthOf(id);
-                  return (
-                    <div key={mo.n} style={{ ...S.card, marginBottom:"0.5rem", padding:0, overflow:"hidden",
-                        borderLeft:`3px solid ${active?ac:done?hexA(ac,0.5):brd}`, opacity:done?0.62:1 }}>
-                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", padding:"0.875rem 1rem",
-                          background:active?`linear-gradient(120deg, ${hexA(ac, dark?0.18:0.1)}, transparent 78%)`:"transparent" }}>
-                        <div style={{ flex:1 }}>
-                          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4, flexWrap:"wrap" }}>
-                            <span style={{ fontSize:11, color:txtT, minWidth:54 }}>Month {mo.n}</span>
-                            {active && <span style={trackBadge(id)}>active</span>}
-                            {done && <span style={{ fontSize:11, color:ac, fontWeight:600 }}>✓ done</span>}
-                          </div>
-                          <div style={{ fontSize:14, fontWeight:600, marginBottom:4 }}>{mo.title}</div>
-                          <div style={{ fontSize:12, color:txtS, lineHeight:1.55 }}>{mo.focus}</div>
-                        </div>
-                        <span style={{ ...S.roiBadge(mo.roi), marginLeft:12, whiteSpace:"nowrap" }}>ROI {mo.roi}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        );
+      })()}
 
       {/* ── TUTOR ── */}
       {tab==="tutor" && (
@@ -1736,100 +1625,86 @@ export default function App() {
 
       {/* ── PROJECTS — biweekly portfolio sprints ── */}
       {tab==="projects" && (() => {
-        const projs = cur?.projects?.list || [];
-        if (!projs.length) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No projects in curriculum.json yet.</div>;
-        const projAc = ["#185FA5", "#7F77DD", "#1D9E75", "#BA7517", "#A32D2D", "#0D9488"];
+        const pf = portfolio;
+        if (!pf) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No portfolio plan found. Run <code>npm run portfolio</code> to build it from crash-course/PORTFOLIO.md.</div>;
+        const allDays = pf.projects.flatMap(p => p.days);
+        const nextDay = allDays.find(d => !crashDone.has(d.n)) || null;
+        const doneIn = (p) => p.days.filter(d => crashDone.has(d.n)).length;
         const statusOf = (p) => {
-          const s = new Date(p.start + "T00:00:00"), e = new Date(p.end + "T23:59:59");
-          const items = [...(p.week1||[]), ...(p.week2||[])];
-          const done = (projDone[p.id] || []).filter(l => items.includes(l)).length;
-          if (items.length && done === items.length) return ["shipped", "#1D9E75"];
-          if (today0 >= s && today0 <= e) return ["current", "#BA7517"];
-          if (today0 > e) return [done > 0 ? "in progress" : "overdue", "#A32D2D"];
+          const d = doneIn(p);
+          if (d === p.days.length) return ["shipped", "#1D9E75"];
+          if (p.n === nextDay?.week) return ["current", "#BA7517"];
+          if (d > 0) return ["in progress", "#185FA5"];
           return ["upcoming", null];
         };
         return (
-        <div>
-          <div style={S.card}>
-            <div style={{ fontSize:14, fontWeight:600 }}>Portfolio sprints <span style={{ fontWeight:500, color:txtT }}>— one every two weeks, Sep → Nov</span></div>
-            <div style={{ fontSize:12, color:txtT, marginTop:4, lineHeight:1.6 }}>
-              {cur?.projects?.cadence} Each sprint is deep enough to demo, shows tools recruiters screen for, and carries stretch goals
-              that turn it into an advanced public showpiece when you want to go further.
+          <div>
+            <div style={S.card}>
+              <div style={{ fontSize:14, fontWeight:600 }}>Portfolio <span style={{ fontWeight:500, color:txtT }}>— five production platforms, one per week</span></div>
+              <div style={{ fontSize:12, color:txtT, marginTop:4, lineHeight:1.6 }}>
+                Built in the order the portfolio review set. They connect: the data platform becomes the agent platform's retrieval backend,
+                the ML platform serves local models into its router, the SWE agent runs inside it, and the from-scratch LLM is one of the served models.
+                Each repo ships with README, ARCHITECTURE, BENCHMARKS, FAILURES, ADRs, CI, tests, and a case study.
+              </div>
             </div>
-            {cur?.projects?.evidence && (
-              <div style={{ marginTop:10, paddingTop:10, borderTop:`1px dashed ${brd}` }}>
-                <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, marginBottom:6 }}>What the market actually asks for <span style={{ fontWeight:500, textTransform:"none", letterSpacing:0 }}>— {cur.projects.evidence.method}</span></div>
-                <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
-                  {(cur.projects.evidence.top_demands || []).map(d => <span key={d} style={pill("#7F77DD", { fontSize:10.5 })}>{d}</span>)}
+            {pf.projects.map((p, i) => {
+              const ac = PROJ_AC[i % PROJ_AC.length];
+              const [st, stC] = statusOf(p);
+              const d = doneIn(p), open = projOpen === p.id;
+              return (
+                <div key={p.id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
+                  <button onClick={() => setProjOpen(open ? null : p.id)}
+                    style={{ display:"block", width:"100%", textAlign:"left", background:"transparent", border:"none", cursor:"pointer", color:txt, padding:"0.95rem 1.1rem", fontFamily:"inherit" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                      <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>WEEK {p.n}</span>
+                      <span style={{ fontSize:11, color:txtT }}>{fmtDate(p.start)} – {fmtDate(p.end)}</span>
+                      {stC && <span style={pill(stC, { fontSize:10.5 })}>{st}</span>}
+                      <span style={{ marginLeft:"auto", fontSize:11, color:txtT, fontVariantNumeric:"tabular-nums" }}>{d}/{p.days.length} days <span style={{ display:"inline-block", transform: open ? "rotate(180deg)" : "none" }}>▾</span></span>
+                    </div>
+                    <div style={{ fontSize:14.5, fontWeight:700, margin:"5px 0 3px", letterSpacing:-0.2 }}>{p.id}</div>
+                    <div style={{ fontSize:12.5, color:txtS, lineHeight:1.55 }}>{p.proves}</div>
+                    <div style={{ marginTop:9 }}><ProgressBar done={d} total={p.days.length} color={ac} /></div>
+                    <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginTop:9 }}>
+                      {p.stack.map(tl => <span key={tl} style={pill(ac, { fontSize:10.5 })}>{tl}</span>)}
+                    </div>
+                  </button>
+                  {open && (
+                    <div style={{ padding:"0 1.1rem 1rem", borderTop:`1px solid ${brd}` }}>
+                      <div style={{ fontSize:12.5, color:txtS, lineHeight:1.65, padding:"10px 0", borderBottom:`1px dashed ${brd}`, marginBottom:10 }}>
+                        <b style={{ color:ac }}>What it is — </b>{p.sentence}
+                      </div>
+                      <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, marginBottom:6 }}>Tasks · {d}/{p.days.length}</div>
+                      {p.days.map(day => {
+                        const isDone = crashDone.has(day.n), isNext = nextDay?.n === day.n;
+                        return (
+                          <button key={day.n} onClick={() => toggleCrashDay(day.n)}
+                            style={{ display:"flex", gap:9, alignItems:"flex-start", width:"100%", textAlign:"left", background:"transparent", border:"none", cursor:"pointer", color:txt, padding:"5px 0", fontFamily:"inherit" }}>
+                            <span style={{ flexShrink:0, width:18, height:18, borderRadius:5, marginTop:1, border:`1.5px solid ${isDone ? ac : brdS}`, background: isDone ? ac : "transparent", color:"#fff", fontSize:12, display:"flex", alignItems:"center", justifyContent:"center" }}>{isDone ? "✓" : ""}</span>
+                            <span style={{ fontSize:12.5, lineHeight:1.5, color: isDone ? txtT : txt, textDecoration: isDone ? "line-through" : "none" }}>
+                              <b>Day {day.n}</b> · {day.title}{isNext && <span style={{ ...pill(ac, { padding:"0 6px", marginLeft:6, fontSize:10 }) }}>next</span>}
+                              <span style={{ display:"block", fontSize:11.5, color:txtT }}>done when: {day.done}</span>
+                            </span>
+                          </button>
+                        );
+                      })}
+                      <div style={{ borderTop:`1px dashed ${brd}`, paddingTop:10, marginTop:8, display:"flex", gap:8, flexWrap:"wrap" }}>
+                        <a href={p.repo} target="_blank" rel="noreferrer" style={{ fontSize:11.5, color:linkC, textDecoration:"none", border:`1px solid ${brd}`, borderRadius:8, padding:"3px 10px" }}>↗ GitHub repo</a>
+                        <button style={{ ...S.btn(false), fontSize:12 }} onClick={() => setTab("plan")}>Full day-by-day plan →</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
+              );
+            })}
+            {pf.applications?.length > 0 && (
+              <div style={{ ...S.card, marginTop:18 }}>
+                <div style={{ fontSize:13, fontWeight:600 }}>Applications <span style={{ fontWeight:500, color:txtT }}>— 3+ per week from Day 7, in this order</span></div>
+                <ol style={{ margin:"8px 0 0", paddingLeft:20, fontSize:12.5, color:txtS, lineHeight:1.7 }}>
+                  {pf.applications.map(a => <li key={a}>{a}</li>)}
+                </ol>
               </div>
             )}
           </div>
-          {projs.map((p, pi) => {
-            const ac = projAc[pi % projAc.length];
-            const [st, stC] = statusOf(p);
-            const open = projOpen === p.id;
-            const items = [...(p.week1||[]), ...(p.week2||[])];
-            const doneN = (projDone[p.id] || []).filter(l => items.includes(l)).length;
-            const Milestones = ({ label, list }) => (
-              <div style={{ marginBottom:10 }}>
-                <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, marginBottom:5 }}>{label}</div>
-                {list.map(m => {
-                  const on = (projDone[p.id] || []).includes(m);
-                  return (
-                    <div key={m} onClick={() => toggleMilestone(p.id, m)} style={{ display:"flex", gap:9, alignItems:"flex-start", padding:"4px 0", cursor:"pointer" }}>
-                      <span style={{ flexShrink:0, marginTop:2, width:15, height:15, borderRadius:4, border:`1.5px solid ${on?ac:brdS}`, background:on?ac:"transparent", color:"#fff", fontSize:10, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>{on?"✓":""}</span>
-                      <span style={{ fontSize:12.5, lineHeight:1.5, color: on ? txtT : txtS, textDecoration: on ? "line-through" : "none" }}>{m}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-            return (
-              <div key={p.id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
-                <button onClick={() => setProjOpen(open ? null : p.id)}
-                  style={{ display:"block", width:"100%", textAlign:"left", background:"transparent", border:"none", cursor:"pointer", color:txt, padding:"0.95rem 1.1rem", fontFamily:"inherit" }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-                    <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>SPRINT {p.n}</span>
-                    <span style={{ fontSize:11, color:txtT }}>{p.window}</span>
-                    {stC && <span style={pill(stC, { fontSize:10.5 })}>{st}</span>}
-                    <span style={{ marginLeft:"auto", fontSize:11, color:txtT, fontVariantNumeric:"tabular-nums" }}>{doneN}/{items.length} <span style={{ display:"inline-block", transform:open?"rotate(180deg)":"none" }}>▾</span></span>
-                  </div>
-                  <div style={{ fontSize:14.5, fontWeight:700, margin:"5px 0 3px", letterSpacing:-0.2 }}>{p.title}</div>
-                  <div style={{ fontSize:12.5, color:txtS, lineHeight:1.55 }}>{p.tagline}</div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginTop:8 }}>
-                    {(p.tools||[]).map(tl => <span key={tl} style={pill(ac, { fontSize:10.5 })}>{tl}</span>)}
-                  </div>
-                </button>
-                {open && (
-                  <div style={{ padding:"0 1.1rem 1rem", borderTop:`1px solid ${brd}` }}>
-                    <div style={{ fontSize:12.5, color:txtS, lineHeight:1.65, padding:"10px 0", borderBottom:`1px dashed ${brd}`, marginBottom:10 }}>
-                      <b style={{ color:ac }}>Why this sprint — </b>{p.why}
-                    </div>
-                    <Milestones label="Week 1" list={p.week1 || []} />
-                    <Milestones label="Week 2" list={p.week2 || []} />
-                    {(p.stretch||[]).length > 0 && (
-                      <div style={{ marginBottom:10 }}>
-                        <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, marginBottom:5 }}>Take it further</div>
-                        {p.stretch.map(s => <div key={s} style={{ fontSize:12.5, color:txtS, lineHeight:1.55, padding:"2px 0" }}>◆ {s}</div>)}
-                      </div>
-                    )}
-                    {(p.resources||[]).length > 0 && (
-                      <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:12 }}>
-                        {p.resources.map(r => <a key={r.url} href={r.url} target="_blank" rel="noreferrer" style={{ fontSize:11.5, color:linkC, textDecoration:"none", border:`1px solid ${brd}`, borderRadius:8, padding:"3px 10px" }}>↗ {r.name}</a>)}
-                      </div>
-                    )}
-                    <div style={{ borderTop:`1px dashed ${brd}`, paddingTop:10 }}>
-                      <div style={{ fontSize:12, fontWeight:700, color:ac, marginBottom:6 }}>Kickoff coach prompt <span style={{ fontWeight:500, color:txtT }}>— paste into Claude to be walked through the sprint</span></div>
-                      <pre style={{ whiteSpace:"pre-wrap", fontFamily:"inherit", fontSize:11.5, lineHeight:1.55, color:txtS, background:bgS, border:`1px solid ${brd}`, borderRadius:10, padding:"10px 12px", margin:"0 0 8px", maxHeight:170, overflowY:"auto" }}>{p.prompt}</pre>
-                      <button style={{ ...S.btn(false), fontSize:12 }} onClick={() => copyText(`proj-${p.id}`, p.prompt)}>{copiedKey === `proj-${p.id}` ? "Copied ✓" : "Copy prompt"}</button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
         );
       })()}
 
