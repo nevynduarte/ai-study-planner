@@ -75,14 +75,15 @@ for (const p of projects) { p.title = p.id; p.proves = proves[p.n] || ""; p.star
 // ── Hour-by-hour schedule per day, derived from the row (deterministic, no LLM) ──
 const hhmm = m => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
 const splitSteps = text => {
-  const parts = text.split(/(?<=[.;])\s+(?=[A-Z0-9`“"(])/).map(x => x.trim()).filter(x => x.length > 3);
+  const parts = text.split(/(?<=[.;])\s+(?=\S)/).map(x => x.trim()).filter(x => x.length > 3);
   if (parts.length <= 6) return parts;
   const head = parts.slice(0, 5), tail = parts.slice(5).join(" ");
   return [...head, tail];
 };
 for (const p of projects) for (const d of p.days) {
   const isMWF = [1, 3, 5].includes(new Date(d.date + "T12:00:00").getDay());
-  const raw = splitSteps(d.build.replace(new RegExp("^" + d.title.replace(/[.*+?^${}()|[]\]/g, "\const raw = splitSteps(d.build)") + "\.?\s*"), "")).filter(x => !/^Send applications|^\*\*Applications|^Applications \d/.test(x));
+  const body = d.build.startsWith(d.title) ? d.build.slice(d.title.length).replace(/^[.:]?\s*/, "") : d.build;
+  const raw = splitSteps(body).filter(x => !/^Send applications|^Applications \d/.test(x));
   const appStep = /applications? \d|Send applications|Applications \d/i.test(d.build);
   const n = Math.max(1, raw.length);
   const slot = Math.max(30, Math.round((300 / n) / 15) * 15);
