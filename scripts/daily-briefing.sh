@@ -72,5 +72,14 @@ $(cat "$CTX")" 2>>"$LOG")"
   fi
 fi
 
+# 4) Make sure the next day without a tutorial has one written (local Claude Max).
+if [ "$PLAN_ONLY" = 0 ]; then
+  if bash "$DIR/write-tutorial.sh" >>"$LOG" 2>&1; then
+    log_line "Tutorial check complete"
+  else
+    log_line "WARN: tutorial generation failed (see log)"
+  fi
+fi
+
 rm -f "$CTX"
 log_line "$([ "$PLAN_ONLY" = 1 ] && echo "Plan-only run complete." || echo "Daily run complete.")"

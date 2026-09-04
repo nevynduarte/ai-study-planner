@@ -105,6 +105,49 @@ for (const p of projects) for (const d of p.days) {
   d.steps = steps;
 }
 
+// ── Tutorials: crash-course/tutorials/day-NN.md → public/tutorials/, split into per-step sections ──
+const tutSrcDir = path.join(ROOT, "crash-course", "tutorials");
+const tutOutDir = path.join(ROOT, "public", "tutorials");
+fs.mkdirSync(tutOutDir, { recursive: true });
+for (const p of projects) for (const d of p.days) {
+  const f = path.join(tutSrcDir, `day-${String(d.n).padStart(2, "0")}.md`);
+  if (!fs.existsSync(f)) continue;
+  const text = fs.readFileSync(f, "utf8").replace(/\r\n/g, "\n");
+  fs.copyFileSync(f, path.join(tutOutDir, `day-${String(d.n).padStart(2, "0")}.md`));
+  d.tutorial = `/tutorials/day-${String(d.n).padStart(2, "0")}.md`;
+  // Sections: "## Step N · title", plus "## Run", "## Defend" for the trailing blocks.
+  const secs = [];
+  const re = /^##\s+(.+)$/gm;
+  let m, marks = [];
+  while ((m = re.exec(text))) marks.push({ head: m[1].trim(), start: m.index });
+  marks.forEach((mk, i) => secs.push({ head: mk.head, body: text.slice(mk.start, i + 1 < marks.length ? marks[i + 1].start : text.length).trim() }));
+  const intro = marks.length ? text.slice(0, marks[0].start).trim() : text.trim();
+  d.tutorial_intro = intro;
+  const stepSecs = secs.filter(s => /^Step\s+\d+/i.test(s.head));
+  const runSec = secs.find(s => /^Run\b/i.test(s.head));
+  const defSec = secs.find(s => /^Defend\b/i.test(s.head));
+  let bi = 0;
+  for (const st of d.steps) {
+    if (st.kind === "BUILD") { if (stepSecs[bi]) st.tutorial = stepSecs[bi].body; bi++; }
+    else if (st.kind === "RUN" && runSec) st.tutorial = runSec.body;
+    else if (st.kind === "DEFEND" && defSec) st.tutorial = defSec.body;
+  }
+  // If the tutorial has a different number of steps than the generated schedule, retime from the tutorial.
+  if (stepSecs.length && stepSecs.length !== d.steps.filter(s => s.kind === "BUILD").length) {
+    const keep = d.steps.filter(s => !["BUILD"].includes(s.kind) && s.kind !== "BREAK");
+    const slot = Math.max(30, Math.round((300 / stepSecs.length) / 15) * 15);
+    let t = 9 * 60, lunch = false; const out = [];
+    const push = (kind, mins, text, coach, tutorial) => {
+      if (!lunch && t >= 12 * 60) { out.push({ time: `${hhmm(t)}–${hhmm(t + 30)}`, kind: "BREAK", text: "Lunch. Step away from the screen." }); t += 30; lunch = true; }
+      out.push({ time: `${hhmm(t)}–${hhmm(t + mins)}`, kind, text, coach, tutorial }); t += mins;
+    };
+    stepSecs.forEach((s, i) => push("BUILD", slot, s.head.replace(/^Step\s+\d+\s*·\s*/i, ""),
+      `I am on Week ${p.n}, Day ${d.n} of my ${p.id} repo, working through "${s.head}". Walk me through it, explaining what each file and tool is for and how data flows, building in small pieces and running something after each. Quiz me on the why before moving on.`, s.body));
+    for (const k of keep) push(k.kind, parseInt(k.time.slice(-5, -3)) * 60 + parseInt(k.time.slice(-2)) - (parseInt(k.time.slice(0, 2)) * 60 + parseInt(k.time.slice(3, 5))) || 45, k.text, k.coach, k.tutorial);
+    d.steps = out;
+  }
+}
+
 // ── Project briefs: crash-course/projects/<id>.md → public/projects/<id>.md ──
 const briefDir = path.join(ROOT, "public", "projects");
 fs.mkdirSync(briefDir, { recursive: true });

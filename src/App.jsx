@@ -21,6 +21,7 @@ export default function App() {
   const [briefMd,   setBriefMd]   = useState({});      // project id -> brief markdown
   const [briefReadIds, setBriefReadIds] = usePersisted("asp.brief.read", []);   // project ids whose brief was read
   const [stepsDone, setStepsDone] = usePersisted("asp.day.steps", {});          // { dayN: [step indexes] }
+  const [openStep,  setOpenStep]  = useState(null);   // "dayN-i" of the expanded tutorial
   const [loading, setLoading] = useState(true);
   const [err,     setErr]     = useState("");
 
@@ -910,8 +911,13 @@ export default function App() {
                       <div style={{ fontSize:13, color:txt, lineHeight:1.6, fontWeight:500 }}>{crashToday.done}</div>
                     </div>
 
+                    {day?.tutorial_intro && (
+                      <div style={{ marginTop:12, padding:"10px 14px", borderRadius:10, background:bgS, border:`1px solid ${brd}`, fontSize:13, lineHeight:1.7 }}>
+                        <Md>{day.tutorial_intro}</Md>
+                      </div>
+                    )}
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", margin:"16px 0 6px" }}>
-                      <div style={S.lbl}>Hour by hour</div>
+                      <div style={S.lbl}>Hour by hour{day?.tutorial ? " — every step has a full walkthrough" : ""}</div>
                       {workSteps.length > 0 && <div style={{ fontSize:11.5, color: doneSteps.length >= workSteps.length ? "#1D9E75" : txtT, fontVariantNumeric:"tabular-nums" }}>{Math.min(doneSteps.length, workSteps.length)}/{workSteps.length} steps</div>}
                     </div>
                     {steps.length === 0 && <div style={{ fontSize:12.5, color:txtS, lineHeight:1.6 }}><strong>Build:</strong> {crashToday.build}</div>}
@@ -925,11 +931,26 @@ export default function App() {
                               <span style={pill(c, { fontSize:10, padding:"1px 7px" })}>{s.kind}</span>
                               <span style={{ fontSize:13, lineHeight:1.55, color: isBreak ? txtT : txt, textDecoration: isDone ? "line-through" : "none" }}>{s.text}</span>
                             </div>
-                            {s.coach && !isBreak && (
-                              <button onClick={() => copyText(`step-${crashToday.n}-${i}`, s.coach)}
-                                style={{ marginTop:5, fontSize:11.5, color:linkC, background:"transparent", border:`1px solid ${brd}`, borderRadius:7, padding:"2px 9px", cursor:"pointer", fontFamily:"inherit" }}>
-                                {copiedKey === `step-${crashToday.n}-${i}` ? "Copied ✓ — paste into Claude Code in the repo" : "Copy coach prompt for this step"}
-                              </button>
+                            {!isBreak && (
+                              <div style={{ display:"flex", gap:7, flexWrap:"wrap", marginTop:6 }}>
+                                {s.tutorial && (
+                                  <button onClick={() => setOpenStep(openStep === `${crashToday.n}-${i}` ? null : `${crashToday.n}-${i}`)}
+                                    style={{ fontSize:11.5, fontWeight:600, color:"#fff", background:c, border:"none", borderRadius:7, padding:"3px 10px", cursor:"pointer", fontFamily:"inherit" }}>
+                                    {openStep === `${crashToday.n}-${i}` ? "Hide the walkthrough ▴" : "Read the walkthrough ▾"}
+                                  </button>
+                                )}
+                                {s.coach && (
+                                  <button onClick={() => copyText(`step-${crashToday.n}-${i}`, s.coach)}
+                                    style={{ fontSize:11.5, color:linkC, background:"transparent", border:`1px solid ${brd}`, borderRadius:7, padding:"3px 10px", cursor:"pointer", fontFamily:"inherit" }}>
+                                    {copiedKey === `step-${crashToday.n}-${i}` ? "Copied ✓ — paste into Claude Code" : "Copy coach prompt"}
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                            {openStep === `${crashToday.n}-${i}` && s.tutorial && (
+                              <div style={{ marginTop:9, padding:"4px 14px 10px", borderRadius:10, background:bgS, border:`1px solid ${brd}`, fontSize:13, lineHeight:1.7 }}>
+                                <Md>{s.tutorial}</Md>
+                              </div>
                             )}
                           </div>
                           {!isBreak && (
