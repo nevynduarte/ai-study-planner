@@ -98,7 +98,10 @@ build_context() {
   local out="$1" cov
   cov="$(d1_json "SELECT track,skill,status FROM skill_coverage;" 2>/dev/null || echo '[]')"
   {
-    echo "=== STUDENT, ROLES & CURRICULUM (public/curriculum.json) ==="
+    echo "=== PORTFOLIO BUILD PLAN (crash-course/PORTFOLIO.md) — SINGLE SOURCE OF TRUTH FOR DAILY PLANS ==="
+    cat "$PROJECT/crash-course/PORTFOLIO.md" 2>/dev/null || echo "(PORTFOLIO.md missing)"
+    echo
+    echo "=== STUDENT, ROLES & CURRICULUM (public/curriculum.json) — background only; the daily plan comes from the portfolio plan above ==="
     COVERAGE_JSON="$cov" node "$LIB_DIR/render-context.cjs" \
       "$PROJECT/public/curriculum.json" "$PROJECT/config/status.json" 2>/dev/null \
       || echo "(curriculum context unavailable)"
