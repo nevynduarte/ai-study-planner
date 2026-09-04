@@ -39,9 +39,10 @@ if [ -f "$OUT" ] && [ "$FORCE" = 0 ]; then
 fi
 
 # The day's row, the project brief, and an existing tutorial as the style exemplar.
-ROW="$(node -e '
-const p=require("'"$PROJECT"'/public/portfolio.json");
-const d=p.projects.flatMap(x=>x.days).find(x=>x.n==='"$DAY"');
+ROW="$(DAY="$DAY" PF="$PROJECT/public/portfolio.json" node -e '
+const fs=require("fs");
+const p=JSON.parse(fs.readFileSync(process.env.PF,"utf8"));
+const d=p.projects.flatMap(x=>x.days).find(x=>x.n===Number(process.env.DAY));
 const proj=p.projects.find(x=>x.n===d.week);
 console.log(JSON.stringify({day:d.n,date:d.date,week:d.week,project:proj.id,repo:proj.repo,
   goal:proj.goal,sentence:proj.sentence,stack:proj.stack,title:d.title,build:d.build,run:d.run,done:d.done,
@@ -53,17 +54,15 @@ BRIEF="$(cat "$PROJECT/crash-course/projects/$BRIEF_ID.md" 2>/dev/null || echo "
 EXEMPLAR="$(cat "$TUT_DIR/day-02.md" 2>/dev/null || echo "")"
 
 echo "Writing day-$NN.md ($BRIEF_ID)…"
-claude -p "$(cat "$DIR/tutorial-prompt.txt")
-
-=== TODAY'S ROW (JSON) ===
-$ROW
-
-=== PROJECT BRIEF ===
-$BRIEF
-
-=== STYLE EXEMPLAR — match this depth, structure and voice exactly (this is Day 2) ===
-$EXEMPLAR
-" > "$OUT"
+PROMPT="$(mktemp)"
+{
+  cat "$DIR/tutorial-prompt.txt"
+  printf "\n\n=== TODAY'S ROW (JSON) ===\n%s\n" "$ROW"
+  printf "\n=== PROJECT BRIEF ===\n%s\n" "$BRIEF"
+  printf "\n=== STYLE EXEMPLAR — match this depth, structure and voice exactly (this is Day 2) ===\n%s\n" "$EXEMPLAR"
+} > "$PROMPT"
+claude -p < "$PROMPT" > "$OUT"
+rm -f "$PROMPT"
 
 if [ ! -s "$OUT" ]; then
   echo "ERROR: empty output, removing $OUT" >&2; rm -f "$OUT"; exit 1
