@@ -108,6 +108,11 @@ facing DS interview wants the framing rather than the model).
 7. **Run the TDS selection procedure once** to pick the *personal* project the
    portfolio structurally cannot supply. See Appendix B — this is the one thing
    five production-grade platforms still do not give you.
+8. **Add persistent agent memory** to `agent-platform` — gap #20, surfaced only by
+   the Reddit thread. See Appendix D.
+9. **Adopt the presentation layer wholesale** (README standard, live demo GIF,
+   problem→approach→result write-ups, and the standout tips as acceptance
+   criteria). See Appendix E. This is free signal on work already being done.
 
 ---
 
@@ -118,17 +123,20 @@ facing DS interview wants the framing rather than the model).
 | LinkedIn — stasbel, "30 AI/ML projects that will get you hired" | ✅ **Full** (resolved 2026-09-05) | The post names only ~11; the full list is the linked repo [KalyanM45/AI-Project-Gallery](https://github.com/KalyanM45/AI-Project-Gallery), now read directly — 33 completed + 10 upcoming, enumerated in Appendix A. |
 | Towards Data Science — Egor Howell, "The exact ML project I'd build to get hired in 2026" | ✅ **Full** (user-supplied 2026-09-05) | Gives a *framework*, not a list. One example (NFL fantasy optimization). Full framework now encoded in Appendix B. |
 | Medium — iamsayantani, "50 projects…ML or MLOps" (Aug 2025) | ✅ **Full** (user-supplied 2026-09-05) | Paywalled to the fetcher; text pasted in. 47 numbered items in 6 groups, enumerated in Appendix C. The most infra-heavy source in the set. |
-| LinkedIn — Aishwarya Srinivasan | ✅ Full | 5 projects, all Tier 1. The most production-focused source. |
-| Scaler — "10 AI portfolio projects, 2026" | ✅ Full | All 10 captured with stacks. |
+| LinkedIn — Aishwarya Srinivasan (Oct 2025) | ✅ **Full** (confirmed 2026-09-05 against pasted text) | 5 projects, all Tier 1. The most production-focused source. Fetched version was accurate; named stacks confirmed. |
+| Scaler — Shivank Agarwal, "10 AI portfolio projects, 2026" | ✅ **Full** (user-supplied 2026-09-05) | All 10 captured with stacks. Pasted text added the per-project "standout tips", a role→project mapping table, a README standard, and a recruiter red-flag list — see Appendix E. |
 | everyonewhocode.com — "Real-world AI projects that get you hired" | ⚠️ **Partial** | 37 of ~52 captured. Categories 01–04 complete (NLP, CV, classic ML, recsys); **Category 05 (GenAI/LLM/agents, 15+ projects) truncated after #37** on two fetch attempts. This is the category most relevant to the AI Eng track. |
-| Reddit — r/learnmachinelearning poll thread | ❌ **Blocked** | Reddit blocks this fetcher entirely. **Not scraped** — neither the post nor the comments. |
+| Reddit — r/learnmachinelearning poll thread | ✅ **Full** (user-supplied 2026-09-05) | Small thread: 5 projects, 5 comments. One comment is from an actual hiring manager and is the single highest-value paragraph in the whole set — see Appendix D. |
 | YouTube — `mGClIHRird8` | ❌ **Blocked** | YouTube returns only the page footer to this fetcher; no transcript, title, or description. Web search could not identify the video either. **Nothing recovered.** |
 | YouTube — `E6lvgbayD04` | ⚠️ **Title only** | Identified via web search as *"How to Become a $300K AI Engineer in 2026 (Complete Roadmap)"*. No transcript or project list recovered. |
 
-**Bottom line on coverage:** 7 of 9 sources fully captured, 1 partial, 2 blocked.
-Still blocked: the Reddit thread and YouTube `mGClIHRird8`. Still partial:
-everyonewhocode Category 05 (GenAI/agents), truncated after #37, and YouTube
-`E6lvgbayD04` (title only).
+**Bottom line on coverage:** 8 of 9 sources fully captured. Remaining gaps are
+both minor: **YouTube `mGClIHRird8`** (nothing recovered — not even a title) and
+**YouTube `E6lvgbayD04`** (title only: *"How to Become a $300K AI Engineer in
+2026"*), plus the truncated everyonewhocode Category 05. Given that eight
+independent sources now agree, a ninth video roadmap is very unlikely to move
+the conclusions. **Treat this document as complete** unless you want the two
+transcripts folded in for the sake of it.
 
 The Tier 1 consensus has now held across all seven fully-read sources.
 Resolving stasbel *strengthened* it (Appendix A); resolving Sayantani **did
@@ -298,3 +306,123 @@ Combined with Appendix B's personal-project action, the running total of changes
 from all nine sources is: **one new personal project (yours to choose), one
 recommender/ranking artifact, and six bolt-ons** — against a five-week platform
 build that stays exactly as written.
+
+---
+
+## Appendix D — the Reddit thread (resolved in full)
+
+Resolved 2026-09-05 from user-supplied text. A small thread — 5 projects, 5
+comments — but it contains the only direct hiring-manager testimony in the set.
+
+**The post's 5 projects:** RAG from scratch · AI social-media agents ·
+medical image analysis · **AI assistants with memory** · tool-calling /
+multi-agent workflows.
+
+Four of five are already Weeks 1–5. The fourth is a real gap:
+
+| # | Gap | Why it matters | Attach to |
+|---|-----|----------------|-----------|
+| 20 | **Persistent agent memory** | Every source lists agents; only this one names *memory*. Session state, cross-session recall, summarization/compaction, and what to forget are live 2026 design problems with no settled answer — which makes it exactly the kind of thing that produces a defensible ADR. | `agent-platform` Week 1 — it already has Postgres, Redis, and per-tenant isolation, so memory is a schema and a policy, not new infrastructure. |
+
+### The hiring-manager comment (u/andy_p_w) — read this one twice
+
+Paraphrasing his four claims, each of which contradicts a common portfolio instinct:
+
+1. **"At least one well-executed project"** beats a portfolio of many. Quality
+   over count — and a project that is *"an idea that makes sense, and is not
+   trivial"* matters **more than ticking tool boxes.** This is the same claim as
+   the TDS piece, from the other side of the table.
+2. **A high-quality public GitHub repo can substitute for the technical round**
+   at his shop. The repo is not evidence *for* the interview; it can *be* the
+   interview.
+3. **Recruiters ≠ hiring managers.** You can tell a recruiter "I know XYZ." You
+   have to *demonstrate* it to the hiring manager. Optimize the portfolio for
+   the second audience.
+4. **His actual RAG screening question:** *when do you use in-memory (FAISS) vs.
+   a persistent on-disk store (ChromaDB)?* Concrete, and answerable only if you
+   have made the tradeoff yourself.
+
+The other substantive comment (u/SemperPistos, AI/Data engineer) deflates RAG
+usefully: *"RAG is nothing more than querying a vector database and injecting
+that into the prompt. Everything else — tool calls, reranking, prompt caching —
+is just the gravy on top."* His recommended differentiators are exactly the ones
+already in Week 1: **chunking strategy, metadata indexing, a reranker, and
+LLM-as-judge.** The first comment in the thread is a one-word joke: *"titantic."*
+
+### Action
+
+- **ADR-worthy question to answer explicitly in `agent-platform`'s docs:**
+  FAISS vs. pgvector vs. Chroma vs. Qdrant, with the in-memory/persistent
+  tradeoff stated. ADR-001 already exists for this — make sure it names the
+  in-memory case rather than only comparing persistent stores.
+- **Pick the one repo** you would hand over as "judge me on this." Right now
+  that is Week 1. Make its README carry that weight (Appendix E).
+
+---
+
+## Appendix E — the presentation layer (Scaler, resolved in full)
+
+The project list was already captured; the pasted text added the part that
+actually differentiates, and it costs nothing to adopt on work already planned.
+
+### Red flags that get a portfolio skipped
+
+1. **The Titanic/Iris trap** — "homework" datasets signal you never left the classroom.
+2. **The black box** — "I used Random Forest, got 90%" with no *why* is a fail.
+3. **No deployment** — *"a .ipynb is a lab report, not a product."*
+4. **Recognizable tutorial shape** — always add a unique twist or custom dataset.
+
+All four are already avoided by the portfolio build. Worth keeping as a
+pre-submission checklist per repo.
+
+### README standard (maps onto the existing per-repo doc set)
+
+**Hook** (one sentence: problem solved) → **Demo** (a GIF, or a live link) →
+**Architecture** (simple data-flow diagram) → **The technical win** (*"improved
+X from 70% to 85% by doing Y"*) → **How to run** (clear, copy-pasteable).
+
+Our `README → ARCHITECTURE → BENCHMARKS → FAILURES → ADRs` set covers this except
+for **two cheap omissions worth fixing**: a **demo GIF at the top of every README**,
+and a **one-line technical win** stated in the hook rather than buried in
+`BENCHMARKS.md`. A recruiter is *"10x more likely to click a link than clone your repo."*
+
+### Write-up formula
+
+Per project, one short post: **problem → approach → result**, quantified.
+Not *"I used a CNN"* but *"the dataset was imbalanced, hurting recall on rare
+classes; a weighted loss raised rare-class detection 22%."* This is the same
+muscle as the ADR/tradeoff-defense weakness the plan is already training — the
+posts are close to free once the ADRs exist.
+
+### Standout tips worth stealing as acceptance criteria
+
+Several are directly portable to the existing platforms, and each is a
+`BENCHMARKS.md` row or a test rather than new work:
+
+- **Source citation down to page and paragraph** (their RAG tip) → Week 1 already
+  cites chunk ids; tighten to page/paragraph.
+- **Always compare against a dumb baseline** (their LSTM tip: moving average) →
+  make this a rule across all five platforms. Any model without a stated baseline
+  is an unfinished benchmark.
+- **Before/after table for fine-tuning** — base model fails, tuned model succeeds →
+  Week 5 `nevyn-lm`.
+- **Drift alert that actually pages someone** (Slack/ntfy) → Week 3; the plan has
+  drift detection but no notification path. You already run ntfy for the 6am brief.
+- **Bias/fairness check** → the one genuinely new idea; relevant to any
+  scoring or ranking model, and to the recommender in gap #8.
+- **Cost of a false negative vs. false positive stated in business terms** → pairs
+  with gap #10 (imbalanced fraud detection).
+- **Explain *why* this model and what the hyperparameters mean** → already the ADR rule.
+
+### Role → project mapping (their table, for reference)
+
+ML Engineer → churn, credit risk, recommenders, MLOps · NLP → sentiment, parsing,
+QA, chatbots · CV → classification, detection, OCR, medical imaging · **GenAI
+specialist → RAG, assistants, multi-agent systems, enterprise copilots,
+evaluation frameworks** · Data Scientist → EDA, forecasting, segmentation, A/B
+testing, dashboards.
+
+Their advice is a **"T-shaped" portfolio**: 2–3 beginner projects across domains
+plus 1–2 deep specializations. **We are deliberately rejecting the beginner
+breadth** — the four-track curriculum supplies breadth, and the five platforms
+supply the depth. Noted so the divergence is a choice, not an oversight.
