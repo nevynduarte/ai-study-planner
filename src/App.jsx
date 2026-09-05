@@ -39,6 +39,7 @@ export default function App() {
   // Today-plan study guides + Projects tab + roadmap day selector
   const [copiedKey, setCopiedKey] = useState(null);   // which copy button just fired
   const [projOpen,  setProjOpen]  = useState(null);   // expanded project id
+  const [maxPanel,  setMaxPanel]  = useState(null);   // id of the panel blown up to full screen
   const [rhythmDay, setRhythmDay] = useState(null);   // selected weekday on the roadmap
   const [projDone,  setProjDone]  = usePersisted("asp.projects.done", {});  // { projectId: [milestone labels] }
   const [researchView, setResearchView] = useState("frontier");  // frontier | papers
@@ -404,6 +405,16 @@ export default function App() {
   // still. Off entirely under prefers-reduced-motion. ─────────────────────
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // While a panel is full screen, Esc closes it and the page behind stops scrolling.
+  useEffect(() => {
+    if (!maxPanel) return;
+    const onKey = (e) => { if (e.key === "Escape") setMaxPanel(null); };
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
+  }, [maxPanel]);
+
   // After jumping from Today, wait for the Projects tab to render the expanded
   // project, then bring its brief into view. Cleared so it only fires once.
   useEffect(() => {
@@ -524,7 +535,41 @@ export default function App() {
     p:  ({ children }) => <p style={{ margin:"0 0 11px", lineHeight:1.75, color:txtS }}>{children}</p>,
   };
 
+  // Maximize, as two pieces that drop into the existing cards rather than
+  // replacing them: MaxBtn is the ⤢ control you put in a card's header, and
+  // Maxable wraps that card so it lifts into a full-screen overlay when its id
+  // is the active one. Esc or a click on the backdrop closes it.
+  const MaxBtn = ({ id, title = "Maximize" }) => {
+    const isMax = maxPanel === id;
+    return (
+      <button
+        onClick={() => setMaxPanel(isMax ? null : id)}
+        title={isMax ? "Close (Esc)" : title}
+        aria-label={isMax ? "Close full screen" : title}
+        style={{ fontSize:12.5, lineHeight:1, padding:"5px 8px", borderRadius:8, cursor:"pointer", flexShrink:0,
+                 border:`1px solid ${brd}`, background:"transparent", color:txtT, fontFamily:"inherit" }}>
+        {isMax ? "✕" : "⤢"}
+      </button>
+    );
+  };
+
+  const Maxable = ({ id, label, children }) => {
+    if (maxPanel !== id) return children;
+    return (
+      <>
+        <div style={{ ...S.card, opacity:0.5 }}>
+          <div style={{ fontSize:12.5, color:txtT }}>{label || "This card"} is full screen — press Esc to come back.</div>
+        </div>
+        <div onClick={(e) => { if (e.target === e.currentTarget) setMaxPanel(null); }}
+          style={{ position:"fixed", inset:0, zIndex:80, background:bg, overflowY:"auto", padding:"1.1rem" }}>
+          <div style={{ maxWidth:1280, margin:"0 auto" }}>{children}</div>
+        </div>
+      </>
+    );
+  };
+
   const ContentCard = ({ title, sub, item, empty, accent = "#185FA5", components }) => (
+    <Maxable id={`content-${title}`} label={title}>
     <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${accent}` }}>
       <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(accent, dark?0.15:0.08)}, transparent 70%)` }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:item?.content?10:6 }}>
@@ -534,11 +579,15 @@ export default function App() {
             </div>
             <div style={{ ...S.stamp, marginLeft:15 }}>{sub}</div>
           </div>
-          <div style={S.stamp}>{item?.generated_at ? `Updated ${fmtTs(item.generated_at)} · P620` : "Awaiting P620"}</div>
+          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+            <div style={S.stamp}>{item?.generated_at ? `Updated ${fmtTs(item.generated_at)} · P620` : "Awaiting P620"}</div>
+            <MaxBtn id={`content-${title}`} />
+          </div>
         </div>
         {item?.content ? <Md components={components}>{item.content}</Md> : <div style={{ fontSize:13, color:txtT, marginLeft:15 }}>{empty}</div>}
       </div>
     </div>
+    </Maxable>
   );
 
   return (
@@ -547,6 +596,18 @@ export default function App() {
           prefers-reduced-motion at the media-query level too. */}
       <style>{`
         @media (prefers-reduced-motion: no-preference) {
+          /* Two-column reading layout. Single column until there is genuinely
+             room for two, so nothing is squeezed on a laptop or a phone. */
+          .asp-two { display: grid; gap: 0.8rem; align-items: start; }
+          .asp-two > * { min-width: 0; }
+          @media (min-width: 1100px) {
+            .asp-two { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
+          }
+          /* Lists of similar cards go two-up on a wide screen. The card's own
+             bottom margin is dropped so the grid gap is the only spacing. */
+          .asp-cards { display: grid; gap: 0.8rem; align-items: start; }
+          .asp-cards > * { min-width: 0; margin-bottom: 0 !important; }
+          @media (min-width: 1100px) { .asp-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
           @keyframes asp-pop { 0% { transform: scale(0.7); } 55% { transform: scale(1.14); } 100% { transform: scale(1); } }
           .asp-pop { animation: asp-pop 0.18s ease-out; }
         }
@@ -647,7 +708,8 @@ export default function App() {
             ].filter(x => x[2]);
             const jump = (key) => { const el = document.getElementById(`sec-${iv.id}-${key}`); if (el) el.scrollIntoView({ behavior:"smooth", block:"start" }); };
             return (
-              <div key={iv.id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, marginBottom:"1.25rem" }}>
+              <Maxable key={iv.id} id={`iv-${iv.id}`} label={`${iv.company} prep`}>
+              <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, marginBottom:"1.25rem" }}>
 
                 {/* header */}
                 <div style={{ padding:"1.1rem 1.2rem 0.95rem", background:`linear-gradient(125deg, ${hexA(ac, dark?0.2:0.11)}, transparent 72%)` }}>
@@ -671,10 +733,13 @@ export default function App() {
                               <div style={{ fontSize:10.5, color:txtT, marginTop:4 }}>{fmtDate(iv.date)}</div></>
                           : <div style={{ fontSize:13, fontWeight:700, color:urgency }}>Role</div>}
                       </div>
-                      <button onClick={() => archiveIv(iv.id)} title="Mark this interview done and move it to the archive"
-                        style={{ fontSize:11, fontWeight:600, padding:"4px 11px", borderRadius:8, cursor:"pointer", border:`1px solid ${brdS}`, background:surface, color:txtS, whiteSpace:"nowrap" }}>
-                        Archive ✓
-                      </button>
+                      <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+                        <button onClick={() => archiveIv(iv.id)} title="Mark this interview done and move it to the archive"
+                          style={{ fontSize:11, fontWeight:600, padding:"4px 11px", borderRadius:8, cursor:"pointer", border:`1px solid ${brdS}`, background:surface, color:txtS, whiteSpace:"nowrap" }}>
+                          Archive ✓
+                        </button>
+                        <MaxBtn id={`iv-${iv.id}`} title={`Read the ${iv.company} prep full screen`} />
+                      </div>
                     </div>
                   </div>
                   {nav.length > 0 && (
@@ -835,6 +900,7 @@ export default function App() {
                 </div>
 
               </div>
+              </Maxable>
             );
           })}
 
@@ -905,6 +971,11 @@ export default function App() {
             );
           })()}
 
+          {/* Wide screens read this as two columns: the day you are working on the
+              left, the ledger and the forms on the right, so the whole day fits
+              on screen instead of running off the bottom. */}
+          <div className="asp-two">
+          <div className="asp-two-main">
           {/* Portfolio day — understand the project, then an hour-by-hour walk through today's row */}
           {crashActive && (() => {
             const p = crashProject;
@@ -969,6 +1040,7 @@ export default function App() {
                 )}
 
                 {/* 2 · Today, hour by hour */}
+                <Maxable id="today-day" label="Today's plan">
                 <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${CRASH_AC}`, marginBottom:"0.875rem" }}>
                   <div style={{ padding:"1rem 1.125rem" }}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12, flexWrap:"wrap" }}>
@@ -976,8 +1048,11 @@ export default function App() {
                         <div style={{ fontSize:10.5, fontWeight:800, color:CRASH_AC, letterSpacing:0.4 }}>TODAY · DAY {crashToday.n} OF {crashDays.length}{day ? ` · ${fmtDate(day.date)}` : ""}</div>
                         <div style={{ fontSize:17, fontWeight:700, letterSpacing:-0.3, marginTop:3 }}>{day ? day.title : crashToday.title}</div>
                       </div>
-                      <div style={{ display:"flex", flexDirection:"column", gap:7, flexShrink:0 }}>
-                        <button style={S.btn(true)} onClick={() => toggleCrashDay(crashToday.n)}>✓ Mark day done</button>
+                      <div style={{ display:"flex", flexDirection:"column", gap:7, flexShrink:0, alignItems:"stretch" }}>
+                        <div style={{ display:"flex", gap:7 }}>
+                          <button style={{ ...S.btn(true), flex:1 }} onClick={() => toggleCrashDay(crashToday.n)}>✓ Mark day done</button>
+                          <MaxBtn id="today-day" title="Read today's plan full screen" />
+                        </div>
                         <button style={S.btn(false)} onClick={() => setTab("plan")}>Full plan →</button>
                       </div>
                     </div>
@@ -1047,6 +1122,7 @@ export default function App() {
                     )}
                   </div>
                 </div>
+                </Maxable>
               </>
             );
           })()}
@@ -1060,6 +1136,8 @@ export default function App() {
             </div>
           )}
 
+          </div>
+          <div className="asp-two-side">
           {/* ── The week's ledger — hours as tally strokes, per track ── */}
           {(() => {
             const dow = (now.getDay() || 7);                 // 1 Mon … 7 Sun
@@ -1216,6 +1294,8 @@ export default function App() {
               {logMsg && <span style={{ fontSize:12, color:"#3B6D11" }}>{logMsg}</span>}
             </div>
           </div>
+          </div>
+          </div>
         </div>
       )}
 
@@ -1271,6 +1351,7 @@ export default function App() {
                 {gateErr && <div style={{ fontSize:12.5, color:"#C43333", marginBottom:10 }}>{gateErr}</div>}
 
                 {/* The four criteria */}
+                <div className="asp-cards">
                 {gateDef.criteria.map(c => {
                   const row = gateRows[c.id] || {};
                   const passed = !!row.passed;
@@ -1308,6 +1389,7 @@ export default function App() {
                     </div>
                   );
                 })}
+                </div>
 
                 <div style={{ fontSize:11.5, color:txtT, lineHeight:1.6, padding:"0.25rem 0.25rem" }}>
                   If all four miss: {gateDef.all_fail_response}
@@ -1690,6 +1772,7 @@ export default function App() {
           </div>
 
           {/* groups */}
+          <div className="asp-cards">
           {(sel.groups || []).map(g => {
             const probs = g.problems || [];
             const gDone = probs.filter(p => solvedProblems.includes(pid(p))).length;
@@ -1725,6 +1808,7 @@ export default function App() {
               </div>
             );
           })}
+          </div>
         </div>
         );
       })()}
@@ -1805,6 +1889,7 @@ export default function App() {
           </div>
 
           {/* Per track — cell strip, expandable to named skills */}
+          <div className="asp-cards">
           {trackIds.map(id => {
             const t = tracks[id]; const ac = t.color?.border || brdS;
             const skills = t.skills || [];
@@ -1855,6 +1940,7 @@ export default function App() {
               </div>
             );
           })}
+          </div>
         </div>
         );
       })()}
@@ -2028,6 +2114,7 @@ export default function App() {
               </div>
             </div>
           )}
+          <div className="asp-cards">
           {rows.map(p => {
             const busy = postingBusy === p.id;
             return (
@@ -2072,6 +2159,7 @@ export default function App() {
               </div>
             );
           })}
+          </div>
         </div>
         );
       })()}
