@@ -22,7 +22,8 @@ export default function App() {
   const [data,    setData]    = useState(null);
   const [cur,     setCur]     = useState(null);   // curriculum.json
   const [portfolio, setPortfolio] = useState(null); // public/portfolio.json (built from crash-course/PORTFOLIO.md)
-  const [briefOpen, setBriefOpen] = useState(false);   // project brief expanded on Today
+  const [briefOpenId, setBriefOpenId] = useState(null); // project id whose brief is expanded (Projects tab)
+  const [briefScrollId, setBriefScrollId] = useState(null); // brief to scroll to after arriving from Today
   const [briefMd,   setBriefMd]   = useState({});      // project id -> brief markdown
   const [briefReadIds, setBriefReadIds] = usePersisted("asp.brief.read", []);   // project ids whose brief was read
   const [stepsDone, setStepsDone] = usePersisted("asp.day.steps", {});          // { dayN: [step indexes] }
@@ -42,6 +43,31 @@ export default function App() {
   const [projDone,  setProjDone]  = usePersisted("asp.projects.done", {});  // { projectId: [milestone labels] }
   const [researchView, setResearchView] = useState("frontier");  // frontier | papers
   const [jobsView,     setJobsView]     = useState("interviews"); // interviews | leads
+  // The brief markdown is fetched once per project and cached; both the Projects
+  // tab and the "understand this project" jump from Today go through here.
+  const briefLoading = useRef(new Set());
+  const loadBrief = useCallback(async (proj) => {
+    if (!proj?.brief || briefLoading.current.has(proj.id)) return;
+    briefLoading.current.add(proj.id);
+    try {
+      const r = await fetch(proj.brief);
+      const t = await r.text();
+      setBriefMd(m => ({ ...m, [proj.id]: t }));
+    } catch {
+      setBriefMd(m => ({ ...m, [proj.id]: "_Could not load the brief._" }));
+    }
+  }, []);
+
+  // Send the reader from Today straight to this project's brief on the Projects tab.
+  const jumpToBrief = (proj) => {
+    if (!proj) return;
+    loadBrief(proj);
+    setProjOpen(proj.id);
+    setBriefOpenId(proj.id);
+    setBriefScrollId(proj.id);
+    setTab("projects");
+  };
+
   const toggleMilestone = (pid, label) => setProjDone(prev => {
     const cur = prev[pid] || [];
     return { ...prev, [pid]: cur.includes(label) ? cur.filter(x => x !== label) : [...cur, label] };
@@ -378,6 +404,19 @@ export default function App() {
   // still. Off entirely under prefers-reduced-motion. ─────────────────────
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // After jumping from Today, wait for the Projects tab to render the expanded
+  // project, then bring its brief into view. Cleared so it only fires once.
+  useEffect(() => {
+    if (!briefScrollId || tab !== "projects") return;
+    const id = requestAnimationFrame(() => {
+      document.getElementById(`brief-${briefScrollId}`)
+        ?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      setBriefScrollId(null);
+    });
+    return () => cancelAnimationFrame(id);
+  }, [briefScrollId, tab, reduceMotion]);
+
+
   // ── Streak: consecutive days with any logged session, ending today or
   // yesterday (today unlogged doesn't break a live streak until midnight). ──
   const isoDay = (d) => { const x = new Date(d); const p = (n) => String(n).padStart(2, "0"); return `${x.getFullYear()}-${p(x.getMonth()+1)}-${p(x.getDate())}`; };
@@ -455,13 +494,34 @@ export default function App() {
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
-  // Track headings inside a P620-generated digest ("### AI Engineering") get the
-  // track's glyph, so the reader can find a track without reading every heading.
-  const glyphHeadings = {
-    h2: ({ children }) => <h2 style={{ fontSize:13, fontWeight:700, margin:"16px 0 6px", display:"flex", alignItems:"center", gap:7 }}>
-      <span aria-hidden>{trackGlyph(nodeText(children))}</span>{children}</h2>,
-    h3: ({ children }) => <h3 style={{ fontSize:11.5, fontWeight:800, letterSpacing:0.4, textTransform:"uppercase", color:txtT, margin:"14px 0 5px", display:"flex", alignItems:"center", gap:6 }}>
-      <span aria-hidden style={{ fontSize:13 }}>{trackGlyph(nodeText(children))}</span>{children}</h3>,
+  // The frontier digest is a scan, not an essay: P620 writes one heading per
+  // track and a few findings under each. Rendered with the default markdown
+  // styles it reads as an undifferentiated list, so it gets its own components —
+  // each track becomes a labelled section with a rule, and each finding a card
+  // you can pick out and read on its own.
+  const FrontierHeading = ({ children }) => (
+    <div style={{ display:"flex", alignItems:"center", gap:9, margin:"22px 0 10px" }}>
+      <span aria-hidden style={{ fontSize:15, lineHeight:1 }}>{trackGlyph(nodeText(children))}</span>
+      <span style={{ fontSize:11.5, fontWeight:800, letterSpacing:0.7, textTransform:"uppercase", color:txt, whiteSpace:"nowrap" }}>{children}</span>
+      <span style={{ flex:1, height:1, background:brd, minWidth:12 }} />
+    </div>
+  );
+
+  const frontierComponents = {
+    ...mdComponents,
+    h1: ({ children }) => <FrontierHeading>{children}</FrontierHeading>,
+    h2: ({ children }) => <FrontierHeading>{children}</FrontierHeading>,
+    h3: ({ children }) => <FrontierHeading>{children}</FrontierHeading>,
+    ul: ({ children }) => <ul style={{ listStyle:"none", margin:"0 0 2px", padding:0, display:"grid", gap:8 }}>{children}</ul>,
+    ol: ({ children }) => <ol style={{ listStyle:"none", margin:"0 0 2px", padding:0, display:"grid", gap:8 }}>{children}</ol>,
+    li: ({ children }) => (
+      <li style={{
+        padding:"10px 13px", borderRadius:10, background:bgS,
+        border:`1px solid ${brd}`, borderLeft:`3px solid ${hexA("#7F77DD", dark?0.7:0.5)}`,
+        fontSize:13, lineHeight:1.68, color:txtS,
+      }}>{children}</li>
+    ),
+    p:  ({ children }) => <p style={{ margin:"0 0 11px", lineHeight:1.75, color:txtS }}>{children}</p>,
   };
 
   const ContentCard = ({ title, sub, item, empty, accent = "#185FA5", components }) => (
@@ -853,13 +913,6 @@ export default function App() {
             const pdone = p ? p.days.filter(d => crashDone.has(d.n)).length : 0;
             const doneSteps = stepsDone[crashToday.n] || [];
             const toggleStep = (i) => setStepsDone(prev => { const c = prev[crashToday.n] || []; return { ...prev, [crashToday.n]: c.includes(i) ? c.filter(x => x !== i) : [...c, i] }; });
-            const openBrief = async () => {
-              setBriefOpen(o => !o);
-              if (p?.brief && briefMd[p.id] === undefined) {
-                try { const r = await fetch(p.brief); const t = await r.text(); setBriefMd(m => ({ ...m, [p.id]: t })); }
-                catch { setBriefMd(m => ({ ...m, [p.id]: "_Could not load the brief._" })); }
-              }
-            };
             const kindC = { BUILD: ac, RUN: "#185FA5", DEFEND: "#7F77DD", APPLY: "#BA7517", DRILL: "#0D9488", BREAK: "#888888" };
             const steps = day?.steps || [];
             const workSteps = steps.filter(s => s.kind !== "BREAK");
@@ -902,17 +955,13 @@ export default function App() {
                           return <span key={d.n} title={`Day ${d.n}: ${d.title}`} style={{ fontSize:10.5, padding:"2px 8px", borderRadius:99, border:`1px solid ${isT ? ac : isD ? hexA(ac, 0.5) : brd}`, background: isT ? ac : isD ? hexA(ac, dark?0.2:0.1) : "transparent", color: isT ? "#fff" : isD ? ac : txtT, fontWeight: isT ? 700 : 500 }}>{isD ? "✓ " : ""}D{d.n} {d.title.length > 22 ? d.title.slice(0, 21) + "…" : d.title}</span>;
                         })}
                       </div>
-                      <div style={{ marginTop:13, display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
-                        <button style={{ ...S.btn(!briefRead), fontSize:12.5 }} onClick={openBrief}>
-                          {briefOpen ? "Hide the project brief ▴" : briefRead ? "Re-read the project brief ▾" : "Understand this project first — 10-min read ▾"}
-                        </button>
-                        {!briefRead && <span style={{ fontSize:11.5, color:txtT }}>Read this once before Day {p.days[0].n}: what it is, the data-flow picture, every tool and why it is there.</span>}
-                        {briefRead && <span style={{ fontSize:11.5, color:"#1D9E75", fontWeight:600 }}>✓ brief read</span>}
-                      </div>
-                      {briefOpen && (
-                        <div style={{ marginTop:12, padding:"4px 14px 10px", borderRadius:10, background:bgS, border:`1px solid ${brd}`, fontSize:13, lineHeight:1.65 }}>
-                          <Md>{briefMd[p.id] ?? "Loading…"}</Md>
-                          {!briefRead && <button style={{ ...S.btn(true), fontSize:12.5, marginTop:6 }} onClick={() => { setBriefReadIds(prev => [...prev, p.id]); setBriefOpen(false); }}>I understand the picture — mark brief read ✓</button>}
+                      {p.brief && (
+                        <div style={{ marginTop:13, display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
+                          <button style={{ ...S.btn(!briefRead), fontSize:12.5 }} onClick={() => jumpToBrief(p)}>
+                            {briefRead ? "Re-read the project brief →" : "Understand this project first — 10-min read →"}
+                          </button>
+                          {!briefRead && <span style={{ fontSize:11.5, color:txtT }}>Read this once before Day {p.days[0].n}: what it is, the data-flow picture, every tool and why it is there. Opens in Projects.</span>}
+                          {briefRead && <span style={{ fontSize:11.5, color:"#1D9E75", fontWeight:600 }}>✓ brief read</span>}
                         </div>
                       )}
                     </div>
@@ -1526,7 +1575,7 @@ export default function App() {
             sub="Web search — one finding per track + a wildcard"
             item={frontier}
             accent="#7F77DD"
-            components={glyphHeadings}
+            components={frontierComponents}
             empty="P620 sweeps each track's frontier every morning and writes the digest here."
           />
           <div style={S.card}>
@@ -1840,7 +1889,7 @@ export default function App() {
               const d = doneIn(p), open = projOpen === p.id;
               return (
                 <div key={p.id} style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
-                  <button onClick={() => setProjOpen(open ? null : p.id)}
+                  <button onClick={() => { const next = open ? null : p.id; setProjOpen(next); if (next) loadBrief(p); }}
                     style={{ display:"block", width:"100%", textAlign:"left", background:"transparent", border:"none", cursor:"pointer", color:txt, padding:"0.95rem 1.1rem", fontFamily:"inherit" }}>
                     <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
                       <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>WEEK {p.n}</span>
@@ -1879,6 +1928,38 @@ export default function App() {
                           <MediaRail items={p.videos} accent={ac} brd={brd} surface={surface} txt={txt} txtT={txtT} dark={dark} />
                         </div>
                       )}
+                      {p.brief && (() => {
+                        const bRead = briefReadIds.includes(p.id);
+                        const bOpen = briefOpenId === p.id;
+                        return (
+                          <div id={`brief-${p.id}`} style={{ paddingBottom:12, borderBottom:`1px dashed ${brd}`, marginBottom:12, scrollMarginTop:12 }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                              <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5 }}>Project brief</div>
+                              {bRead && <span style={{ fontSize:11, color:"#1D9E75", fontWeight:600 }}>✓ read</span>}
+                              <button style={{ ...S.btn(!bRead && !bOpen), fontSize:12, marginLeft:"auto" }}
+                                onClick={() => { const next = bOpen ? null : p.id; setBriefOpenId(next); if (next) loadBrief(p); }}>
+                                {bOpen ? "Hide ▴" : bRead ? "Re-read ▾" : "Read it — 10 min ▾"}
+                              </button>
+                            </div>
+                            {!bOpen && (
+                              <div style={{ fontSize:11.5, color:txtT, marginTop:5, lineHeight:1.55 }}>
+                                What it is, the data-flow picture, every tool and why it is there. Read once before Day {p.days[0].n}.
+                              </div>
+                            )}
+                            {bOpen && (
+                              <div style={{ marginTop:10, padding:"4px 14px 10px", borderRadius:10, background:bgS, border:`1px solid ${brd}`, fontSize:13, lineHeight:1.65 }}>
+                                <Md>{briefMd[p.id] ?? "Loading…"}</Md>
+                                {!bRead && (
+                                  <button style={{ ...S.btn(true), fontSize:12.5, marginTop:6 }}
+                                    onClick={() => { setBriefReadIds(prev => [...prev, p.id]); setBriefOpenId(null); }}>
+                                    I understand the picture — mark brief read ✓
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
                       <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, marginBottom:6 }}>Tasks · {d}/{p.days.length}</div>
                       {p.days.map(day => {
                         const isDone = crashDone.has(day.n), isNext = nextDay?.n === day.n;
