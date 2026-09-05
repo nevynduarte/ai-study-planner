@@ -3,7 +3,7 @@
  "summary": "6–8 focused hours a day, and Claude Code writes most of the boilerplate while you make and defend the decisions. Your job each day is the ADR, the benchmark, the failure log, and being able to explain it. If a day runs over, the next day's row starts anyway; unfinished items go to that week's Day 7 buffer, never into the next week.",
  "start_date": "2026-09-03",
  "total_days": 35,
- "generated_at": "2026-09-05T20:22:28.969Z",
+ "generated_at": "2026-09-05T20:30:12.531Z",
  "projects": [
   {
    "n": 1,
@@ -26,7 +26,7 @@
     "Next.js 15",
     "Docker Compose",
     "GitHub Actions",
-    "Fly.io (Day 7) → EKS (Day 15)."
+    "Fly.io (Day 7) → EKS (Day 15)"
    ],
    "days": [
     {
@@ -62,6 +62,11 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 1, Day 1 (\"Repo, compose (pgvector, redis, api), api/main.py GET /healt\") of my agent-platform repo. Today's row says: BUILD — Repo, compose (pgvector, redis, api), api/main.py GET /health pinging both, Dockerfile. RUN — docker compose up --build && curl localhost:8000/health DONE WHEN — {\"db\":\"ok\",\"redis\":\"ok\"}. Done 2026-09-03..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "Postgres 16 + pgvector (RLS)",
+      "Redis",
+      "Docker Compose"
      ]
     },
     {
@@ -141,6 +146,9 @@
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
      ],
+     "tech": [
+      "Python 3.12"
+     ],
      "tutorial": "/tutorials/day-02.md",
      "tutorial_intro": "# Day 2 — Data + tenancy\n\n**Where you are.** Yesterday the API answered `/health` by pinging an empty Postgres and Redis. Today the database gets its shape, real Austin data goes in, PDFs get chunked, and every chunk gets a vector. By 2pm you can run one command chain and watch row counts print. Everything else this week (search, agents, tenants) sits on what you build today.\n\n**The one idea to hold all day: every table that holds customer data has a `tenant_id` column.** Not because you need tenants today, but because adding that column later means rewriting every query. Day 5 turns it into row-level security. Today you just never forget the column.\n\nOpen a terminal in `agent-platform`, run `docker compose up -d db redis` so Postgres and Redis are up, and start.\n\n---"
     },
@@ -216,6 +224,10 @@
        "tutorial": "## Defend · 30 minutes that make tomorrow's interview answer\n\n1. **FAILURES.md.** At least one line, format `2026-09-05 · tried X · saw Y · changed to Z · result`. Candidates from today: the synthetic prior-year values in `parcel_values` (you must log this one); the model answering in prose instead of calling `answer` and how the nudge message fixed it; `websearch_to_tsquery` returning nothing for a street name because \"Cir\" is a stop word or the chunks do not mention it; the 512-token truncation in the reranker; the first `pg_sleep` test that made you wait 5 s.\n2. **Three sentences** in your log: \"In an interview I'd describe today's work as…\" What you built, one decision and why, one number. A good number: reranker latency for 30 candidates, or tokens and cost for the Garcreek run.\n3. **Six levels, out loud, on one decision.** Pick from: Why RRF instead of a weighted sum of scores, and what breaks if one search returns an empty list? Why is the SQL guard two layers, and which layer would catch `SELECT * FROM users`? Why is the citation check in code and not in the prompt, and what does the run do on the second bad answer? If an answer is \"I think,\" write it as a Day 7 or Day 11 experiment.\n4. **ADR-001.** Read it once more and decide whether the decision paragraph is something you would say to a hiring manager. If you would hedge, fix the ADR, not the interview. The evidence line stays \"Day 12\" until you have the numbers.\n\nTomorrow (Day 4) this loop moves into a Kafka worker, each `trace.event` becomes an event on the topic, and `ApprovalRequired` becomes a gate you click. Log the session with \"Day 3 done\" so the site advances."
       }
      ],
+     "tech": [
+      "Python 3.12",
+      "Postgres 16 + pgvector (RLS)"
+     ],
      "tutorial": "/tutorials/day-03.md",
      "tutorial_intro": "# Day 3 — Retrieval + agent runtime\n\n**Where you are.** Day 1 gave you a running API over Postgres and Redis. Day 2 gave the database its shape and filled it: over 100k parcels, over 500 chunks, every chunk with a 384-number embedding and a full-text index. Today those tables get read for the first time. You build three ways to search chunks, a reranker that picks the best 8, five tools with hard safety limits, and the loop that lets Claude call those tools and hand back a cited answer. Day 4 moves this loop into a Kafka worker; today it runs from the command line.\n\n**The one idea to hold all day: the model never gets to say a number it did not get from a tool.** Every tool result gets an evidence id. The final answer must cite those ids. The runtime checks each id exists and fails the run if one does not. Retrieval quality, the safe SQL role, the step cap, the forced schema: all of them serve that one property.\n\nOpen a terminal in `agent-platform`, run `docker compose up -d db redis`, then `uv add anthropic pyyaml` and set `ANTHROPIC_API_KEY` in your `.env`. Start.\n\n---"
     },
@@ -282,6 +294,11 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 1, Day 4 (\"Durable workflows on Kafka\") of my agent-platform repo. Today's row says: BUILD — Durable workflows on Kafka. Redpanda in compose. events/schema.py (RunRequested, StepStarted/Finished, ApprovalRequested, RunFinished, all carry tenant_id, run_id). worker/main.py consumes runs.requested, emits to runs.events, commits offsets after RunFinished, idempotent per (run_id, step_no). POST /runs (idempotency key), GET /runs/{id} (state from events), GET /runs/{id}/stream SSE, POST /runs/{id}/approve. tenacity backoff, token budget 200k, step timeout 60s, circuit breaker, runs.dlq + GET /admin/dlq + retry. Planner/executor with parallel independent nodes (asyncio). RUN — docker compose up; POST; rpk topic consume runs.events; then docker compose kill worker && docker compose up worker mid-run DONE WHEN — Steps stream live; killed run resumes from last finished step with no duplicate side effects; approval pauses and resumes. FAILURES.md #1. ADR-002 event-sourced-runs, ADR-003 kafka-vs-sqs-vs-redis-streams..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "Redis",
+      "Kafka (Redpanda local, Upstash/MSK cloud)",
+      "Docker Compose"
      ]
     },
     {
@@ -352,6 +369,13 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "FastAPI",
+      "Go gateway (chi)",
+      "Postgres 16 + pgvector (RLS)",
+      "Redis",
+      "Keycloak OIDC → Cognito later"
      ]
     },
     {
@@ -417,6 +441,15 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 1, Day 6 (\"MCP, routing, LangGraph, UI\") of my agent-platform repo. Today's row says: BUILD — MCP, routing, LangGraph, UI. mcp_server/ exposing the tools (stdio + streamable HTTP); runtime becomes an MCP client via mcp.json, plus one third-party MCP server. llm/router.py (Haiku for extraction, frontier for planning/memo, local slot reserved for Week 3) + Redis semantic cache. agent/memory.py: per-(tenant, user) persistent memory — short-term turn buffer in Redis, long-term facts in Postgres under RLS, summarisation/compaction when the buffer exceeds a token budget, explicit forget/expiry, and retrieval of relevant memories into the prompt. tests/test_memory_isolation.py proves one tenant's memory never reaches another. agent/langgraph_runtime.py same graph; evals/compare_topology.py on 10 questions: single vs planner/executor vs LangGraph (latency, tokens, your 1–5 quality). web/ Next.js: Keycloak login, question, live steps, citation drawers, approve button, usage page → Vercel. RUN — npx @modelcontextprotocol/inspector; python evals/compare_topology.py --all; npm run dev DONE WHEN — Tools callable over MCP; comparison table in BENCHMARKS.md; ADR-005 mcp-vs-hardcoded-tools, ADR-006 custom-runtime-vs-langgraph, ADR-017 agent-memory-model (what to keep, summarise, and forget, and why); full flow works in a browser..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "Python 3.12",
+      "Anthropic SDK runtime + LangGraph adapter",
+      "MCP",
+      "Postgres 16 + pgvector (RLS)",
+      "Redis",
+      "Keycloak OIDC → Cognito later",
+      "Next.js 15"
      ]
     },
     {
@@ -493,10 +526,56 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "Python 3.12",
+      "Go gateway (chi)",
+      "Postgres 16 + pgvector (RLS)",
+      "Redis",
+      "Kafka (Redpanda local, Upstash/MSK cloud)",
+      "OpenTelemetry → Tempo/Prometheus/Grafana",
+      "Arize Phoenix"
      ]
     }
    ],
    "goal": "a public URL where a stranger logs in as a demo tenant, asks a question, watches the agent plan and call tools step by step, approves an action, and gets a memo where every number cites its source. Behind it: tenant isolation the database enforces, a Kafka-backed worker that survives being killed, one trace per run with cost, and a benchmark table proving retrieval quality.",
+   "flow": [
+    "Next.js UI",
+    "Go gateway",
+    "FastAPI",
+    "Kafka",
+    "Worker",
+    "Planner agent",
+    "Tools (MCP)",
+    "Postgres + pgvector",
+    "Memo with citations"
+   ],
+   "videos": [
+    {
+     "id": "mGClIHRird8",
+     "title": "The five levels of AI engineering projects"
+    },
+    {
+     "q": "MCP model context protocol tutorial",
+     "title": "MCP model context protocol tutorial"
+    },
+    {
+     "q": "multi-agent LLM systems architecture",
+     "title": "multi-agent LLM systems architecture"
+    },
+    {
+     "q": "Postgres row level security multi-tenant",
+     "title": "Postgres row level security multi-tenant"
+    },
+    {
+     "q": "OpenTelemetry distributed tracing explained",
+     "title": "OpenTelemetry distributed tracing explained"
+    },
+    {
+     "q": "LLM evaluation and LLM-as-a-judge",
+     "title": "LLM evaluation and LLM-as-a-judge"
+    }
+   ],
    "title": "agent-platform",
    "proves": "Multi-tenant agentic AI platform: RBAC, MCP, Kafka workers, approval gates, evals, OTel, deployed",
    "start": "2026-09-03",
@@ -518,7 +597,7 @@
     "bge-reranker-base",
     "FastAPI",
     "Docker Compose",
-    "GitHub Actions. Databricks Free edition for one notebook-based Spark UI comparison on Day 11."
+    "GitHub Actions"
    ],
    "days": [
     {
@@ -566,6 +645,15 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 2, Day 8 (\"Repo. Compose: redpanda, minio, spark-master, spark-worker,\") of my data-platform repo. Today's row says: BUILD — Repo. Compose: redpanda, minio, spark-master, spark-worker, dagster, opensearch, db (pgvector). producers/{parcels,permits,edgar,pdf}.py publish rows/files to topics raw.parcels, raw.permits, raw.docs (docs as S3 keys). jobs/bronze.py: Spark structured streaming → Delta bronze/<topic> on MinIO with checkpointing. RUN — docker compose up && python producers/parcels.py && spark-submit jobs/bronze.py DONE WHEN — bronze/parcels Delta table has > 100k rows; restart the job, it resumes from the checkpoint with 0 duplicates..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "Kafka (Redpanda)",
+      "PySpark structured streaming",
+      "Delta Lake",
+      "Dagster",
+      "MinIO (S3 API)",
+      "OpenSearch + pgvector (benchmarked)",
+      "Docker Compose"
      ]
     },
     {
@@ -636,6 +724,10 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "Delta Lake",
+      "Dagster"
      ]
     },
     {
@@ -689,6 +781,9 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 2, Day 10 (\"jobs/embed.py: Spark batch embeddings (bge-small, mapPartiti\") of my data-platform repo. Today's row says: BUILD — jobs/embed.py: Spark batch embeddings (bge-small, mapPartitions, batch 256) → gold/doc_chunks_emb. Generate synthetic docs to reach 5M chunks. Writers: index/to_opensearch.py (BM25 + kNN), index/to_pgvector.py (HNSW). Record indexing throughput and index build time for both. RUN — spark-submit jobs/embed.py && python index/to_opensearch.py && python index/to_pgvector.py DONE WHEN — 5M chunks in both stores; throughput table in BENCHMARKS.md..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "OpenSearch + pgvector (benchmarked)"
      ]
     },
     {
@@ -742,6 +837,11 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 2, Day 11 (\"search/ FastAPI: /search with modes vector / bm25 / hybrid / hybrid…\") of my data-platform repo. Today's row says: BUILD — search/ FastAPI: /search with modes vector / bm25 / hybrid / hybrid+rerank / query-decomposition / HyDE, metadata filters, tenant filter. evals/ 100 questions with expected chunks. Run all modes on both stores at 5M: Recall@10, MRR, NDCG, P50/P95, $/query estimate. Open the same gold table in Databricks Free, run one aggregation, compare the Spark UI plan with local. RUN — python evals/run.py --stores all --modes all DONE WHEN — Full matrix in BENCHMARKS.md. ADR-001 in Week 1 updated with this evidence and a switch threshold. ADR-008 opensearch-vs-pgvector-at-5M..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "MinIO (S3 API)",
+      "OpenSearch + pgvector (benchmarked)",
+      "FastAPI"
      ]
     },
     {
@@ -788,6 +888,9 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "Delta Lake"
      ]
     },
     {
@@ -853,6 +956,10 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 2, Day 13 (\"Repoint Week 1's search_docs MCP tool at this service; Week 1 evals…\") of my data-platform repo. Today's row says: BUILD — Repoint Week 1's search_docs MCP tool at this service; Week 1 evals rerun. Data-quality checks as Dagster asset checks (row counts, null rates, freshness) with alerts. OTel on the search API + Spark metrics into Prometheus; Grafana dashboard: lag, batch duration, rows/sec, P95 search. CI: unit tests for transforms with chispa, small end-to-end on a 1k-row fixture. RUN — python ../agent-platform/evals/retrieval.py DONE WHEN — Week 1 Recall@10 same or better; dashboard has data; CI green..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "Dagster",
+      "MinIO (S3 API)"
      ]
     },
     {
@@ -923,10 +1030,48 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
-     ]
+     ],
+     "tech": []
     }
    ],
    "goal": "one docker compose up brings up Kafka, Spark, MinIO, Dagster, OpenSearch and Postgres; three datasets stream through bronze → silver → gold with lineage; 5 million chunks are indexed in two search stores; a benchmark matrix compares six retrieval modes; six break-it drills have postmortems; and Week 1's agent now searches through this system.",
+   "flow": [
+    "Producers",
+    "Kafka topics",
+    "Spark streaming",
+    "Delta bronze",
+    "silver (Great Expectations)",
+    "gold (dbt)",
+    "embeddings",
+    "OpenSearch + pgvector",
+    "/search"
+   ],
+   "videos": [
+    {
+     "q": "Kafka exactly once semantics explained",
+     "title": "Kafka exactly once semantics explained"
+    },
+    {
+     "q": "Spark structured streaming tutorial",
+     "title": "Spark structured streaming tutorial"
+    },
+    {
+     "q": "Delta Lake medallion architecture",
+     "title": "Delta Lake medallion architecture"
+    },
+    {
+     "q": "dbt data build tool crash course",
+     "title": "dbt data build tool crash course"
+    },
+    {
+     "q": "hybrid search BM25 vector reciprocal rank fusion",
+     "title": "hybrid search BM25 vector reciprocal rank fusion"
+    },
+    {
+     "q": "Great Expectations data validation tutorial",
+     "title": "Great Expectations data validation tutorial"
+    }
+   ],
    "title": "data-platform",
    "proves": "Kafka → Spark/Delta → bronze/silver/gold → millions of chunks, hybrid + rerank, benchmarked",
    "start": "2026-09-10",
@@ -956,7 +1101,7 @@
     "TensorRT",
     "vLLM",
     "Evidently",
-    "Prometheus/Grafana."
+    "Prometheus/Grafana"
    ],
    "days": [
     {
@@ -1016,6 +1161,15 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 3, Day 15 (\"Shared platform\") of my ml-platform repo. Today's row says: BUILD — Shared platform. platform/terraform/: VPC, EKS (one spot t3.medium group), RDS pg16 (pgvector), ElastiCache, S3, ECR, Secrets Manager, Cognito, remote state (S3 + DynamoDB). terraform apply. Helm-install OTel collector, Prometheus, Grafana, KEDA, ArgoCD, Argo Rollouts. Join one local GPU machine as a node over Tailscale (label gpu=true), install NVIDIA device plugin. COST.md per-resource estimate. RUN — terraform apply && kubectl get nodes DONE WHEN — Cloud node + your GPU node both Ready; nvidia-smi runs in a pod on the GPU node. ADR-009 eks-vs-ecs, ADR-010 hybrid-local-gpu-nodes..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "Terraform",
+      "EKS (spot) + your local GPU machines joined as workers (k3s agent or kubeadm join over Tailscale)",
+      "Helm",
+      "ArgoCD + Argo Rollouts",
+      "KEDA",
+      "ECR",
+      "Secrets Manager"
      ]
     },
     {
@@ -1086,6 +1240,14 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "EKS (spot) + your local GPU machines joined as workers (k3s agent or kubeadm join over Tailscale)",
+      "Helm",
+      "ArgoCD + Argo Rollouts",
+      "KEDA",
+      "ECR",
+      "Cognito"
      ]
     },
     {
@@ -1151,6 +1313,12 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 3, Day 17 (\"ML lifecycle\") of my ml-platform repo. Today's row says: BUILD — ML lifecycle. ml-platform repo. features/build.py from Week 2 gold (parcels_current + permits) → feature table in Delta, registered in a Feast feature store with offline (Delta) and online (Redis) stores, so training and serving read the *same* feature definitions. tests/test_train_serve_skew.py asserts the online and offline values agree for a sample of entities — train/serve skew is the classic MLE interview question and this is the answer. train/{linear,lightgbm,xgboost,mlp}.py for appraised-value and rent prediction, plus train/ranking.py — a learning-to-rank model (LightGBM lambdarank) over the Week 2 retrieval logs, scored with NDCG@10/MRR against the Week 1 hybrid baseline, which adds the one project shape the other four platforms never produce. train/fraud.py on a deliberately imbalanced target (anomalous permit/appraisal activity): PR-AUC and recall at fixed precision — never accuracy — comparing class weights vs SMOTE, with a stated cost matrix for a false negative vs a false positive. MLflow tracking (params, metrics, artifacts), train/validate.py gate (RMSE/MAE vs baseline, leakage check, feature-drift check) → registry promotion staging→production. explain/shap_report.py writes global importances and per-prediction SHAP explanations as an MLflow artifact for every promoted model, plus a fairness slice check across geography — a promotion with no explanation artifact fails the gate. Ray Train job on the cluster for the MLP. RUN — python train/lightgbm.py && python train/validate.py --promote DONE WHEN — MLflow shows 6 runs; one model in production with a SHAP artifact attached; a deliberately leaked feature fails the gate; the online and offline feature values match. ADR-011 boosting-vs-nn-tabular, ADR-019 feature-store-vs-recomputing-features..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "EKS (spot) + your local GPU machines joined as workers (k3s agent or kubeadm join over Tailscale)",
+      "MLflow",
+      "LightGBM/XGBoost",
+      "Ray Train"
      ]
     },
     {
@@ -1198,6 +1366,14 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 3, Day 18 (\"Serving\") of my ml-platform repo. Today's row says: BUILD — Serving. KServe InferenceService for the LightGBM model (CPU) and a YOLOv11 + CLIP image pipeline on the GPU node via Triton (models/ repo with config.pbtxt, dynamic batching). Export YOLO to ONNX and TensorRT. serve/bench.py: PyTorch eager vs torch.compile vs ONNX Runtime vs TensorRT at FP32/FP16/INT8, batch 1/8/32: throughput, P50/P95/P99, GPU util, VRAM. RUN — python serve/bench.py --all DONE WHEN — Benchmark matrix in BENCHMARKS.md; a one-sentence recommendation with a threshold. ADR-012 triton-vs-kserve-raw-vs-fastapi..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "EKS (spot) + your local GPU machines joined as workers (k3s agent or kubeadm join over Tailscale)",
+      "LightGBM/XGBoost",
+      "PyTorch",
+      "KServe with Triton",
+      "ONNX Runtime",
+      "TensorRT"
      ]
     },
     {
@@ -1250,6 +1426,13 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "EKS (spot) + your local GPU machines joined as workers (k3s agent or kubeadm join over Tailscale)",
+      "ArgoCD + Argo Rollouts",
+      "Ray Train",
+      "Evidently",
+      "Prometheus/Grafana"
      ]
     },
     {
@@ -1309,6 +1492,11 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 3, Day 20 (\"Local LLM serving\") of my ml-platform repo. Today's row says: BUILD — Local LLM serving. vLLM on the GPU node serving Qwen2.5-7B-Instruct (or the largest that fits) with an OpenAI-compatible endpoint; Prometheus metrics (tokens/s, TTFT, queue). Week 1 router local slot → this endpoint for extraction/classification; rerun Week 1 evals with --router local: cost and quality delta. serve/llm_bench.py: FP16 vs AWQ INT4, concurrency 1/8/32. RUN — python serve/llm_bench.py && python ../agent-platform/evals/answer.py --router local DONE WHEN — Cost-per-run row before/after in Week 1 BENCHMARKS.md; LLM benchmark table here. ADR-013 vllm-vs-tgi-vs-ollama..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "EKS (spot) + your local GPU machines joined as workers (k3s agent or kubeadm join over Tailscale)",
+      "vLLM",
+      "Prometheus/Grafana"
      ]
     },
     {
@@ -1379,10 +1567,56 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "Terraform",
+      "EKS (spot) + your local GPU machines joined as workers (k3s agent or kubeadm join over Tailscale)"
      ]
     }
    ],
    "goal": "the whole platform created by terraform apply and removed by terraform destroy; Weeks 1–2 running on EKS with GitOps deploys and a working rollback; a property-value model with tracked lineage, a validation gate that rejects leakage, drift detection that triggers retraining and a canary that can roll back; a GPU benchmark matrix (runtime × precision × batch); and Week 1's agent using your own hosted 7B model with the cost delta measured.",
+   "flow": [
+    "Terraform",
+    "EKS + GPU nodes",
+    "ArgoCD",
+    "Feast features",
+    "Train",
+    "MLflow registry",
+    "Validation gate",
+    "KServe/Triton",
+    "Evidently drift",
+    "Retrain"
+   ],
+   "videos": [
+    {
+     "q": "Terraform EKS tutorial from scratch",
+     "title": "Terraform EKS tutorial from scratch"
+    },
+    {
+     "q": "ArgoCD GitOps explained",
+     "title": "ArgoCD GitOps explained"
+    },
+    {
+     "q": "MLflow model registry tutorial",
+     "title": "MLflow model registry tutorial"
+    },
+    {
+     "q": "Feast feature store train serve skew",
+     "title": "Feast feature store train serve skew"
+    },
+    {
+     "q": "NVIDIA Triton inference server tutorial",
+     "title": "NVIDIA Triton inference server tutorial"
+    },
+    {
+     "q": "vLLM fast LLM serving explained",
+     "title": "vLLM fast LLM serving explained"
+    },
+    {
+     "q": "SHAP model explainability tutorial",
+     "title": "SHAP model explainability tutorial"
+    }
+   ],
    "title": "ml-platform",
    "proves": "Terraform/EKS/ArgoCD shared platform; train → registry → GPU inference (Triton/ONNX/TensorRT/vLLM) → drift → retrain",
    "start": "2026-09-17",
@@ -1401,7 +1635,7 @@
     "Kafka (from Week 1)",
     "Docker-in-Kubernetes sandboxes (one Job per task, gVisor if available)",
     "Anthropic SDK + Week 3 local model via router",
-    "MCP (exposes itself as a tool to Week 1)."
+    "MCP (exposes itself as a tool to Week 1)"
    ],
    "days": [
     {
@@ -1449,6 +1683,12 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 4, Day 22 (\"Repo. GitHub App (webhook/ FastAPI receiving issues.labeled\") of my autonomous-swe repo. Today's row says: BUILD — Repo. GitHub App (webhook/ FastAPI receiving issues.labeled with label agent). index/: clone, tree-sitter symbol extraction (Python + TS), embeddings per symbol/file, incremental by commit SHA. search/: symbol lookup + semantic + import-graph neighbors. RUN — Label an issue on a test repo DONE WHEN — Webhook event logged; index for a 50k-line repo builds in < 5 min; search \"where is auth validated\" returns the right file..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "GitHub App (webhooks, installation tokens)",
+      "tree-sitter + pyright/LSP",
+      "Postgres + pgvector (code index)",
+      "Docker-in-Kubernetes sandboxes (one Job per task, gVisor if available)"
      ]
     },
     {
@@ -1507,6 +1747,12 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "GitHub App (webhooks, installation tokens)",
+      "Postgres + pgvector (code index)",
+      "Kafka (from Week 1)",
+      "Docker-in-Kubernetes sandboxes (one Job per task, gVisor if available)"
      ]
     },
     {
@@ -1560,6 +1806,14 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 4, Day 24 (\"reviewer/ agent: reads the diff\") of my autonomous-swe repo. Today's row says: BUILD — reviewer/ agent: reads the diff, checks acceptance criteria, flags risk, posts a review comment; human approval gate before PR opens (reuse Week 1's approval event). Cost, tokens, iterations recorded per task in Postgres; Grafana panel. RUN — Run 5 issues DONE WHEN — 5 PRs with review comments and a cost per task on the dashboard..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "GitHub App (webhooks, installation tokens)",
+      "Postgres + pgvector (code index)",
+      "Kafka (from Week 1)",
+      "Docker-in-Kubernetes sandboxes (one Job per task, gVisor if available)",
+      "Anthropic SDK + Week 3 local model via router",
+      "MCP (exposes itself as a tool to Week 1)"
      ]
     },
     {
@@ -1601,6 +1855,10 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 4, Day 25 (\"Benchmark\") of my autonomous-swe repo. Today's row says: BUILD — Benchmark. SWE-bench Lite harness (benchmarks/swebench.py) on 100 tasks in parallel Jobs on the cluster. Report: resolved %, tests passed, iterations, tokens, $/task, wall time. RUN — python benchmarks/swebench.py --n 100 DONE WHEN — Results table in BENCHMARKS.md. Publish the raw JSONL..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "GitHub App (webhooks, installation tokens)",
+      "Docker-in-Kubernetes sandboxes (one Job per task, gVisor if available)"
      ]
     },
     {
@@ -1671,6 +1929,11 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "Postgres + pgvector (code index)",
+      "Docker-in-Kubernetes sandboxes (one Job per task, gVisor if available)",
+      "Anthropic SDK + Week 3 local model via router"
      ]
     },
     {
@@ -1736,6 +1999,14 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 4, Day 27 (\"The self-improvement loop\") of my autonomous-swe repo. Today's row says: BUILD — The self-improvement loop. improve/loop.py: propose a change to the system's own prompts, tool set, retrieval strategy, or iteration budget → apply it in a branch → score it on the dev split → keep if it beats the incumbent by more than run-to-run noise (measure that noise first), else discard → repeat, logging every proposal, score, and verdict to Postgres. Run it unattended overnight with a hard $ cap. In the morning, score the surviving config once on holdout and compare the two deltas: dev-only gains are overfitting, and that gap is the headline number. Also register as an MCP server so Week 1's planner can delegate implement_change; Week 1's approval gate applies. Failure drills: sandbox OOM, flaky tests, repo with no tests. RUN — python improve/loop.py --hours 8 --budget 40 && python benchmarks/swebench.py --split holdout --config best DONE WHEN — A run log of N proposals with accept/reject reasons; a dev-vs-holdout delta table; at least one FAILURES.md entry for a change that gamed the score or looked good on dev and did not hold on holdout — if the loop never fooled you once, the eval is probably too loose to be interesting. Week 1 opens a PR on itself through Week 4. Postmortems..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "GitHub App (webhooks, installation tokens)",
+      "Postgres + pgvector (code index)",
+      "Kafka (from Week 1)",
+      "Docker-in-Kubernetes sandboxes (one Job per task, gVisor if available)",
+      "Anthropic SDK + Week 3 local model via router",
+      "MCP (exposes itself as a tool to Week 1)"
      ]
     },
     {
@@ -1800,10 +2071,53 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "GitHub App (webhooks, installation tokens)",
+      "Postgres + pgvector (code index)",
+      "Anthropic SDK + Week 3 local model via router"
      ]
     }
    ],
    "goal": "label an issue agent on one of your repos and a reviewed, tested PR appears with its cost in the footer; a SWE-bench Lite table over 100 tasks; an ablation table (topology, context strategy, model, reviewer); Week 1's agent able to ask Week 4 to change code; and one unattended overnight self-improvement run whose accepted changes are justified against a scoring function you have argued, in writing, cannot be gamed.",
+   "flow": [
+    "Issue labelled",
+    "Webhook",
+    "Code index (tree-sitter)",
+    "Planner",
+    "Sandbox (K8s Job)",
+    "Coder loop",
+    "Reviewer",
+    "PR",
+    "Self-improvement loop",
+    "SWE-bench holdout"
+   ],
+   "videos": [
+    {
+     "id": "mGClIHRird8",
+     "title": "The five levels of AI engineering projects"
+    },
+    {
+     "q": "SWE-bench explained benchmark coding agents",
+     "title": "SWE-bench explained benchmark coding agents"
+    },
+    {
+     "q": "tree-sitter code parsing tutorial",
+     "title": "tree-sitter code parsing tutorial"
+    },
+    {
+     "q": "reward hacking in AI evaluation",
+     "title": "reward hacking in AI evaluation"
+    },
+    {
+     "q": "sandboxing untrusted code Kubernetes gVisor",
+     "title": "sandboxing untrusted code Kubernetes gVisor"
+    },
+    {
+     "q": "self improving AI agents research",
+     "title": "self improving AI agents research"
+    }
+   ],
    "title": "autonomous-swe",
    "proves": "GitHub issue → sandboxed, tested PR, SWE-bench numbers",
    "start": "2026-09-24",
@@ -1826,7 +2140,7 @@
     "DPO (trl)",
     "vLLM",
     "Triton",
-    "lm-eval-harness."
+    "lm-eval-harness"
    ],
    "days": [
     {
@@ -1868,6 +2182,9 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 5, Day 29 (\"Repo. model/: BPE tokenizer trained on the corpus; Embedding\") of my nevyn-lm repo. Today's row says: BUILD — Repo. model/: BPE tokenizer trained on the corpus; Embedding, RoPE, RMSNorm, GQA attention with causal mask + KV cache, SwiGLU MLP, residual blocks, tied LM head, sampling (temperature/top-p). tests/: each module vs a reference (HF Llama config at tiny size, max abs diff < 1e-4). RUN — pytest tests/ DONE WHEN — All green. docs/why.md started: why RoPE, why RMSNorm, why GQA (one paragraph each, with the VRAM arithmetic)..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "sentencepiece or your own BPE"
      ]
     },
     {
@@ -1914,6 +2231,11 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "DDP across your local GPUs (FSDP if 2+ cards)",
+      "sentencepiece or your own BPE",
+      "bf16"
      ]
     },
     {
@@ -1955,6 +2277,10 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 5, Day 31 (\"Training continues\") of my nevyn-lm repo. Today's row says: BUILD — Training continues. Meanwhile serve/own_server.py: your inference server with KV cache, continuous batching, streaming. serve/bench.py: tokens/s, TTFT, P50/P95, VRAM at concurrency 1/8/32, FP16 vs INT8 (torch.ao/bitsandbytes). RUN — python serve/bench.py --server own DONE WHEN — Table. Explain compute-bound vs memory-bandwidth-bound with your own numbers..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "DDP across your local GPUs (FSDP if 2+ cards)",
+      "sentencepiece or your own BPE"
      ]
     },
     {
@@ -2008,6 +2334,11 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 5, Day 32 (\"Stop pretraining at the token budget\") of my nevyn-lm repo. Today's row says: BUILD — Stop pretraining at the token budget. lm-eval-harness on a few tasks (sanity, not glory). post/sft.py on an instruction set (Alpaca-style, 20k) with LoRA; post/dpo.py on a preference set (UltraFeedback sample). Eval before/after on 50 held-out prompts with the Week 1 judge, written up as an explicit before/after table with concrete examples where the base model failed and the tuned model succeeded — not just an aggregate score. RUN — python post/sft.py && python post/dpo.py && python evals/judge.py DONE WHEN — Before/after table; adapters saved as MLflow artifacts in Week 3's registry..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "LoRA (peft)",
+      "DPO (trl)",
+      "lm-eval-harness"
      ]
     },
     {
@@ -2060,6 +2391,14 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
+     ],
+     "tech": [
+      "FlashAttention 2",
+      "DDP across your local GPUs (FSDP if 2+ cards)",
+      "sentencepiece or your own BPE",
+      "DPO (trl)",
+      "vLLM",
+      "Triton"
      ]
     },
     {
@@ -2119,6 +2458,9 @@
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
        "coach": "I am on Week 5, Day 34 (\"Integration\") of my nevyn-lm repo. Today's row says: BUILD — Integration. Week 3 router registers nevyn-lm as a model; Week 1 router uses it for classification; Week 1 evals rerun with it. One end-to-end demo: login → question → Week 2 retrieval → Week 4 opens a PR → Week 3 serves local models → Week 5 model in the mix, one trace across all of it. Top-level nevyn-ai-platform/README.md with the ecosystem diagram linking the five repos. RUN — Run the demo, record it DONE WHEN — One trace spans all five systems..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
+     ],
+     "tech": [
+      "DDP across your local GPUs (FSDP if 2+ cards)"
      ]
     },
     {
@@ -2189,10 +2531,48 @@
        "kind": "DRILL",
        "text": "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on."
       }
-     ]
+     ],
+     "tech": []
     }
    ],
    "goal": "a from-scratch transformer whose modules match a reference in tests; a real training run (loss curve, tokens/sec, VRAM breakdown, one crash-and-resume); an instruction-following model after SFT and DPO with a judged before/after; a three-way serving benchmark (your server vs vLLM vs Triton); docs/why.md in your own words; and one trace where Week 1 uses this model through Week 3's router, so all five systems are one platform.",
+   "flow": [
+    "Corpus",
+    "BPE tokenizer",
+    "Transformer (RoPE, GQA, SwiGLU)",
+    "DDP training",
+    "Checkpoints",
+    "SFT + DPO",
+    "vLLM / Triton serving",
+    "Week 3 registry",
+    "Week 1 router"
+   ],
+   "videos": [
+    {
+     "q": "Karpathy let's build GPT from scratch",
+     "title": "Karpathy let's build GPT from scratch"
+    },
+    {
+     "q": "FlashAttention explained",
+     "title": "FlashAttention explained"
+    },
+    {
+     "q": "RoPE rotary position embeddings explained",
+     "title": "RoPE rotary position embeddings explained"
+    },
+    {
+     "q": "LoRA and QLoRA fine tuning explained",
+     "title": "LoRA and QLoRA fine tuning explained"
+    },
+    {
+     "q": "DPO direct preference optimization",
+     "title": "DPO direct preference optimization"
+    },
+    {
+     "q": "KV cache and continuous batching explained",
+     "title": "KV cache and continuous batching explained"
+    }
+   ],
    "title": "nevyn-lm",
    "proves": "Transformer from scratch → train on your GPUs → SFT/LoRA → serve, then wire all five together",
    "start": "2026-10-01",

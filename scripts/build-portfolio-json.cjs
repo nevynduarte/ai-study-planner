@@ -47,10 +47,30 @@ for (let i = 0; i < lines.length; i++) {
     let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
     cur.goal = s; continue;
   }
+  // "**Flow:** A → B → C" — the data path, drawn as a diagram in the app.
+  if (cur && l.startsWith("**Flow:**")) {
+    let s = strip(l.replace("**Flow:**", ""));
+    let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
+    cur.flow = s.split(/\s*(?:→|->)\s*/).map(x => x.trim()).filter(Boolean); continue;
+  }
+  // "**Watch:** yt:<id> Title · Some topic" — `yt:` embeds that exact video,
+  // anything else becomes a YouTube search so it can never rot into a dead embed.
+  if (cur && l.startsWith("**Watch:**")) {
+    let s = strip(l.replace("**Watch:**", ""));
+    let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
+    cur.videos = s.split("·").map(x => x.trim()).filter(Boolean).map(entry => {
+      const m = entry.match(/^yt:([A-Za-z0-9_-]{11})\s*(.*)$/);
+      return m ? { id: m[1], title: m[2].trim() || "Video" } : { q: entry, title: entry };
+    });
+    continue;
+  }
+
   if (cur && l.startsWith("**Stack:**")) {
     let s = strip(l.replace("**Stack:**", ""));
     let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
-    cur.stack = s.split("·").map(x => x.trim()).filter(Boolean); continue;
+    // An entry is the tool alone: drop a sentence trailing the last one
+    // ("GitHub Actions. Databricks Free edition for …") and any final period.
+    cur.stack = s.split("·").map(x => x.trim().split(/\.\s+/)[0].replace(/\s*\.$/, "").trim()).filter(Boolean); continue;
   }
 
   if (!l.startsWith("|") || /^\|\s*-+/.test(l)) continue;
@@ -103,6 +123,22 @@ for (const p of projects) for (const d of p.days) {
   if (appStep) push("APPLY", 45, "Send today's applications (see the row) and log them in applications.md with date, role, link, status, materials.", `${ctx}\n\nHelp me tailor my résumé summary and a 4-sentence note for each application named in today's row, using measured numbers from BENCHMARKS.md and the live URL.`);
   if (isMWF) push("DRILL", 25, "One LeetCode 150 problem, 25-minute timer. Timer ends → read the solution, write one sentence on the trick, move on.");
   d.steps = steps;
+}
+
+// ── Per-day tool strip: which of the project's stack a day actually touches, so
+// the Plan and Projects tabs can head each day with logos instead of only prose.
+for (const p of projects) {
+  for (const d of p.days) {
+    const hay = `${d.title} ${d.build} ${d.run} ${d.done}`.toLowerCase();
+    // A stack entry counts as touched if any of its distinctive words appears in
+    // the day's text — "Postgres 16 + pgvector (RLS)" matches a day naming only
+    // pgvector. Version numbers and filler words are not distinctive.
+    const FILLER = new Set(["the", "and", "with", "for", "day", "later", "adapter", "runtime", "sdk", "local", "cloud", "edition", "compose"]);
+    d.tech = p.stack.filter(t => String(t).toLowerCase()
+      .split(/[^a-z0-9.+-]+/)
+      .some(w => w.length > 2 && !FILLER.has(w) && !/^[\d.]+$/.test(w) && hay.includes(w))
+    ).slice(0, 7);
+  }
 }
 
 // ── Tutorials: crash-course/tutorials/day-NN.md → public/tutorials/, split into per-step sections ──

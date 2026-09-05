@@ -45,6 +45,10 @@ memo, with approval gates, audit trail, evals, traces, and cost per tenant.
 
 **Week goal:** a public URL where a stranger logs in as a demo tenant, asks a question, watches the agent plan and call tools step by step, approves an action, and gets a memo where every number cites its source. Behind it: tenant isolation the database enforces, a Kafka-backed worker that survives being killed, one trace per run with cost, and a benchmark table proving retrieval quality.
 
+**Flow:** Next.js UI → Go gateway → FastAPI → Kafka → Worker → Planner agent → Tools (MCP) → Postgres + pgvector → Memo with citations
+
+**Watch:** yt:mGClIHRird8 The five levels of AI engineering projects · MCP model context protocol tutorial · multi-agent LLM systems architecture · Postgres row level security multi-tenant · OpenTelemetry distributed tracing explained · LLM evaluation and LLM-as-a-judge
+
 **Stack:** Python 3.12 · FastAPI · Pydantic v2 · Go gateway (`chi`) · Anthropic SDK runtime + LangGraph adapter · MCP · Postgres 16 + pgvector (RLS) · Redis · Kafka (Redpanda local, Upstash/MSK cloud) · Keycloak OIDC → Cognito later · OpenTelemetry → Tempo/Prometheus/Grafana · Arize Phoenix · Next.js 15 · Docker Compose · GitHub Actions · Fly.io (Day 7) → EKS (Day 15).
 
 | Day | Build (exact) | Run | Done when |
@@ -66,6 +70,10 @@ and files of any type through bronze/silver/gold on Delta Lake and serves
 hybrid search over millions of chunks, and becomes Week 1's `search_docs`.
 
 **Week goal:** one `docker compose up` brings up Kafka, Spark, MinIO, Dagster, OpenSearch and Postgres; three datasets stream through bronze → silver → gold with lineage; 5 million chunks are indexed in two search stores; a benchmark matrix compares six retrieval modes; six break-it drills have postmortems; and Week 1's agent now searches through this system.
+
+**Flow:** Producers → Kafka topics → Spark streaming → Delta bronze → silver (Great Expectations) → gold (dbt) → embeddings → OpenSearch + pgvector → /search
+
+**Watch:** Kafka exactly once semantics explained · Spark structured streaming tutorial · Delta Lake medallion architecture · dbt data build tool crash course · hybrid search BM25 vector reciprocal rank fusion · Great Expectations data validation tutorial
 
 **Stack:** Kafka (Redpanda) · PySpark structured streaming · Delta Lake · Dagster · MinIO (S3 API) · OpenSearch + pgvector (benchmarked) · `bge-reranker-base` · FastAPI · Docker Compose · GitHub Actions. Databricks Free edition for one notebook-based Spark UI comparison on Day 11.
 
@@ -89,6 +97,10 @@ gates → GPU inference on your own NVIDIA machines and AWS → drift → retrai
 with model routing back into Week 1.
 
 **Week goal:** the whole platform created by `terraform apply` and removed by `terraform destroy`; Weeks 1–2 running on EKS with GitOps deploys and a working rollback; a property-value model with tracked lineage, a validation gate that rejects leakage, drift detection that triggers retraining and a canary that can roll back; a GPU benchmark matrix (runtime × precision × batch); and Week 1's agent using your own hosted 7B model with the cost delta measured.
+
+**Flow:** Terraform → EKS + GPU nodes → ArgoCD → Feast features → Train → MLflow registry → Validation gate → KServe/Triton → Evidently drift → Retrain
+
+**Watch:** Terraform EKS tutorial from scratch · ArgoCD GitOps explained · MLflow model registry tutorial · Feast feature store train serve skew · NVIDIA Triton inference server tutorial · vLLM fast LLM serving explained · SHAP model explainability tutorial
 
 **Stack:** Terraform · EKS (spot) + your local GPU machines joined as workers (k3s agent or `kubeadm join` over Tailscale) · Helm · ArgoCD + Argo Rollouts · KEDA · ECR · Secrets Manager · Cognito · MLflow · LightGBM/XGBoost · PyTorch · Ray Train · KServe with Triton · ONNX Runtime · TensorRT · vLLM · Evidently · Prometheus/Grafana.
 
@@ -125,6 +137,10 @@ flaw and exploit it, posting a rising number while the thing quietly gets worse
 in ways you never thought to measure. Defending the scoring function against
 that is the interesting artifact and the thing to talk about in an interview.
 
+**Flow:** Issue labelled → Webhook → Code index (tree-sitter) → Planner → Sandbox (K8s Job) → Coder loop → Reviewer → PR → Self-improvement loop → SWE-bench holdout
+
+**Watch:** yt:mGClIHRird8 The five levels of AI engineering projects · SWE-bench explained benchmark coding agents · tree-sitter code parsing tutorial · reward hacking in AI evaluation · sandboxing untrusted code Kubernetes gVisor · self improving AI agents research
+
 **Stack:** GitHub App (webhooks, installation tokens) · tree-sitter + `pyright`/LSP · Postgres + pgvector (code index) · Kafka (from Week 1) · Docker-in-Kubernetes sandboxes (one Job per task, gVisor if available) · Anthropic SDK + Week 3 local model via router · MCP (exposes itself as a tool to Week 1).
 
 | Day | Build (exact) | Run | Done when |
@@ -146,6 +162,10 @@ training stack, post-trained, served two ways and benchmarked, then plugged
 into Week 3 and Week 1 so all five systems are one platform.
 
 **Week goal:** a from-scratch transformer whose modules match a reference in tests; a real training run (loss curve, tokens/sec, VRAM breakdown, one crash-and-resume); an instruction-following model after SFT and DPO with a judged before/after; a three-way serving benchmark (your server vs vLLM vs Triton); `docs/why.md` in your own words; and one trace where Week 1 uses this model through Week 3's router, so all five systems are one platform.
+
+**Flow:** Corpus → BPE tokenizer → Transformer (RoPE, GQA, SwiGLU) → DDP training → Checkpoints → SFT + DPO → vLLM / Triton serving → Week 3 registry → Week 1 router
+
+**Watch:** Karpathy let's build GPT from scratch · FlashAttention explained · RoPE rotary position embeddings explained · LoRA and QLoRA fine tuning explained · DPO direct preference optimization · KV cache and continuous batching explained
 
 **Stack:** PyTorch · FlashAttention 2 · DDP across your local GPUs (FSDP if 2+ cards) · `sentencepiece` or your own BPE · W&B · bf16 · LoRA (`peft`) · DPO (`trl`) · vLLM · Triton · `lm-eval-harness`.
 

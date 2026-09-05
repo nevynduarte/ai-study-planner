@@ -3,6 +3,9 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import DocReader from "./components/DocReader.jsx";
+import TechStack from "./components/TechStack.jsx";
+import ArchFlow from "./components/ArchFlow.jsx";
+import MediaRail from "./components/MediaRail.jsx";
 import { usePersisted } from "./hooks/usePersisted.js";
 import { parsePlan } from "./lib/parsePlan.js";
 import { COV, covOf, DAILY_HOURS, WEEKLY_TARGET } from "./lib/constants.js";
@@ -85,14 +88,18 @@ export default function App() {
   const load = useCallback(async () => {
     try {
       setErr("");
-      const [d, c, pf] = await Promise.all([
+      // The curriculum and the portfolio are static files: they must still render
+      // when D1 or the Worker is unreachable, so each result is settled on its
+      // own rather than letting one rejection blank the Plan and Projects tabs.
+      const [d, c, pf] = await Promise.allSettled([
         getJSON("/api/data"),
-        getJSON("/curriculum.json").catch(() => null),
-        getJSON("/portfolio.json").catch(() => null),
+        getJSON("/curriculum.json"),
+        getJSON("/portfolio.json"),
       ]);
-      setData(d);
-      if (c) setCur(c);
-      if (pf) setPortfolio(pf);
+      if (c.status === "fulfilled" && c.value) setCur(c.value);
+      if (pf.status === "fulfilled" && pf.value) setPortfolio(pf.value);
+      if (d.status === "fulfilled") setData(d.value);
+      else setErr(d.reason?.message || "Failed to load");
     } catch (e) { setErr(e.message); }
     finally { setLoading(false); }
   }, []);
@@ -1381,7 +1388,17 @@ export default function App() {
                       </div>
                       <div style={{ fontSize:15, fontWeight:700, margin:"5px 0 2px", letterSpacing:-0.2 }}>{p.id} <span style={{ fontWeight:500, color:txtT, fontSize:12.5 }}>— {p.proves}</span></div>
                       <div style={{ fontSize:12.5, color:txtS, lineHeight:1.55 }}>{p.sentence}</div>
-                      <div style={{ display:"flex", justifyContent:"space-between", fontSize:11.5, color:txtT, margin:"10px 0 5px", fontVariantNumeric:"tabular-nums" }}>
+                      {p.flow?.length > 0 && (
+                        <div style={{ marginTop:11, overflowX:"auto", paddingBottom:2 }}>
+                          <ArchFlow flow={p.flow} accent={ac} brd={brd} surface={surface} txt={txt} txtT={txtT} dark={dark} />
+                        </div>
+                      )}
+                      {p.stack?.length > 0 && (
+                        <div style={{ marginTop:10 }}>
+                          <TechStack stack={p.stack} accent={ac} brd={brd} txtS={txtS} />
+                        </div>
+                      )}
+                      <div style={{ display:"flex", justifyContent:"space-between", fontSize:11.5, color:txtT, margin:"12px 0 5px", fontVariantNumeric:"tabular-nums" }}>
                         <span>Progress</span><span>{d}/{p.days.length} days · {Math.round(d/p.days.length*100)}%</span>
                       </div>
                       <ProgressBar done={d} total={p.days.length} color={ac} />
@@ -1400,6 +1417,11 @@ export default function App() {
                               <span style={{ fontSize:11, color:txtT }}>{fmtDate(day.date)}</span>
                               {isToday && <span style={pill(ac, { padding:"1px 7px" })}>next</span>}
                             </div>
+                            {day.tech?.length > 0 && (
+                              <div style={{ marginTop:6 }}>
+                                <TechStack stack={day.tech} accent={ac} brd={brd} txtS={txtS} compact />
+                              </div>
+                            )}
                             <div style={{ fontSize:12, color:txtS, lineHeight:1.6, marginTop:3 }}><strong style={{ color:txt }}>Build:</strong> {day.build}</div>
                             <div style={{ fontSize:11.5, color:txtS, lineHeight:1.6, marginTop:2 }}><strong style={{ color:txt }}>Run:</strong> <code style={{ fontSize:11 }}>{day.run}</code></div>
                             <div style={{ fontSize:11.5, color:txtS, lineHeight:1.6, marginTop:2 }}><strong style={{ color:txt }}>Done when:</strong> {day.done}</div>
@@ -1783,15 +1805,34 @@ export default function App() {
                     <div style={{ fontSize:14.5, fontWeight:700, margin:"5px 0 3px", letterSpacing:-0.2 }}>{p.id}</div>
                     <div style={{ fontSize:12.5, color:txtS, lineHeight:1.55 }}>{p.proves}</div>
                     <div style={{ marginTop:9 }}><ProgressBar done={d} total={p.days.length} color={ac} /></div>
-                    <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginTop:9 }}>
-                      {p.stack.map(tl => <span key={tl} style={pill(ac, { fontSize:10.5 })}>{tl}</span>)}
+                    <div style={{ marginTop:10 }}>
+                      <TechStack stack={p.stack} accent={ac} brd={brd} txtS={txtS} compact max={14} />
                     </div>
                   </button>
                   {open && (
                     <div style={{ padding:"0 1.1rem 1rem", borderTop:`1px solid ${brd}` }}>
-                      <div style={{ fontSize:12.5, color:txtS, lineHeight:1.65, padding:"10px 0", borderBottom:`1px dashed ${brd}`, marginBottom:10 }}>
+                      <div style={{ fontSize:12.5, color:txtS, lineHeight:1.65, padding:"10px 0" }}>
                         <b style={{ color:ac }}>What it is — </b>{p.sentence}
                       </div>
+                      {p.flow?.length > 0 && (
+                        <div style={{ padding:"2px 0 12px", borderBottom:`1px dashed ${brd}`, marginBottom:12 }}>
+                          <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, marginBottom:7 }}>How it flows</div>
+                          <div style={{ overflowX:"auto", paddingBottom:2 }}>
+                            <ArchFlow flow={p.flow} accent={ac} brd={brd} surface={surface} txt={txt} txtT={txtT} dark={dark} />
+                          </div>
+                        </div>
+                      )}
+                      {p.stack?.length > 0 && (
+                        <div style={{ paddingBottom:12, borderBottom:`1px dashed ${brd}`, marginBottom:12 }}>
+                          <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, marginBottom:7 }}>Stack</div>
+                          <TechStack stack={p.stack} accent={ac} brd={brd} txtS={txtS} />
+                        </div>
+                      )}
+                      {p.videos?.length > 0 && (
+                        <div style={{ paddingBottom:12, borderBottom:`1px dashed ${brd}`, marginBottom:12 }}>
+                          <MediaRail items={p.videos} accent={ac} brd={brd} surface={surface} txt={txt} txtT={txtT} dark={dark} />
+                        </div>
+                      )}
                       <div style={{ fontSize:10.5, fontWeight:700, color:txtT, textTransform:"uppercase", letterSpacing:0.5, marginBottom:6 }}>Tasks · {d}/{p.days.length}</div>
                       {p.days.map(day => {
                         const isDone = crashDone.has(day.n), isNext = nextDay?.n === day.n;
@@ -1802,6 +1843,11 @@ export default function App() {
                             <span style={{ fontSize:12.5, lineHeight:1.5, color: isDone ? txtT : txt, textDecoration: isDone ? "line-through" : "none" }}>
                               <b>Day {day.n}</b> · {day.title}{isNext && <span style={{ ...pill(ac, { padding:"0 6px", marginLeft:6, fontSize:10 }) }}>next</span>}
                               <span style={{ display:"block", fontSize:11.5, color:txtT }}>done when: {day.done}</span>
+                              {day.tech?.length > 0 && (
+                                <span style={{ display:"block", marginTop:5 }}>
+                                  <TechStack stack={day.tech} accent={ac} brd={brd} txtS={txtS} compact />
+                                </span>
+                              )}
                             </span>
                           </button>
                         );
