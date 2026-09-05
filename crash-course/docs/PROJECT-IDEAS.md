@@ -110,7 +110,7 @@ facing DS interview wants the framing rather than the model).
 
 | Source | Status | Notes |
 |--------|--------|-------|
-| LinkedIn — stasbel, "30 AI/ML projects that will get you hired" | ⚠️ **Partial** | Only ~11 of the 30 are named in the post body; the full list lives in a linked GitHub repo. Categories recovered: regression, classification, GenAI, CV, agentic. |
+| LinkedIn — stasbel, "30 AI/ML projects that will get you hired" | ✅ **Full** (resolved 2026-09-05) | The post names only ~11; the full list is the linked repo [KalyanM45/AI-Project-Gallery](https://github.com/KalyanM45/AI-Project-Gallery), now read directly — 33 completed + 10 upcoming, enumerated in Appendix A. |
 | Towards Data Science — "The exact ML project that gets you hired" | ✅ Full | Gives a *framework*, not a list. One example (NFL fantasy optimization). Its stack advice is folded in above. |
 | Medium — iamsayantani, "50 projects…ML or MLOps" | ❌ **Blocked** | HTTP 403 — Medium member-only paywall. **Not scraped.** Its themes were inferred from the title and cross-referenced titles only; treat its row above as unverified. |
 | LinkedIn — Aishwarya Srinivasan | ✅ Full | 5 projects, all Tier 1. The most production-focused source. |
@@ -120,13 +120,62 @@ facing DS interview wants the framing rather than the model).
 | YouTube — `mGClIHRird8` | ❌ **Blocked** | YouTube returns only the page footer to this fetcher; no transcript, title, or description. Web search could not identify the video either. **Nothing recovered.** |
 | YouTube — `E6lvgbayD04` | ⚠️ **Title only** | Identified via web search as *"How to Become a $300K AI Engineer in 2026 (Complete Roadmap)"*. No transcript or project list recovered. |
 
-**Bottom line on coverage:** 4 of 9 sources fully captured, 3 partial, 2 blocked
+**Bottom line on coverage:** 5 of 9 sources fully captured, 2 partial, 2 blocked
 entirely. The blocked and partial ones are unlikely to change the conclusions —
-the four fully-captured sources already agree with each other, and the Tier 1
+the five fully-captured sources already agree with each other, and the Tier 1
 consensus was stable across every source that could be read. The one real risk
 is the truncated everyonewhocode Category 05, which is the GenAI/agent section;
 if a GenAI project idea is missing from Tier 1, it is missing from there.
 
+Resolving the stasbel source *strengthened* the Tier 1 conclusion rather than
+changing it — see Appendix A.
+
 **To close the gaps:** paste the Medium article text, the Reddit thread, or the
 two YouTube transcripts into a session and this file can be regenerated with
 them folded in.
+
+---
+
+## Appendix A — the stasbel / AI-Project-Gallery 30 (resolved in full)
+
+Source: [KalyanM45/AI-Project-Gallery](https://github.com/KalyanM45/AI-Project-Gallery).
+The post says "30"; the repo actually lists **33 completed and 10 upcoming**.
+
+**Completed (33), grouped by the repo's own categories:**
+
+- **Regression (5):** Boston house price · diamond price · flight fare · gold price · student performance
+- **Classification (8):** Airbnb price *(labelled classification in the repo)* · Respire chest disease · diabetes · heart disease · password strength · rock vs. mine · spam e-mail · wine quality
+- **Generative AI (10):** chatbot w/ Gemini Pro · chatbot w/ OpenAI · conversational chatbot w/ OpenAI · Doc-Genius · medical assistant w/ Gemini Pro · medicine recognition · text generation w/ Gemini · Synapse · Doclify (CLI for docs) · multi-agentic blog generation
+- **Agentic (2):** Market Insight · travel planning agent
+- **Computer Vision (1):** hand tracking with OpenCV
+- **Recommendation (1):** movie recommendation system
+- **Web scraping (2):** article scraper · image scraper
+- **Power BI / analytics (4):** e-commerce data analysis · Indian restaurants · Virat Kohli performance · GitHub tracker
+
+**Upcoming (10):** deep-fake detection · arrhythmia · driver drowsiness ·
+diet recommendation · breast cancer · kidney disease · text summarisation ·
+brain tumor · pneumonia · realtime face detection.
+
+### Verdict on this source
+
+**Every one of the 43 is Tier 3 by the criteria above, with two partial exceptions.**
+The regression, classification, scraping, and Power BI groups are canonical
+tutorial projects on public Kaggle/UCI datasets — exactly the shape the Towards
+Data Science piece argues gets discarded. The eight medical-detection items in
+"upcoming" are the same CNN five times over.
+
+The two worth a second look, and only as *bolt-ons*:
+- **Market Insight (agentic workflows)** and **travel planning agent** — the only
+  items in the collection with tool-calling and a multi-step plan. Both are
+  strictly weaker than Week 1 `agent-platform`, which already has tenancy, MCP,
+  approval gates, durable Kafka runs, and evals. **No action.**
+- **Multi-agentic blog generation** — same conclusion. **No action.**
+
+The recommendation-system entry is worth noting only because it echoes gap **#8**
+above; the repo's version (MovieLens content-based) is Tier 3 and does not close it.
+
+**Net effect on the plan: none.** Resolving this source added zero projects to
+Tier 1 or Tier 2 and moved ~30 items into the explicit-skip list. That is a
+useful negative result: the most-shared "30 projects that get you hired" list in
+the set is, in 2026 terms, almost entirely table stakes — which is precisely why
+the portfolio build was structured around platforms instead of projects.
