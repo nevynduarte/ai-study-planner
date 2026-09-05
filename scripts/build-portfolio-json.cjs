@@ -3,7 +3,6 @@
 // for the web app's Today / Plan / Projects tabs. Run: npm run portfolio
 const fs = require("fs");
 const path = require("path");
-const { execFileSync } = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..");
 const SRC = path.join(ROOT, "crash-course", "PORTFOLIO.md");
@@ -11,23 +10,6 @@ const OUT = path.join(ROOT, "public", "portfolio.json");
 const START_DATE = "2026-09-03"; // Day 1
 const GITHUB_USER = "nevynduarte";
 
-// Stamp the output from the SOURCE, never from the clock: rebuilding without
-// editing the plan must produce a byte-identical file. A wall-clock stamp
-// dirtied portfolio.json on every build and turned identical content into merge
-// conflicts. Committed and unmodified -> the source's last commit date, which is
-// the same in every clone (mtime is not; git does not preserve mtimes). Locally
-// modified, untracked, or no git available -> the file's mtime, the best answer
-// left.
-const sourceStamp = (file) => {
-  const git = (args) => execFileSync("git", args, { cwd: ROOT, stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
-  try {
-    if (!git(["status", "--porcelain", "--", file])) {
-      const iso = git(["log", "-1", "--format=%cI", "--", file]);
-      if (iso) return new Date(iso).toISOString();
-    }
-  } catch { /* not a git repo, or git is not on PATH */ }
-  return fs.statSync(file).mtime.toISOString();
-};
 
 const md = fs.readFileSync(SRC, "utf8").replace(/\r\n/g, "\n");
 const lines = md.split("\n");
@@ -222,7 +204,13 @@ if (appIdx >= 0) {
 
 const days = projects.flatMap(p => p.days);
 const out = {
-  title, summary, start_date: START_DATE, total_days: days.length, generated_at: sourceStamp(SRC),
+  // No generation timestamp on purpose: the output is a pure function of
+  // PORTFOLIO.md, so a rebuild that changes nothing produces an identical file
+  // and never dirties the tree or conflicts on merge. A clock-based stamp did
+  // both; a source-commit-date stamp still went stale the moment it was
+  // committed alongside the source it described. Git already records when this
+  // was generated, and the app never read the field.
+  title, summary, start_date: START_DATE, total_days: days.length,
   projects, applications,
   // Compatibility shape for the app's existing "crash course" day logic.
   crash_course: { title, summary, start_date: START_DATE, project: projects.map(p => p.id).join(" → "),
