@@ -103,6 +103,11 @@ facing DS interview wants the framing rather than the model).
    forecast — parcel value or permit volume by geography — with no new data work.
 5. **Follow the TDS rule everywhere:** every project needs one non-obvious
    decision you can defend, which the existing ADR-per-choice rule already enforces.
+6. **Four infra gaps from Sayantani** (feature store, data validation, distributed
+   training, warehouse/dbt) — all bolt-ons to Week 3 `ml-platform`. See Appendix C.
+7. **Run the TDS selection procedure once** to pick the *personal* project the
+   portfolio structurally cannot supply. See Appendix B — this is the one thing
+   five production-grade platforms still do not give you.
 
 ---
 
@@ -111,8 +116,8 @@ facing DS interview wants the framing rather than the model).
 | Source | Status | Notes |
 |--------|--------|-------|
 | LinkedIn — stasbel, "30 AI/ML projects that will get you hired" | ✅ **Full** (resolved 2026-09-05) | The post names only ~11; the full list is the linked repo [KalyanM45/AI-Project-Gallery](https://github.com/KalyanM45/AI-Project-Gallery), now read directly — 33 completed + 10 upcoming, enumerated in Appendix A. |
-| Towards Data Science — "The exact ML project that gets you hired" | ✅ Full | Gives a *framework*, not a list. One example (NFL fantasy optimization). Its stack advice is folded in above. |
-| Medium — iamsayantani, "50 projects…ML or MLOps" | ❌ **Blocked** | HTTP 403 — Medium member-only paywall. **Not scraped.** Its themes were inferred from the title and cross-referenced titles only; treat its row above as unverified. |
+| Towards Data Science — Egor Howell, "The exact ML project I'd build to get hired in 2026" | ✅ **Full** (user-supplied 2026-09-05) | Gives a *framework*, not a list. One example (NFL fantasy optimization). Full framework now encoded in Appendix B. |
+| Medium — iamsayantani, "50 projects…ML or MLOps" (Aug 2025) | ✅ **Full** (user-supplied 2026-09-05) | Paywalled to the fetcher; text pasted in. 47 numbered items in 6 groups, enumerated in Appendix C. The most infra-heavy source in the set. |
 | LinkedIn — Aishwarya Srinivasan | ✅ Full | 5 projects, all Tier 1. The most production-focused source. |
 | Scaler — "10 AI portfolio projects, 2026" | ✅ Full | All 10 captured with stacks. |
 | everyonewhocode.com — "Real-world AI projects that get you hired" | ⚠️ **Partial** | 37 of ~52 captured. Categories 01–04 complete (NLP, CV, classic ML, recsys); **Category 05 (GenAI/LLM/agents, 15+ projects) truncated after #37** on two fetch attempts. This is the category most relevant to the AI Eng track. |
@@ -120,15 +125,17 @@ facing DS interview wants the framing rather than the model).
 | YouTube — `mGClIHRird8` | ❌ **Blocked** | YouTube returns only the page footer to this fetcher; no transcript, title, or description. Web search could not identify the video either. **Nothing recovered.** |
 | YouTube — `E6lvgbayD04` | ⚠️ **Title only** | Identified via web search as *"How to Become a $300K AI Engineer in 2026 (Complete Roadmap)"*. No transcript or project list recovered. |
 
-**Bottom line on coverage:** 5 of 9 sources fully captured, 2 partial, 2 blocked
-entirely. The blocked and partial ones are unlikely to change the conclusions —
-the five fully-captured sources already agree with each other, and the Tier 1
-consensus was stable across every source that could be read. The one real risk
-is the truncated everyonewhocode Category 05, which is the GenAI/agent section;
-if a GenAI project idea is missing from Tier 1, it is missing from there.
+**Bottom line on coverage:** 7 of 9 sources fully captured, 1 partial, 2 blocked.
+Still blocked: the Reddit thread and YouTube `mGClIHRird8`. Still partial:
+everyonewhocode Category 05 (GenAI/agents), truncated after #37, and YouTube
+`E6lvgbayD04` (title only).
 
-Resolving the stasbel source *strengthened* the Tier 1 conclusion rather than
-changing it — see Appendix A.
+The Tier 1 consensus has now held across all seven fully-read sources.
+Resolving stasbel *strengthened* it (Appendix A); resolving Sayantani **did
+change the gap list** — it is the only source that treats platform
+infrastructure as the project, and it surfaced four real gaps (Appendix C).
+Resolving Towards Data Science supplied a selection procedure, not projects
+(Appendix B).
 
 **To close the gaps:** paste the Medium article text, the Reddit thread, or the
 two YouTube transcripts into a session and this file can be regenerated with
@@ -179,3 +186,115 @@ Tier 1 or Tier 2 and moved ~30 items into the explicit-skip list. That is a
 useful negative result: the most-shared "30 projects that get you hired" list in
 the set is, in 2026 terms, almost entirely table stakes — which is precisely why
 the portfolio build was structured around platforms instead of projects.
+
+---
+
+## Appendix B — the Towards Data Science selection procedure (Egor Howell)
+
+Resolved in full 2026-09-05. This source gives **no projects**; it gives a
+procedure, and a claim from someone who says he has reviewed 100+ portfolios:
+*"When we see a house price prediction model or a Titanic survival classifier,
+we don't think 'solid fundamentals.' We think 'next.'"*
+
+That sentence is the justification for the entire Tier 3 skip list above, and it
+independently validates Appendix A's verdict on the 33-project gallery.
+
+### The four criteria a hireable project must hit
+
+**Personal** (you actually care) · **Novel** (not seen a hundred times) ·
+**Relevant** (matches the role you want) · **Live** (a stranger can see it run).
+
+### The procedure
+
+1. **Write 5 things you care about outside data/ML.** Hobbies, obsessions — things
+   you'd talk about for an hour. *(His own list: investing, hockey, gym, films, YouTube.)*
+2. **Write 5 genuine questions per interest** → ~25 candidate ideas. A question, not
+   a topic: *"Which fantasy players are underpriced this week?"*, not *"football stats."*
+3. **Cut anything that isn't one of the 5 ML shapes:** regression · classification ·
+   time series · recommendation · clustering. Leaves ~10–15.
+4. **Score each survivor /5 on:** how personal · how novel · how relevant to target
+   roles · how hard to get the data · how hard to build. Highest total wins.
+5. **Three validation checks before committing:**
+   - Can you name the *actual* data source (API, dataset)? If not, sourcing it is job #1.
+   - Can a rough v1 ship in ~2 months at 1–2 h/day? If not, shrink it.
+   - Have you seen it several times before? If yes, take your second choice.
+
+### His deployment stack (for comparison with ours)
+
+Notebook prototype → split into production Python (typing, formatters, docstrings)
+→ git repo + strong README → unit tests, Poetry, Makefile, PyEnv → Streamlit on
+Community Cloud → GitHub Actions daily run. Template: `egorhowell/ML-Project-Starter`.
+
+**This is strictly below our floor.** Weeks 1–5 already exceed every line of it
+(Docker, Kafka, RLS, OTel, EKS, evals, ADRs). No stack change. Noted only so the
+gap is a deliberate over-shoot rather than an unexamined one.
+
+### The one thing this source says that the portfolio does not satisfy
+
+**Personal and novel.** The five platforms are maximally *relevant* and *live*,
+and they are novel in execution — but they are role-shaped, not you-shaped. Every
+strong applicant targeting D.E. Shaw could describe a similar agent platform.
+
+**Action:** run steps 1–5 above once, in one sitting, and produce a single
+personal project sized to the ~2-month check. It does not replace anything; it
+becomes the sixth repo and the thing you lead the "tell me about a project"
+answer with, because it is the only one that answers *why you*. The Quant/
+Alt-Data track (15%, thinnest coverage) is the natural home for it, and the
+TCAD/permits corpus is already local — but the whole point is that the topic
+must come from your list, not from this file.
+
+---
+
+## Appendix C — the Sayantani 47 (resolved in full)
+
+Resolved 2026-09-05 from user-supplied text. Titled "50", contains 47 numbered
+items across 6 groups. **This is the only source in the set that treats
+infrastructure as the deliverable**, and it is the one that changed the gap list.
+
+- **Starter (10):** recommender · loan default · sales forecasting · customer
+  segmentation · fraud detection · resume screener · image classifier · BERT
+  sentiment · multi-label news classifier · anomaly detection → **all Tier 3.**
+- **MLOps (10):** deploy on AWS (SageMaker/Lambda/API GW) · CI/CD for ML · GCP
+  MLOps pipeline · **drift monitoring** · **auto-retraining with Airflow** ·
+  **feature store (Feast)** · **FastAPI + Triton** · **batch inference (Beam)** ·
+  **data validation (Great Expectations)** · **model testing suite**
+- **GenAI (10):** RAG chatbot · PDF summarizer · LangChain pipeline · fine-tune an
+  LLM · email assistant · **multimodal search** · LLM resume matcher ·
+  embedding-based search · voice translator · PDF knowledge base
+- **DevOps for ML (8):** **Terraform + AWS** · Dockerize ML · **Kubernetes for ML** ·
+  Seldon Core · **secure ML deployment** · **distributed training with Ray** ·
+  **Snowflake + dbt** · **GPU monitoring on EKS**
+- **DE meets ML (6):** weather pipeline · **lakehouse (Delta + Spark)** · personal
+  finance tracker · **Kafka sentiment streamer** · live news classifier ·
+  auto-profiling tool
+- **Boss-level (6):** **mini AutoML platform** · AI construction estimator · mental
+  health chatbot · resume parser + job matcher · medical diagnosis assistant ·
+  **ML monitoring dashboard**
+
+### Already covered
+
+Bolded items map almost one-to-one onto the existing plan: Terraform/EKS/ArgoCD,
+Triton serving, GPU monitoring, drift + retrain, lakehouse, Kafka streaming, and
+the monitoring dashboard are **Weeks 2–3**; RAG, multimodal, and fine-tuning are
+**Weeks 1 and 5**. Its whole GenAI section is below Week 1.
+
+### Four genuine gaps this source surfaced — all Week 3 bolt-ons
+
+| # | Gap | Why it matters | Attach to |
+|---|-----|----------------|-----------|
+| 16 | **Feature store (Feast)** | Train/serve skew is the classic ML Eng interview question; a feature store is the standard answer and the plan currently has no story for it. | `ml-platform` — same features feed training and the Triton path. |
+| 17 | **Data validation (Great Expectations / Pandera)** | Schema and distribution checks at ingest. Pairs directly with drift detection, which the plan already has downstream but not upstream. | `data-platform` bronze→silver boundary. |
+| 18 | **Distributed training (Ray)** | The only multi-GPU-training item in any source. You have the GPUs and Week 5 trains a transformer; running it distributed is nearly free signal. | `nevyn-lm` Week 5, or `ml-platform`. |
+| 19 | **Warehouse + dbt (Snowflake/DuckDB + dbt)** | Analytics-engineering vocabulary the Sector Data Analyst target asks for; gold layer is already being built by hand. | `data-platform` gold layer — swap hand-written SQL for dbt models with tests. |
+
+Gaps 16 and 17 are the strongest of the four: both are one-day bolt-ons that add a
+row to an existing `BENCHMARKS.md` and both answer a question interviewers
+reliably ask. **19** is the highest-leverage one for the Woodline target specifically.
+
+### Net effect on the plan
+
+No new repos. Four bolt-ons, plus confirmation that the Tier 1 seven were right.
+Combined with Appendix B's personal-project action, the running total of changes
+from all nine sources is: **one new personal project (yours to choose), one
+recommender/ranking artifact, and six bolt-ons** — against a five-week platform
+build that stays exactly as written.
