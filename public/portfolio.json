@@ -3,7 +3,7 @@
  "summary": "6–8 focused hours a day, and Claude Code writes most of the boilerplate while you make and defend the decisions. Your job each day is the ADR, the benchmark, the failure log, and being able to explain it. If a day runs over, the next day's row starts anyway; unfinished items go to that week's Day 7 buffer, never into the next week.",
  "start_date": "2026-09-03",
  "total_days": 35,
- "generated_at": "2026-09-05T20:55:59.027Z",
+ "generated_at": "2026-09-05T20:57:50.796Z",
  "projects": [
   {
    "n": 1,
