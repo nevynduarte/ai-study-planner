@@ -113,6 +113,9 @@ facing DS interview wants the framing rather than the model).
 9. **Adopt the presentation layer wholesale** (README standard, live demo GIF,
    problem→approach→result write-ups, and the standout tips as acceptance
    criteria). See Appendix E. This is free signal on work already being done.
+10. **Reframe Week 4 `autonomous-swe` as a Level 5 system** — a self-improving
+    loop with a deliberately uncheatable eval — rather than as an issue→PR bot.
+    Same repo, same week, materially higher ceiling. See Appendix F.
 
 ---
 
@@ -127,16 +130,19 @@ facing DS interview wants the framing rather than the model).
 | Scaler — Shivank Agarwal, "10 AI portfolio projects, 2026" | ✅ **Full** (user-supplied 2026-09-05) | All 10 captured with stacks. Pasted text added the per-project "standout tips", a role→project mapping table, a README standard, and a recruiter red-flag list — see Appendix E. |
 | everyonewhocode.com — "Real-world AI projects that get you hired" | ⚠️ **Partial** | 37 of ~52 captured. Categories 01–04 complete (NLP, CV, classic ML, recsys); **Category 05 (GenAI/LLM/agents, 15+ projects) truncated after #37** on two fetch attempts. This is the category most relevant to the AI Eng track. |
 | Reddit — r/learnmachinelearning poll thread | ✅ **Full** (user-supplied 2026-09-05) | Small thread: 5 projects, 5 comments. One comment is from an actual hiring manager and is the single highest-value paragraph in the whole set — see Appendix D. |
-| YouTube — `mGClIHRird8` | ❌ **Blocked** | YouTube returns only the page footer to this fetcher; no transcript, title, or description. Web search could not identify the video either. **Nothing recovered.** |
+| YouTube — `mGClIHRird8`, "The 5 levels of AI engineering projects" | ✅ **Full** (transcript user-supplied 2026-09-05) | Creator works on production AI at Twitch; coaches into AI roles. **Not a project list — a maturity ladder**, and the most useful framing in the entire set. See Appendix F. |
 | YouTube — `E6lvgbayD04` | ⚠️ **Title only** | Identified via web search as *"How to Become a $300K AI Engineer in 2026 (Complete Roadmap)"*. No transcript or project list recovered. |
 
-**Bottom line on coverage:** 8 of 9 sources fully captured. Remaining gaps are
-both minor: **YouTube `mGClIHRird8`** (nothing recovered — not even a title) and
-**YouTube `E6lvgbayD04`** (title only: *"How to Become a $300K AI Engineer in
-2026"*), plus the truncated everyonewhocode Category 05. Given that eight
-independent sources now agree, a ninth video roadmap is very unlikely to move
-the conclusions. **Treat this document as complete** unless you want the two
-transcripts folded in for the sake of it.
+**Bottom line on coverage:** 9 of 9 sources captured; 8 in full. The only
+remaining gap is **YouTube `E6lvgbayD04`** (title only: *"How to Become a $300K
+AI Engineer in 2026"*), plus the truncated everyonewhocode Category 05 — and
+`mGClIHRird8` turned out to cover the same $300k-tier territory in depth, so the
+marginal value of that last transcript is low. **This document is complete.**
+
+Every source that was initially blocked or partial has now been resolved by
+paste. Of the nine, exactly two changed the plan: **Sayantani** (four infra
+gaps) and **`mGClIHRird8`** (the level-5 reframe below). The other seven
+confirmed what was already there.
 
 The Tier 1 consensus has now held across all seven fully-read sources.
 Resolving stasbel *strengthened* it (Appendix A); resolving Sayantani **did
@@ -426,3 +432,74 @@ Their advice is a **"T-shaped" portfolio**: 2–3 beginner projects across domai
 plus 1–2 deep specializations. **We are deliberately rejecting the beginner
 breadth** — the four-track curriculum supplies breadth, and the five platforms
 supply the depth. Noted so the divergence is a choice, not an oversight.
+
+---
+
+## Appendix F — the five levels of AI engineering (YouTube `mGClIHRird8`)
+
+Recovered in full 2026-09-05 from a user-supplied transcript, after the fetcher
+returned nothing at all. **The single most useful source in the set**, because it
+is not a project list: it is a capability ladder that explains *why* the Tier 3
+projects fail and what each rung actually costs. The creator ships production AI
+at Twitch and has coached "hundreds" into AI roles.
+
+| Level | What it is | The hard part | What it looks like |
+|-------|-----------|---------------|--------------------|
+| **1** | LLM API + a simple interface | Nothing tracked — "it only works when it works" | Chatbot, summarizer, Streamlit in front of an API. Prompt engineering, some structured outputs, a fallback when the model flakes. |
+| **2** | RAG over data the model has never seen | *Knowing whether the answers are correct*, and why they're wrong when they aren't | Chunking, embedding, vector store, retrieval strategy — plus **per-component and whole-system evals**, and knowing what "good" means. |
+| **3** | Agents: tools + a decide→act→check loop | Evaluation stops being "score one answer" and becomes **grading a trajectory**; one wrong turn poisons everything after it. Real stakes (credit card, code, email). | Research agent, support agent that looks up and processes orders. |
+| **4** | Enterprise multi-agent at scale | Coordination. Every agent added is another failure mode, and mistakes propagate downstream — live, in public. | Router agent → specialist agents → checker agent, for millions of users. |
+| **5** | Systems that improve themselves | Building an eval the agent **cannot cheat** | An agent proposes a change, tests whether it helped, keeps or discards it — for hours or days, unattended. |
+
+### The three claims worth internalizing
+
+1. **"Most of the real work at level 4 is everything around the agents."** When
+   researchers looked at Claude Code's own code, the AI was a tiny sliver;
+   almost all of it was scaffolding that keeps the thing reliable. Tracing,
+   guardrails against data-leaking prompt injection, cost and latency control.
+2. **The level-5 failure mode is reward hacking.** *"If your scoring is even a
+   little bit off, the agent won't fix the product. It'll find the flaw in your
+   scoring and exploit it"* — racking up a great score while the product quietly
+   gets worse in ways you never thought to measure. Level 5 therefore demands:
+   an eval tied to what actually makes the product good, instrumentation
+   (you can't watch it run), and **knowing exactly where a human still belongs** —
+   picking the problem, designing the scoring, approving production.
+3. **The calibration, and the most honest line in any of the nine sources:**
+   *"Most of my work on production AI systems at Twitch is realistically a
+   level two or three. We're hired to be useful, not fancy."*
+
+### Where the portfolio sits
+
+**Week 1 `agent-platform` is a textbook Level 4** — router/planner plus
+specialists, a checker via approval gates, tracing, guardrails, per-tenant cost.
+It has every element the transcript names, which is a strong independent
+validation of the plan. Weeks 2, 3, and 5 are the infrastructure underneath it.
+
+**The gap is Level 5 — and it is reachable this quarter.** Week 4
+`autonomous-swe` is currently specified as issue → sandboxed, tested PR with
+SWE-bench numbers. That is a very good Level 3–4 project. It is *one design
+decision* away from Level 5:
+
+> **Close the loop.** Don't just have the agent fix issues — have it propose
+> changes to *its own* prompts, tool set, and retrieval strategy, measure the
+> effect on a held-out SWE-bench split, and keep or discard automatically.
+> Run it unattended overnight. Report the delta.
+
+That reframe costs approximately nothing in scope (the harness, the sandbox, and
+the benchmark all already exist in the Week 4 spec) and buys the one thing no
+other candidate's portfolio will have. Karpathy's cited run — ~700 experiments
+over two days, unattended, yielding 20 training speedups — is the shape.
+
+**Critically, the deliverable is the eval, not the agent.** The interesting
+artifact is a written argument for *why your scoring function can't be gamed*,
+plus a `FAILURES.md` entry for the first time it was — because it will be. That
+is a level-5 conversation almost nobody applying to D.E. Shaw can have, and it
+is the highest-leverage single change identified across all nine sources.
+
+### The counterweight
+
+Hold claim 3 alongside it. The ladder is a map of what exists, not a mandate to
+live at the top. Level 5 belongs in exactly one repo — Week 4 — as the thing
+that proves the ceiling. Everywhere else, Level 2–3 done rigorously (real evals,
+honest baselines, a live URL) is what the job actually is, and over-building the
+other four platforms toward level 5 would trade delivered work for a story.
