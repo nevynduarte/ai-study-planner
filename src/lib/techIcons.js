@@ -143,3 +143,21 @@ export const shortLabel = (label, max = 28) => {
     .trim();
   return s.length > max ? s.slice(0, max - 1).trimEnd() + "…" : s;
 };
+
+// Pull the tools out of a free-text line ("pgvector HNSW + Kafka consumer
+// groups") so a study-log entry or a note can show logos instead of only prose.
+// Returns the matched keys themselves, which <TechStack> then renders.
+export function detectTech(text, max = 5) {
+  const l = String(text || "").toLowerCase();
+  const seen = new Set(), out = [];
+  for (const k of KEYS) {
+    if (!l.includes(k)) continue;
+    const [slug, color] = ICONS[k];
+    const id = slug || color;              // one chip per distinct logo
+    if (seen.has(id)) continue;
+    seen.add(id);
+    out.push(k.replace(/\b\w/g, (c) => c.toUpperCase()));
+    if (out.length >= max) break;
+  }
+  return out;
+}
