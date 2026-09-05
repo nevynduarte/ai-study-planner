@@ -3,7 +3,7 @@
  "summary": "6–8 focused hours a day, and Claude Code writes most of the boilerplate while you make and defend the decisions. Your job each day is the ADR, the benchmark, the failure log, and being able to explain it. If a day runs over, the next day's row starts anyway; unfinished items go to that week's Day 7 buffer, never into the next week.",
  "start_date": "2026-09-03",
  "total_days": 35,
- "generated_at": "2026-09-05T20:39:43.714Z",
+ "generated_at": "2026-09-05T20:51:36.630Z",
  "projects": [
   {
    "n": 1,
@@ -36,14 +36,14 @@
      "title": "Repo, compose (pgvector, redis, api), api/main.py GET /healt",
      "build": "Repo, compose (pgvector, redis, api), api/main.py GET /health pinging both, Dockerfile.",
      "run": "docker compose up --build && curl localhost:8000/health",
-     "done": "{\"db\":\"ok\",\"redis\":\"ok\"}. Done 2026-09-03.",
-     "checked": true,
+     "done": "{\"db\":\"ok\",\"redis\":\"ok\"}.",
+     "checked": false,
      "steps": [
       {
        "time": "09:00–14:00",
        "kind": "BUILD",
        "text": "h pinging both, Dockerfile.",
-       "coach": "I am on Week 1, Day 1 (\"Repo, compose (pgvector, redis, api), api/main.py GET /healt\") of my agent-platform repo. Today's row says: BUILD — Repo, compose (pgvector, redis, api), api/main.py GET /health pinging both, Dockerfile. RUN — docker compose up --build && curl localhost:8000/health DONE WHEN — {\"db\":\"ok\",\"redis\":\"ok\"}. Done 2026-09-03..\n\nWalk me through step 1 of 1: \"h pinging both, Dockerfile.\". First explain in plain words what each file or tool in this step is for and how data flows through it. Then help me build it in small pieces, running something after each piece. Stop and quiz me on why we made each choice before moving on."
+       "coach": "I am on Week 1, Day 1 (\"Repo, compose (pgvector, redis, api), api/main.py GET /healt\") of my agent-platform repo. Today's row says: BUILD — Repo, compose (pgvector, redis, api), api/main.py GET /health pinging both, Dockerfile. RUN — docker compose up --build && curl localhost:8000/health DONE WHEN — {\"db\":\"ok\",\"redis\":\"ok\"}..\n\nWalk me through step 1 of 1: \"h pinging both, Dockerfile.\". First explain in plain words what each file or tool in this step is for and how data flows through it. Then help me build it in small pieces, running something after each piece. Stop and quiz me on why we made each choice before moving on."
       },
       {
        "time": "14:00–14:30",
@@ -54,13 +54,13 @@
        "time": "14:30–15:15",
        "kind": "RUN",
        "text": "Run and verify: docker compose up --build && curl localhost:8000/health",
-       "coach": "I am on Week 1, Day 1 (\"Repo, compose (pgvector, redis, api), api/main.py GET /healt\") of my agent-platform repo. Today's row says: BUILD — Repo, compose (pgvector, redis, api), api/main.py GET /health pinging both, Dockerfile. RUN — docker compose up --build && curl localhost:8000/health DONE WHEN — {\"db\":\"ok\",\"redis\":\"ok\"}. Done 2026-09-03..\n\nHelp me run today's command and verify the done-when condition. If anything fails, help me debug it and then write a FAILURES.md line in the format \"date · tried · saw · changed to · result\"."
+       "coach": "I am on Week 1, Day 1 (\"Repo, compose (pgvector, redis, api), api/main.py GET /healt\") of my agent-platform repo. Today's row says: BUILD — Repo, compose (pgvector, redis, api), api/main.py GET /health pinging both, Dockerfile. RUN — docker compose up --build && curl localhost:8000/health DONE WHEN — {\"db\":\"ok\",\"redis\":\"ok\"}..\n\nHelp me run today's command and verify the done-when condition. If anything fails, help me debug it and then write a FAILURES.md line in the format \"date · tried · saw · changed to · result\"."
       },
       {
        "time": "15:15–15:45",
        "kind": "DEFEND",
        "text": "Write one FAILURES.md line for anything that broke, then three sentences: \"In an interview I'd describe today's work as…\"",
-       "coach": "I am on Week 1, Day 1 (\"Repo, compose (pgvector, redis, api), api/main.py GET /healt\") of my agent-platform repo. Today's row says: BUILD — Repo, compose (pgvector, redis, api), api/main.py GET /health pinging both, Dockerfile. RUN — docker compose up --build && curl localhost:8000/health DONE WHEN — {\"db\":\"ok\",\"redis\":\"ok\"}. Done 2026-09-03..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
+       "coach": "I am on Week 1, Day 1 (\"Repo, compose (pgvector, redis, api), api/main.py GET /healt\") of my agent-platform repo. Today's row says: BUILD — Repo, compose (pgvector, redis, api), api/main.py GET /health pinging both, Dockerfile. RUN — docker compose up --build && curl localhost:8000/health DONE WHEN — {\"db\":\"ok\",\"redis\":\"ok\"}..\n\nInterview me for 10 minutes on what I built today using the six levels (what, how, why this, why not X, what breaks at 10×, how do you know). Then help me write the FAILURES.md lines with the ADR template: context, requirements, options, decision, why, tradeoff, evidence, would-change-if."
       }
      ],
      "tech": [
@@ -2609,8 +2609,8 @@
     "title": "agent-platform: Repo, compose (pgvector, redis, api), api/main.py GET /healt",
     "build": "Repo, compose (pgvector, redis, api), api/main.py GET /health pinging both, Dockerfile.",
     "drill": "docker compose up --build && curl localhost:8000/health",
-    "done": "{\"db\":\"ok\",\"redis\":\"ok\"}. Done 2026-09-03.",
-    "checked": true
+    "done": "{\"db\":\"ok\",\"redis\":\"ok\"}.",
+    "checked": false
    },
    {
     "n": 2,
