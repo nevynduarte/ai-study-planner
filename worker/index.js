@@ -59,6 +59,11 @@ const VALID_KINDS = ["reproduction", "oss-pr", "blog-post", "system", "resume"];
 const VALID_ARTIFACT_STATUS = ["planned", "in-progress", "shipped"];
 const VALID_CRITERIA = ["dsa", "sysdesign", "recall", "assets"];
 
+export {
+  authorized, getData, postLog, postAsk, postApplication, patchApplication,
+  postArtifact, patchArtifact, patchGate, patchPosting, CORS_HEADERS,
+};
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
@@ -140,7 +145,10 @@ async function getData(env) {
 async function postLog(request, env) {
   try {
     const { hours, topic, track, notes } = await request.json();
-    if (!topic || !hours || Number(hours) <= 0) {
+    if (
+      typeof topic !== "string" || !topic.trim() ||
+      typeof hours !== "number" || !Number.isFinite(hours) || hours <= 0
+    ) {
       return json({ error: "topic and positive hours required" }, 400);
     }
     const trackVal = VALID_TRACKS.includes(track) ? track : null;
@@ -159,7 +167,7 @@ async function postLog(request, env) {
 async function postAsk(request, env) {
   try {
     const { question } = await request.json();
-    if (!question || !String(question).trim()) {
+    if (typeof question !== "string" || !question.trim()) {
       return json({ error: "question required" }, 400);
     }
     const date = new Date().toISOString().slice(0, 10);
