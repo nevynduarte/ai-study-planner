@@ -108,7 +108,7 @@ test("POST /api/log with a valid body inserts and returns ok", async () => {
 test("POST /api/log rejects a non-JSON body without inserting", async () => {
   const db = new FakeD1();
   const res = await postLog(req("/api/log", { method: "POST", body: "not json" }), { DB: db });
-  assert.equal(res.status, 500); // JSON.parse throws, caught by the handler's try/catch
+  assert.equal(res.status, 400); // regression: used to be a 500 from the outer catch
   assert.equal(db.calls.length, 0);
 });
 
@@ -150,7 +150,7 @@ test("POST /api/ask with a valid body inserts and returns ok", async () => {
 test("POST /api/ask rejects a non-JSON body without inserting", async () => {
   const db = new FakeD1();
   const res = await postAsk(req("/api/ask", { method: "POST", body: "not json" }), { DB: db });
-  assert.equal(res.status, 500);
+  assert.equal(res.status, 400);
   assert.equal(db.calls.length, 0);
 });
 
