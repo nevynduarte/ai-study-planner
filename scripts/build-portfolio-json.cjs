@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Turns crash-course/PORTFOLIO.md (single source of truth) into public/portfolio.json
-// for the web app's Today / Plan / Projects tabs. Run: npm run portfolio
+// Turns crash-course/PORTFOLIO.md (the project list) plus the per-project
+// crash-course/<ID>_3_WEEK_PLAN.md day plans into public/portfolio.json for the
+// web app's Today / Plan / Projects tabs. Run: npm run portfolio
 const fs = require("fs");
 const path = require("path");
 
@@ -22,76 +23,130 @@ const dateOf = n => {
   d.setDate(d.getDate() + (n - 1));
   return d.toISOString().slice(0, 10);
 };
+// Each project is a three-week block. Day numbers are global and fixed per
+// slot (project 2 starts at Day 22 even if project 1's plan is shorter), so a
+// "Day N done" mark never drifts when a later plan file lands.
+const DAYS_PER_PROJECT = 21;
 
-const projects = [];
-const proves = {};
-let cur = null;
+// Summary: the first prose paragraph after the title (skips the "Revised" stamp).
 let summary = "";
-let inAssume = false;
+{
+  let i = lines.findIndex(l => l.startsWith("# ")) + 1;
+  while (i < lines.length && (lines[i].trim() === "" || lines[i].startsWith("**Revised"))) i++;
+  const para = [];
+  while (i < lines.length && lines[i].trim() !== "" && !lines[i].startsWith("#") && !lines[i].startsWith("|")) para.push(strip(lines[i++]));
+  summary = para.join(" ");
+}
 
-for (let i = 0; i < lines.length; i++) {
-  const l = lines[i];
-  if (l.startsWith("**What \"5 weeks\" assumes:**")) { inAssume = true; summary = strip(l.replace(/^\*\*What "5 weeks" assumes:\*\*/, "")); continue; }
-  if (inAssume) { if (l.trim() === "") inAssume = false; else summary += " " + strip(l); continue; }
-
-  const wk = l.match(/^## Week (\d+) — `([^`]+)`/);
-  if (wk) { cur = { n: +wk[1], id: wk[2], repo: `https://github.com/${GITHUB_USER}/${wk[2]}`, sentence: "", stack: [], days: [] }; projects.push(cur); continue; }
-  if (l.startsWith("## ") && cur) { cur = null; }
-
-  if (cur && l.startsWith("**One sentence:**")) {
-    let s = strip(l.replace("**One sentence:**", ""));
-    let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
-    cur.sentence = s; continue;
-  }
-  if (cur && l.startsWith("**Week goal:**")) {
-    let s = strip(l.replace("**Week goal:**", ""));
-    let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
-    cur.goal = s; continue;
-  }
-  // "**Flow:** A → B → C" — the data path, drawn as a diagram in the app.
-  if (cur && l.startsWith("**Flow:**")) {
-    let s = strip(l.replace("**Flow:**", ""));
-    let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
-    cur.flow = s.split(/\s*(?:→|->)\s*/).map(x => x.trim()).filter(Boolean); continue;
-  }
-  // "**Watch:** yt:<id> Title · Some topic" — `yt:` embeds that exact video,
-  // anything else becomes a YouTube search so it can never rot into a dead embed.
-  if (cur && l.startsWith("**Watch:**")) {
-    let s = strip(l.replace("**Watch:**", ""));
-    let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
-    cur.videos = s.split("·").map(x => x.trim()).filter(Boolean).map(entry => {
-      const m = entry.match(/^yt:([A-Za-z0-9_-]{11})\s*(.*)$/);
-      return m ? { id: m[1], title: m[2].trim() || "Video" } : { q: entry, title: entry };
-    });
-    continue;
-  }
-
-  if (cur && l.startsWith("**Stack:**")) {
-    let s = strip(l.replace("**Stack:**", ""));
-    let j = i + 1; while (j < lines.length && lines[j].trim() !== "") { s += " " + strip(lines[j]); j++; }
-    // An entry is the tool alone: drop a sentence trailing the last one
-    // ("GitHub Actions. Databricks Free edition for …") and any final period.
-    cur.stack = s.split("·").map(x => x.trim().split(/\.\s+/)[0].replace(/\s*\.$/, "").trim()).filter(Boolean); continue;
-  }
-
+// ── Projects: the "## Final portfolio" table — | Weeks | `repo` | What it proves | ──
+const projects = [];
+for (const l of lines) {
   if (!l.startsWith("|") || /^\|\s*-+/.test(l)) continue;
   const c = cells(l);
-  // overview table: | # | `repo` | proves |
-  if (!cur && c.length === 3 && /^\d+$/.test(c[0])) { proves[+c[0]] = strip(c[2]); continue; }
-  // day rows: | Day | Build | Run | Done when |
-  if (cur && c.length === 4 && /^\d+/.test(c[0])) {
-    const n = parseInt(c[0], 10);
-    const checked = /✅/.test(c[0]);
-    const build = c[1];
-    const bold = build.match(/^\*\*([^*]+)\*\*/);
-    let t = bold ? bold[1].replace(/\.$/, "") : strip(build).split(/[.,]/)[0];
-    if (!bold && t.length < 12) t = strip(build).slice(0, 60);
-    if (t.length > 70) t = t.slice(0, 67) + "…";
-    cur.days.push({ n, week: cur.n, date: dateOf(n), title: strip(t), build: strip(build), run: strip(c[2]), done: strip(c[3]), checked });
+  const wk = c.length === 3 && c[0].match(/^(\d+)\s*[–-]\s*(\d+)$/);
+  const id = c.length === 3 && c[1].match(/^`([^`]+)`$/);
+  if (!wk || !id) continue;
+  projects.push({ n: projects.length + 1, id: id[1], weeks: `${wk[1]}–${wk[2]}`, weekStart: +wk[1], weekEnd: +wk[2],
+                  repo: `https://github.com/${GITHUB_USER}/${id[1]}`, proves: strip(c[2]), sentence: "", stack: [], days: [] });
+}
+
+// ── Per-project detail from its "# Project N — …" section: Goal, Core flow, Required stack ──
+const fenced = (from) => { // lines of the first ``` block at/after `from`; returns [lines, indexAfter]
+  let i = from; while (i < lines.length && !lines[i].startsWith("```")) { if (lines[i].startsWith("#")) return [[], i]; i++; }
+  const out = []; i++;
+  while (i < lines.length && !lines[i].startsWith("```")) out.push(lines[i++]);
+  return [out, i + 1];
+};
+for (const p of projects) {
+  const head = lines.findIndex(l => new RegExp(`^# Project ${p.n}\\b`).test(l));
+  if (head < 0) continue;
+  let end = lines.findIndex((l, i) => i > head && l.startsWith("# "));
+  if (end < 0) end = lines.length;
+  for (let i = head + 1; i < end; i++) {
+    const l = lines[i];
+    if (l === "## Goal") {
+      let j = i + 1; while (j < end && lines[j].trim() === "") j++;
+      const para = []; while (j < end && lines[j].trim() !== "" && !lines[j].startsWith("#")) para.push(strip(lines[j++]));
+      p.sentence = para.join(" ");
+    }
+    if (/^## Core (flow|lifecycle)$/.test(l)) {
+      const [block] = fenced(i + 1);
+      // One node per non-arrow line; arrows (↓, ->, →) and blank lines separate them.
+      p.flow = block.map(x => x.trim()).filter(x => x && !/^[↓→>|-]+$/.test(x) && !/^(->|→)/.test(x))
+        .map(x => x.replace(/^(->|→)\s*/, "").trim()).filter(Boolean);
+    }
+    if (l === "## Required stack") {
+      let j = i + 1;
+      while (j < end && !lines[j].startsWith("#")) {
+        const b = lines[j].match(/^-\s+(.+)$/);
+        // The tool alone: drop a trailing qualifier sentence and any final period.
+        if (b) p.stack.push(strip(b[1]).split(/;\s+/)[0].replace(/\s*\.$/, "").trim());
+        j++;
+      }
+    }
   }
 }
 
-for (const p of projects) { p.title = p.id; p.proves = proves[p.n] || ""; p.start = p.days[0]?.date; p.end = p.days[p.days.length - 1]?.date; }
+// ── Days: crash-course/<ID>_3_WEEK_PLAN.md, one "## Day N — title" section per day ──
+// Each section carries **Learn:**, a **Build** bullet list, a **Run** code block
+// and a **Done when** sentence; gate days use **Week N gate:** / **Final oral
+// defense:** instead. Missing plan files leave the project with zero days.
+const planFile = (id) => path.join(ROOT, "crash-course", `${id.toUpperCase().replace(/-/g, "_")}_3_WEEK_PLAN.md`);
+for (const p of projects) {
+  const f = planFile(p.id);
+  if (!fs.existsSync(f)) { p.days = []; continue; }
+  const pl = fs.readFileSync(f, "utf8").replace(/\r\n/g, "\n").split("\n");
+  const heads = [];
+  pl.forEach((l, i) => { const m = l.match(/^## Day (\d+)\s*[—–-]\s*(.+)$/); if (m) heads.push({ i, local: +m[1], title: m[2].trim() }); });
+  heads.forEach((h, k) => {
+    let end = k + 1 < heads.length ? heads[k + 1].i : pl.length;
+    for (let i = h.i + 1; i < end; i++) if (/^#{1,2} /.test(pl[i])) { end = i; break; }
+    const sec = pl.slice(h.i + 1, end);
+    const checked = /✅/.test(h.title);
+    const titleText = strip(h.title.replace(/✅/g, ""));
+    const bullets = [], labelled = {};
+    let label = null, run = "";
+    for (let i = 0; i < sec.length; i++) {
+      const l = sec[i];
+      if (l.startsWith("```")) {
+        const block = []; i++;
+        while (i < sec.length && !sec[i].startsWith("```")) block.push(sec[i++]);
+        if (label === "run" && !run) run = block.map(x => x.trim()).filter(x => x && !x.startsWith("#")).join(" && ");
+        continue;
+      }
+      const lab = l.match(/^\*\*([^*]+?)\*\*:?\s*(.*)$/);
+      if (lab) {
+        const name = lab[1].replace(/:$/, "").trim();
+        label = /^Build/i.test(name) ? "build" : /^Run\b/i.test(name) ? "run" : /^Done when/i.test(name) ? "done"
+              : /gate$|^Final oral defense/i.test(name) ? "gate" : /^Learn/i.test(name) ? "learn" : "other:" + name;
+        if (lab[2]) labelled[label] = (labelled[label] ? labelled[label] + " " : "") + strip(lab[2]);
+        continue;
+      }
+      const b = l.match(/^-\s+(.+)$/);
+      if (b) { bullets.push({ label, text: strip(b[1]) }); continue; }
+      if (label && l.trim() && !l.startsWith("|") && !/^-{3,}$/.test(l.trim())) labelled[label] = (labelled[label] ? labelled[label] + " " : "") + strip(l);
+    }
+    const sentence = t => /[.!?]$/.test(t) ? t : t + ".";
+    const buildBul = bullets.filter(b => b.label === "build");
+    const plainBul = bullets.filter(b => b.label == null || b.label === "build");
+    const build = (buildBul.length ? buildBul : plainBul).map(b => sentence(b.text)).join(" ")
+               || labelled.build || "";
+    const extras = Object.keys(labelled).filter(k => k.startsWith("other:"))
+      .map(k => /[.!?]$/.test(k) ? `${k.slice(6)} ${labelled[k]}` : `${k.slice(6)}: ${labelled[k]}`);
+    const n = (p.n - 1) * DAYS_PER_PROJECT + h.local;
+    p.days.push({
+      n, local: h.local, week: p.n, date: dateOf(n), title: titleText.length > 70 ? titleText.slice(0, 67) + "…" : titleText,
+      learn: labelled.learn || "",
+      build: build || extras.join(" ") || titleText,
+      run: run || labelled.run || extras.find(x => /^(Measure|Experiment|Load test|Failure drill|Tests)/i.test(x)) || "",
+      done: labelled.done || labelled.gate || "",
+      checked,
+    });
+  });
+  p.days.sort((a, b) => a.n - b.n);
+}
+
+for (const p of projects) { p.title = p.id; p.start = p.days[0]?.date || dateOf((p.n - 1) * DAYS_PER_PROJECT + 1); p.end = p.days[p.days.length - 1]?.date || dateOf(p.n * DAYS_PER_PROJECT); }
 
 // ── Hour-by-hour schedule per day, derived from the row (deterministic, no LLM) ──
 const hhmm = m => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
@@ -114,7 +169,7 @@ for (const p of projects) for (const d of p.days) {
     if (!lunch && t >= 12 * 60) { steps.push({ time: `${hhmm(t)}–${hhmm(t + 30)}`, kind: "BREAK", text: "Lunch. Step away from the screen." }); t += 30; lunch = true; }
     steps.push({ time: `${hhmm(t)}–${hhmm(t + mins)}`, kind, text, coach }); t += mins;
   };
-  const ctx = `I am on Week ${p.n}, Day ${d.n} ("${d.title}") of my ${p.id} repo. Today's row says: BUILD — ${d.build} RUN — ${d.run} DONE WHEN — ${d.done}.`;
+  const ctx = `I am on Project ${p.n} (weeks ${p.weeks}), Day ${d.n} — day ${d.local} of the ${p.id} plan ("${d.title}"). The plan says: LEARN — ${d.learn || "n/a"} BUILD — ${d.build} RUN — ${d.run} DONE WHEN — ${d.done}.`;
   raw.forEach((s, i) => push("BUILD", slot, s,
     `${ctx}\n\nWalk me through step ${i + 1} of ${n}: "${s}". First explain in plain words what each file or tool in this step is for and how data flows through it. Then help me build it in small pieces, running something after each piece. Stop and quiz me on why we made each choice before moving on.`));
   push("RUN", 45, `Run and verify: ${d.run}`, `${ctx}\n\nHelp me run today's command and verify the done-when condition. If anything fails, help me debug it and then write a FAILURES.md line in the format "date · tried · saw · changed to · result".`);
@@ -134,7 +189,8 @@ for (const p of projects) {
     // A stack entry counts as touched if any of its distinctive words appears in
     // the day's text — "Postgres 16 + pgvector (RLS)" matches a day naming only
     // pgvector. Version numbers and filler words are not distinctive.
-    const FILLER = new Set(["the", "and", "with", "for", "day", "later", "adapter", "runtime", "sdk", "local", "cloud", "edition", "compose"]);
+    const FILLER = new Set(["the", "and", "with", "for", "day", "later", "adapter", "runtime", "sdk", "local", "cloud", "edition", "compose",
+                            "agent", "custom", "comparison", "locally", "equivalent", "tooling", "production", "milestone", "gateway"]);
     d.tech = p.stack.filter(t => String(t).toLowerCase()
       .split(/[^a-z0-9.+-]+/)
       .some(w => w.length > 2 && !FILLER.has(w) && !/^[\d.]+$/.test(w) && hay.includes(w))
@@ -150,6 +206,12 @@ for (const p of projects) for (const d of p.days) {
   const f = path.join(tutSrcDir, `day-${String(d.n).padStart(2, "0")}.md`);
   if (!fs.existsSync(f)) continue;
   const text = fs.readFileSync(f, "utf8").replace(/\r\n/g, "\n");
+  // The tutorials were written for an earlier plan whose day numbers no longer
+  // line up. Only attach one whose own heading names this day's title, so a
+  // day never opens a walkthrough for different work.
+  const th = text.match(/^# Day \d+\s*[—–-]\s*(.+)$/m);
+  const norm = x => String(x).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  if (!th || !(norm(th[1]) === norm(d.title) || norm(d.title).includes(norm(th[1])) || norm(th[1]).includes(norm(d.title)))) continue;
   fs.copyFileSync(f, path.join(tutOutDir, `day-${String(d.n).padStart(2, "0")}.md`));
   d.tutorial = `/tutorials/day-${String(d.n).padStart(2, "0")}.md`;
   // Sections: "## Step N · title", plus "## Run", "## Defend" for the trailing blocks.
@@ -179,7 +241,7 @@ for (const p of projects) for (const d of p.days) {
       out.push({ time: `${hhmm(t)}–${hhmm(t + mins)}`, kind, text, coach, tutorial }); t += mins;
     };
     stepSecs.forEach((s, i) => push("BUILD", slot, s.head.replace(/^Step\s+\d+\s*·\s*/i, ""),
-      `I am on Week ${p.n}, Day ${d.n} of my ${p.id} repo, working through "${s.head}". Walk me through it, explaining what each file and tool is for and how data flows, building in small pieces and running something after each. Quiz me on the why before moving on.`, s.body));
+      `I am on Project ${p.n}, Day ${d.n} (day ${d.local} of the ${p.id} plan), working through "${s.head}". Walk me through it, explaining what each file and tool is for and how data flows, building in small pieces and running something after each. Quiz me on the why before moving on.`, s.body));
     for (const k of keep) push(k.kind, parseInt(k.time.slice(-5, -3)) * 60 + parseInt(k.time.slice(-2)) - (parseInt(k.time.slice(0, 2)) * 60 + parseInt(k.time.slice(3, 5))) || 45, k.text, k.coach, k.tutorial);
     d.steps = out;
   }
@@ -193,9 +255,16 @@ for (const p of projects) {
   if (fs.existsSync(src)) { fs.copyFileSync(src, path.join(briefDir, `${p.id}.md`)); p.brief = `/projects/${p.id}.md`; }
 }
 
-// Applications list (## Austin applications ...)
+// Applications list: "## Austin applications …" (older plans) or the bullets
+// under "# Application strategy while building" (current plan).
 let applications = [];
-const appIdx = lines.findIndex(l => l.startsWith("## Austin applications"));
+let appIdx = lines.findIndex(l => l.startsWith("## Austin applications"));
+if (appIdx < 0) {
+  const st = lines.findIndex(l => l.startsWith("# Application strategy"));
+  if (st >= 0) for (let j = st + 1; j < lines.length && !lines[j].startsWith("# "); j++) {
+    const b = lines[j].match(/^-\s+(.+)$/); if (b) applications.push(strip(b[1]));
+  }
+}
 if (appIdx >= 0) {
   let s = ""; let j = appIdx + 1;
   while (j < lines.length && !lines[j].startsWith("## ")) { s += " " + lines[j]; j++; }
@@ -218,4 +287,5 @@ const out = {
 };
 fs.writeFileSync(OUT, JSON.stringify(out, null, 1));
 console.log(`portfolio.json: ${projects.length} projects, ${days.length} days (${days.filter(d => d.checked).length} checked), ${applications.length} applications`);
-if (days.length !== 35) console.warn(`WARN: expected 35 days, parsed ${days.length}`);
+if (projects.length === 0) console.warn("WARN: no projects parsed — check the '## Final portfolio' table in PORTFOLIO.md");
+for (const p of projects) if (p.days.length === 0) console.warn(`WARN: ${p.id} has no day plan yet (expected crash-course/${p.id.toUpperCase().replace(/-/g, "_")}_3_WEEK_PLAN.md)`);

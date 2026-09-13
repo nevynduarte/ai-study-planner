@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { Component, useState, useEffect, useCallback, useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -9,6 +9,25 @@ import MediaRail from "./components/MediaRail.jsx";
 import { trackGlyph, kindGlyph, topicGlyph } from "./lib/glyphs.js";
 import { detectTech } from "./lib/techIcons.js";
 import { usePersisted } from "./hooks/usePersisted.js";
+
+// A render error inside one tab used to unmount the whole app — tab bar
+// included — so a single bad field in portfolio.json made every tab look
+// broken. Contain it to the tab's body and keep the rest of the shell usable.
+class TabErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error) { return { error }; }
+  componentDidCatch(error) { console.error("Tab render failed:", error); }
+  render() {
+    if (!this.state.error) return this.props.children;
+    return (
+      <div style={{ padding:"12px 15px", borderRadius:12, border:"1px solid rgba(226,75,74,0.35)", background:"rgba(226,75,74,0.08)", fontSize:13, lineHeight:1.6 }}>
+        <div style={{ fontWeight:700, marginBottom:4 }}>This tab hit an error and could not render.</div>
+        <div style={{ opacity:0.85 }}>{String(this.state.error?.message || this.state.error)}</div>
+        <div style={{ fontSize:12, opacity:0.7, marginTop:6 }}>The other tabs still work. Check the browser console for the stack trace.</div>
+      </div>
+    );
+  }
+}
 import { parsePlan } from "./lib/parsePlan.js";
 import { COV, covOf, DAILY_HOURS, WEEKLY_TARGET } from "./lib/constants.js";
 import { slugify, nodeText, READER_ACCENT } from "./lib/text.js";
@@ -211,6 +230,10 @@ export default function App() {
   // study. Day N is derived from start_date; covers a 14-day window. ────────
   const CRASH_AC    = "#0D9488";
   const PROJ_AC     = ["#185FA5", "#7F77DD", "#1D9E75", "#BA7517", "#A32D2D"];
+  // Projects now span several weeks each ("1–3"); older portfolio.json files
+  // had one week per project.
+  const projLabel   = (p) => p.weeks ? `WEEKS ${p.weeks}` : `WEEK ${p.n}`;
+  const pct         = (done, total) => total ? Math.round(done / total * 100) : 0;
   const crashCourse = portfolio?.crash_course || cur?.crash_course || null;
   const crashDays   = crashCourse?.days || [];
   const crashStart  = crashCourse?.start_date ? startOfDay(new Date(crashCourse.start_date + "T12:00:00")) : null;
@@ -647,6 +670,7 @@ export default function App() {
       <div style={{ display:"flex", gap:2, marginBottom:"1.4rem", overflowX:"auto", padding:4, background:bgS, border:`1px solid ${brd}`, borderRadius:999 }}>
         {TABS.map(t => <button key={t} style={S.tab(tab===t)} onClick={() => setTab(t)}>{TAB_LABELS[t] || (t.charAt(0).toUpperCase()+t.slice(1))}</button>)}
       </div>
+      <TabErrorBoundary key={tab}>
 
       {/* ── JOBS = interview targets + scraped leads, one tab ── */}
       {tab==="jobs" && (
@@ -995,7 +1019,7 @@ export default function App() {
                   <div style={{ ...S.card, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}`, marginBottom:"0.875rem" }}>
                     <div style={{ padding:"1rem 1.125rem", background:`linear-gradient(125deg, ${hexA(ac, dark?0.2:0.11)}, transparent 72%)` }}>
                       <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-                        <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>WEEK {p.n} OF 5 · PROJECT {p.n}</span>
+                        <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>{projLabel(p)}{p.weeks ? " OF 12" : " OF 5"} · PROJECT {p.n}</span>
                         <a href={p.repo} target="_blank" rel="noreferrer" style={{ fontSize:11, color:linkC, textDecoration:"none", marginLeft:"auto" }}>↗ {p.repo.replace("https://github.com/", "")}</a>
                       </div>
                       <div style={{ fontSize:20, fontWeight:800, letterSpacing:-0.4, margin:"4px 0 4px" }}>{p.id}</div>
@@ -1012,7 +1036,7 @@ export default function App() {
                       )}
                       {p.goal && (
                         <div style={{ marginTop:11, padding:"10px 13px", borderRadius:10, background:hexA(ac, dark?0.12:0.06), border:`1px solid ${hexA(ac, dark?0.35:0.2)}` }}>
-                          <div style={{ fontSize:10.5, fontWeight:700, color:ac, textTransform:"uppercase", letterSpacing:0.5, marginBottom:4 }}>By Day {p.days[p.days.length-1].n} you will have</div>
+                          <div style={{ fontSize:10.5, fontWeight:700, color:ac, textTransform:"uppercase", letterSpacing:0.5, marginBottom:4 }}>By Day {p.days[p.days.length-1]?.n ?? "—"} you will have</div>
                           <div style={{ fontSize:12.5, color:txtS, lineHeight:1.6 }}>{p.goal}</div>
                         </div>
                       )}
@@ -1031,7 +1055,7 @@ export default function App() {
                           <button style={{ ...S.btn(!briefRead), fontSize:12.5 }} onClick={() => jumpToBrief(p)}>
                             {briefRead ? "Re-read the project brief →" : "Understand this project first — 10-min read →"}
                           </button>
-                          {!briefRead && <span style={{ fontSize:11.5, color:txtT }}>Read this once before Day {p.days[0].n}: what it is, the data-flow picture, every tool and why it is there. Opens in Projects.</span>}
+                          {!briefRead && <span style={{ fontSize:11.5, color:txtT }}>Read this once before Day {p.days[0]?.n ?? "—"}: what it is, the data-flow picture, every tool and why it is there. Opens in Projects.</span>}
                           {briefRead && <span style={{ fontSize:11.5, color:"#1D9E75", fontWeight:600 }}>✓ brief read</span>}
                         </div>
                       )}
@@ -1483,7 +1507,8 @@ export default function App() {
       {tab==="plan" && (() => {
         const pf = portfolio;
         if (!pf) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No portfolio plan found. Run <code>npm run portfolio</code> to build it from crash-course/PORTFOLIO.md.</div>;
-        const allDays = pf.projects.flatMap(p => p.days);
+        if (!pf.projects?.length) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>portfolio.json has no projects. The generator could not read crash-course/PORTFOLIO.md — check its “Final portfolio” table, then run <code>npm run portfolio</code>.</div>;
+        const allDays = pf.projects.flatMap(p => p.days || []);
         const totalDone = allDays.filter(d => crashDone.has(d.n)).length;
         const nextDay = allDays.find(d => !crashDone.has(d.n)) || null;
         const curProj = pf.projects.find(p => p.n === nextDay?.week) || pf.projects[pf.projects.length - 1];
@@ -1504,17 +1529,17 @@ export default function App() {
                 </div>
                 <div style={{ marginTop:14 }}>
                   <div style={{ display:"flex", justifyContent:"space-between", fontSize:11.5, color:txtT, marginBottom:5, fontVariantNumeric:"tabular-nums" }}>
-                    <span><b style={{ color:txt }}>Now: Week {curProj.n} · {curProj.id}</b>{nextDay ? ` — Day ${nextDay.n}: ${nextDay.title}` : ""}</span>
-                    <span>{totalDone}/{allDays.length} days · {Math.round(totalDone/allDays.length*100)}%</span>
+                    <span><b style={{ color:txt }}>Now: {curProj ? `Project ${curProj.n} · ${curProj.id}` : "—"}</b>{nextDay ? ` — Day ${nextDay.n}: ${nextDay.title}` : ""}</span>
+                    <span>{totalDone}/{allDays.length} days · {pct(totalDone, allDays.length)}%</span>
                   </div>
                   <ProgressBar done={totalDone} total={allDays.length} color={CRASH_AC} height={10} />
                 </div>
                 <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(110px, 1fr))", gap:6, marginTop:12 }}>
                   {pf.projects.map((p, i) => {
-                    const d = doneIn(p), ac = PROJ_AC[i % PROJ_AC.length], on = p.n === curProj.n;
+                    const d = doneIn(p), ac = PROJ_AC[i % PROJ_AC.length], on = p.n === curProj?.n;
                     return (
                       <div key={p.id} style={{ padding:"8px 9px", borderRadius:9, border:`1px solid ${on ? ac : brd}`, background: on ? hexA(ac, dark?0.18:0.08) : "transparent", minWidth:0 }}>
-                        <div style={{ fontSize:10, fontWeight:800, color:ac, letterSpacing:0.4 }}>WEEK {p.n}{on ? " · NOW" : d === p.days.length ? " · DONE" : ""}</div>
+                        <div style={{ fontSize:10, fontWeight:800, color:ac, letterSpacing:0.4 }}>{projLabel(p)}{on ? " · NOW" : p.days.length && d === p.days.length ? " · DONE" : !p.days.length ? " · NO PLAN YET" : ""}</div>
                         <div style={{ fontSize:11.5, fontWeight:700, margin:"2px 0 6px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.id}</div>
                         <ProgressBar done={d} total={p.days.length} color={ac} height={6} />
                         <div style={{ fontSize:10.5, color:txtT, marginTop:4, fontVariantNumeric:"tabular-nums" }}>{d}/{p.days.length} days</div>
@@ -1529,13 +1554,13 @@ export default function App() {
             {/* ── Per project: header + progress + the day rows ── */}
             {pf.projects.map((p, i) => {
               const ac = PROJ_AC[i % PROJ_AC.length];
-              const d = doneIn(p), on = p.n === curProj.n;
+              const d = doneIn(p), on = p.n === curProj?.n;
               return (
                 <div key={p.id}>
                   <div style={{ ...S.card, marginTop:18, padding:0, overflow:"hidden", borderLeft:`3px solid ${ac}` }}>
                     <div style={{ padding:"0.9rem 1.1rem", background: on ? `linear-gradient(120deg, ${hexA(ac, dark?0.16:0.08)}, transparent 78%)` : "transparent" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-                        <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>WEEK {p.n}{on ? " · NOW" : ""}</span>
+                        <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>{projLabel(p)}{on ? " · NOW" : ""}</span>
                         <span style={{ fontSize:11, color:txtT }}>{fmtDate(p.start)} – {fmtDate(p.end)}</span>
                         <a href={p.repo} target="_blank" rel="noreferrer" style={{ fontSize:11, color:linkC, textDecoration:"none", marginLeft:"auto" }}>↗ {p.repo.replace("https://github.com/", "")}</a>
                       </div>
@@ -1552,11 +1577,14 @@ export default function App() {
                         </div>
                       )}
                       <div style={{ display:"flex", justifyContent:"space-between", fontSize:11.5, color:txtT, margin:"12px 0 5px", fontVariantNumeric:"tabular-nums" }}>
-                        <span>Progress</span><span>{d}/{p.days.length} days · {Math.round(d/p.days.length*100)}%</span>
+                        <span>Progress</span><span>{d}/{p.days.length} days · {pct(d, p.days.length)}%</span>
                       </div>
                       <ProgressBar done={d} total={p.days.length} color={ac} />
                     </div>
                   </div>
+                  {p.days.length === 0 && (
+                    <div style={{ fontSize:12, color:txtT, padding:"0.6rem 0.25rem 0.2rem", lineHeight:1.6 }}>No day-by-day plan yet — add <code>crash-course/{p.id.toUpperCase().replace(/-/g, "_")}_3_WEEK_PLAN.md</code> and rebuild.</div>
+                  )}
                   {p.days.map(day => {
                     const isDone = crashDone.has(day.n), isToday = nextDay?.n === day.n;
                     return (
@@ -1949,12 +1977,13 @@ export default function App() {
       {tab==="projects" && (() => {
         const pf = portfolio;
         if (!pf) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No portfolio plan found. Run <code>npm run portfolio</code> to build it from crash-course/PORTFOLIO.md.</div>;
-        const allDays = pf.projects.flatMap(p => p.days);
+        if (!pf.projects?.length) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>portfolio.json has no projects. The generator could not read crash-course/PORTFOLIO.md — check its “Final portfolio” table, then run <code>npm run portfolio</code>.</div>;
+        const allDays = pf.projects.flatMap(p => p.days || []);
         const nextDay = allDays.find(d => !crashDone.has(d.n)) || null;
         const doneIn = (p) => p.days.filter(d => crashDone.has(d.n)).length;
         const statusOf = (p) => {
           const d = doneIn(p);
-          if (d === p.days.length) return ["shipped", "#1D9E75"];
+          if (p.days.length && d === p.days.length) return ["shipped", "#1D9E75"];
           if (p.n === nextDay?.week) return ["current", "#BA7517"];
           if (d > 0) return ["in progress", "#185FA5"];
           return ["upcoming", null];
@@ -1962,10 +1991,10 @@ export default function App() {
         return (
           <div>
             <div style={S.card}>
-              <div style={{ fontSize:14, fontWeight:600 }}>Portfolio <span style={{ fontWeight:500, color:txtT }}>— five production platforms, one per week</span></div>
+              <div style={{ fontSize:14, fontWeight:600 }}>Portfolio <span style={{ fontWeight:500, color:txtT }}>— {pf.projects.length} production systems, {pf.projects[0]?.weeks ? "three weeks each" : "one per week"}</span></div>
               <div style={{ fontSize:12, color:txtT, marginTop:4, lineHeight:1.6 }}>
                 Built in the order the portfolio review set. They connect: the data platform becomes the agent platform's retrieval backend,
-                the ML platform serves local models into its router, the SWE agent runs inside it, and the from-scratch LLM is one of the served models.
+                the ML platform serves local models into its router, and the SWE agent runs as one of its tools.
                 Each repo ships with README, ARCHITECTURE, BENCHMARKS, FAILURES, ADRs, CI, tests, and a case study.
               </div>
             </div>
@@ -1978,7 +2007,7 @@ export default function App() {
                   <button onClick={() => { const next = open ? null : p.id; setProjOpen(next); if (next) loadBrief(p); }}
                     style={{ display:"block", width:"100%", textAlign:"left", background:"transparent", border:"none", cursor:"pointer", color:txt, padding:"0.95rem 1.1rem", fontFamily:"inherit" }}>
                     <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-                      <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>WEEK {p.n}</span>
+                      <span style={{ fontSize:10.5, fontWeight:800, color:ac, letterSpacing:0.4 }}>{projLabel(p)}</span>
                       <span style={{ fontSize:11, color:txtT }}>{fmtDate(p.start)} – {fmtDate(p.end)}</span>
                       {stC && <span style={pill(stC, { fontSize:10.5 })}>{st}</span>}
                       <span style={{ marginLeft:"auto", fontSize:11, color:txtT, fontVariantNumeric:"tabular-nums" }}>{d}/{p.days.length} days <span style={{ display:"inline-block", transform: open ? "rotate(180deg)" : "none" }}>▾</span></span>
@@ -2029,7 +2058,7 @@ export default function App() {
                             </div>
                             {!bOpen && (
                               <div style={{ fontSize:11.5, color:txtT, marginTop:5, lineHeight:1.55 }}>
-                                What it is, the data-flow picture, every tool and why it is there. Read once before Day {p.days[0].n}.
+                                What it is, the data-flow picture, every tool and why it is there. Read once before Day {p.days[0]?.n ?? "—"}.
                               </div>
                             )}
                             {bOpen && (
@@ -2196,6 +2225,8 @@ export default function App() {
           })}
         </div>
       )}
+
+      </TabErrorBoundary>
 
       {/* Full-screen document reader for a prep guide */}
       {readerIv && <DocReader iv={readerIv} md={guideMd[readerIv.id]} onClose={() => setReaderIv(null)} />}
