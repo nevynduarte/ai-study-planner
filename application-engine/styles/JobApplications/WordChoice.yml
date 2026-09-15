@@ -1,0 +1,9 @@
+extends: substitution
+message: "Prefer direct wording: consider '%s' instead of '%s'."
+level: suggestion
+ignorecase: true
+swap:
+  'utilize|utilizing|leveraging': use
+  'in order to': to
+  'due to the fact that': because
+  'at this point in time': now
