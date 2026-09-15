@@ -22,13 +22,18 @@ Populate manually with the exact contact information you want used on applicatio
 
 ### M Science / Jefferies
 - Quantitative Equity Research Associate — Industrials, approximately late 2022 to early 2023. Resume versions differ slightly on exact month boundaries; use the dates on the submitted resume for applications.
+- Worked inside the M Science AWS/Databricks lakehouse-style data architecture shown in the user-provided architecture diagram: data was ingested into AWS services/S3, transformed and queried through Databricks/Spark, and served downstream to reporting/analysis systems including BlueMatrix and BI tooling. Do not claim personal ownership of this enterprise architecture.
 - Sourced and processed alternative datasets including satellite imagery, job postings, point-of-sale transactions, and company fundamentals using SQL and Python.
 - User-confirmed analysis included job-posting data and SKU/item-availability changes observed through web/cart interactions to estimate product sales over time.
 - Built predictive equity models in PySpark/Databricks using millions of transactions and job-posting observations.
-- Produced 10+ research reports.
+- Helped create research reports delivered through BlueMatrix.
+- Reviewed prior monthly reports when preparing the current month's report, using historical reports as context for changes, trends, prior expectations, and continuity in the research narrative.
+- Began developing a Power BI dashboard that used PySpark commands/queries to pull data from the Databricks-backed research environment for visualization and analysis.
+- Produced/contributed to 10+ research reports.
 - Automated FactSet/REST workflows, reducing reporting effort by approximately 20% and moving reporting cycles from quarterly to monthly.
-- This experience supports claims about alternative-data research, signal/feature development, quantitative equity research, Python/SQL, PySpark/Databricks, data processing, web-derived SKU/inventory signals, and communicating research.
-- Do **not** claim that a specific methodology was a tradeable index, that you personally owned an index product, or that a specific normalization/backtest procedure was used unless separately reconstructed and verified.
+- This experience supports claims about alternative-data research, signal/feature development, quantitative equity research, Python/SQL, PySpark/Databricks, data processing, web-derived SKU/inventory signals, BlueMatrix research publishing, historical report review, Power BI/dashboard development, and communicating research.
+- Do **not** claim that Nevyn designed the overall M Science data platform, personally owned the lakehouse architecture, or personally built every downstream report/dashboard integration.
+- Do **not** claim that a specific methodology was a tradeable index, that Nevyn personally owned an index product, or that a specific normalization/backtest procedure was used unless separately reconstructed and verified.
 
 ## Earlier experience
 
@@ -73,11 +78,14 @@ Populate manually with the exact contact information you want used on applicatio
 - Redis
 - Docker
 - AWS Lambda / SQS / SNS / ECS Fargate exposure
+- AWS/S3 data-platform exposure through M Science
 - PyTorch
 - LightGBM / XGBoost
 - YOLO / CLIP
 - Hugging Face NLP
 - PySpark / Databricks
+- Power BI
+- BlueMatrix research publishing workflow
 - Snowflake exposure
 - REST APIs / FactSet workflows
 - Alternative-data signals from job postings, transactions, satellite imagery, fundamentals, and SKU/cart availability changes
@@ -89,7 +97,7 @@ Populate manually with the exact contact information you want used on applicatio
 - Exact normalization and weighting methodology.
 - Exact entity-resolution procedure.
 - Exact point-in-time/backtest design and validation metrics.
-- How individual outputs fed investment decisions or client deliverables beyond the verified 10+ reports.
+- Exact boundaries between Nevyn's work and pre-existing M Science data pipelines/models.
 
 A best-effort inferred reconstruction is maintained separately in `M_SCIENCE_RECONSTRUCTION.md`. That document may be used to prepare for interviews and generate hypotheses, but inferred details must not be presented as remembered facts without user confirmation.
 
