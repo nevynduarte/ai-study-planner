@@ -23,10 +23,11 @@ Populate manually with the exact contact information you want used on applicatio
 ### M Science / Jefferies
 - Quantitative Equity Research Associate — Industrials, approximately late 2022 to early 2023. Resume versions differ slightly on exact month boundaries; use the dates on the submitted resume for applications.
 - Sourced and processed alternative datasets including satellite imagery, job postings, point-of-sale transactions, and company fundamentals using SQL and Python.
+- User-confirmed analysis included job-posting data and SKU/item-availability changes observed through web/cart interactions to estimate product sales over time.
 - Built predictive equity models in PySpark/Databricks using millions of transactions and job-posting observations.
 - Produced 10+ research reports.
 - Automated FactSet/REST workflows, reducing reporting effort by approximately 20% and moving reporting cycles from quarterly to monthly.
-- This experience supports claims about alternative-data research, signal/feature development, quantitative equity research, Python/SQL, PySpark/Databricks, data processing, and communicating research.
+- This experience supports claims about alternative-data research, signal/feature development, quantitative equity research, Python/SQL, PySpark/Databricks, data processing, web-derived SKU/inventory signals, and communicating research.
 - Do **not** claim that a specific methodology was a tradeable index, that you personally owned an index product, or that a specific normalization/backtest procedure was used unless separately reconstructed and verified.
 
 ## Earlier experience
@@ -79,15 +80,18 @@ Populate manually with the exact contact information you want used on applicatio
 - PySpark / Databricks
 - Snowflake exposure
 - REST APIs / FactSet workflows
+- Alternative-data signals from job postings, transactions, satellite imagery, fundamentals, and SKU/cart availability changes
 
-## Facts still requiring reconstruction before they can be used
+## Facts still requiring reconstruction before they can be used as verified detail
 
 ### M Science methodology details
-- Exact definition of each signal/index/feature produced.
+- Exact formulae for each signal/index/feature.
 - Exact normalization and weighting methodology.
-- Entity-resolution procedure.
-- Point-in-time/backtest design and validation metrics.
+- Exact entity-resolution procedure.
+- Exact point-in-time/backtest design and validation metrics.
 - How individual outputs fed investment decisions or client deliverables beyond the verified 10+ reports.
+
+A best-effort inferred reconstruction is maintained separately in `M_SCIENCE_RECONSTRUCTION.md`. That document may be used to prepare for interviews and generate hypotheses, but inferred details must not be presented as remembered facts without user confirmation.
 
 ### Production incident story
 - A single incident with exact chronology: detection -> diagnosis -> root cause -> fix -> prevention -> impact.
