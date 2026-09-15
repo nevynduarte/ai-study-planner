@@ -1,0 +1,16 @@
+extends: existence
+message: "Canned application phrase: '%s'. Replace it with specific evidence or direct language."
+level: warning
+ignorecase: true
+tokens:
+  - 'I am writing to express my interest'
+  - 'I am thrilled to apply'
+  - 'I am excited to apply'
+  - 'I am passionate about'
+  - 'unique blend'
+  - 'perfectly aligns'
+  - 'cutting-edge'
+  - 'fast-paced environment'
+  - 'proven track record'
+  - 'I believe I would be an excellent fit'
+  - 'I would be an excellent fit'
