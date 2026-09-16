@@ -11,7 +11,7 @@ Then add ONE "adjacent field" wildcard — something outside the current month f
 
 For each item (5 total) give:
 1) [TRACK] one-sentence description with the primary source woven in as a Markdown link: [title](https://real-url)
-2) why it matters for the primary target role (MLE at a Series B–D applied-AI/infra company) or another target role
+2) why it matters for the primary target role (AI engineering, with MLE as a secondary path) or another target role
 3) which skill in the coverage matrix it advances, and whether it should change this week's plan (yes/no + reason)
 4) priority: READ NOW / this week / bookmark
 
@@ -20,6 +20,6 @@ REFERENCES — the reader learns from this section, so every item must be self-s
 - Only link URLs you found in your web search this run and are confident resolve — arxiv abstract pages, official docs/blogs, YouTube watch pages. Never construct a URL from memory.
 - If (and only if) a figure genuinely aids understanding AND you found a stable, directly-loadable image URL (an official blog's asset, an arxiv figure mirror), embed it with ![caption](https://image-url) right after the item. At most one image total; skip images entirely rather than guess a URL.
 
-Respect the phase in the context: in Phase 1 nothing here should push toward applying early or toward items on the EXPLICITLY NOT DOING list.
+Respect the active scope and capacity. November is the main readiness target, not a ban on earlier suitable opportunities. Recommend at most one item for immediate study; the rest are reference material. Do not let frontier reading displace building or interview practice.
 
 End with: ONE finding (if any) that should trigger a plan adjustment, and for which track. Use real working URLs found this run. Markdown output (links, bold, the optional image), no preamble.

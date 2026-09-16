@@ -15,6 +15,12 @@ set -e
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$DIR/lib.sh"
 
+# The milestone plan has no numbered daily rows. Do not generate stale tutorials.
+if node -e 'const p=require(process.argv[1]); process.exit(p.mode === "milestones" ? 0 : 1)' "$PROJECT/public/portfolio.json"; then
+  echo "Milestone plan active; use the current session plan for scoped coaching."
+  exit 0
+fi
+
 TUT_DIR="$PROJECT/crash-course/tutorials"
 mkdir -p "$TUT_DIR"
 

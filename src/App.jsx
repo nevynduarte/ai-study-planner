@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import DocReader from "./components/DocReader.jsx";
+import ReadinessPlan from "./components/ReadinessPlan.jsx";
 import TechStack from "./components/TechStack.jsx";
 import ArchFlow from "./components/ArchFlow.jsx";
 import MediaRail from "./components/MediaRail.jsx";
@@ -21,7 +22,7 @@ export default function App() {
   const [tab,     setTab]     = useState("today");
   const [data,    setData]    = useState(null);
   const [cur,     setCur]     = useState(null);   // curriculum.json
-  const [portfolio, setPortfolio] = useState(null); // public/portfolio.json (built from crash-course/PORTFOLIO.md)
+  const [portfolio, setPortfolio] = useState(null); // generated from crash-course/november-plan.json
   const [briefOpenId, setBriefOpenId] = useState(null); // project id whose brief is expanded (Projects tab)
   const [briefScrollId, setBriefScrollId] = useState(null); // brief to scroll to after arriving from Today
   const [briefMd,   setBriefMd]   = useState({});      // project id -> brief markdown
@@ -211,7 +212,7 @@ export default function App() {
   // study. Day N is derived from start_date; covers a 14-day window. ────────
   const CRASH_AC    = "#0D9488";
   const PROJ_AC     = ["#185FA5", "#7F77DD", "#1D9E75", "#BA7517", "#A32D2D"];
-  const crashCourse = portfolio?.crash_course || cur?.crash_course || null;
+  const crashCourse = portfolio?.mode === "milestones" ? null : (portfolio?.crash_course || cur?.crash_course || null);
   const crashDays   = crashCourse?.days || [];
   const crashStart  = crashCourse?.start_date ? startOfDay(new Date(crashCourse.start_date + "T12:00:00")) : null;
   // Progression is completion-driven, not calendar-driven: an unfinished day
@@ -1187,7 +1188,7 @@ export default function App() {
             {!plan?.content && (
               <div style={{ fontSize:13, color:txtS, lineHeight:1.65 }}>
                 No plan yet — P620 writes one every morning at 6am ET.<br />
-                Until it lands: an hour of DSA is never the wrong answer. Log it below when it's done.
+                Until it lands: use the first-session assessment or your next unfinished milestone in Plan, within today's time budget. Log the evidence and remaining obstacle below.
               </div>
             )}
             {plan?.content && parsedPlan.blocks.map((b, i) => {
@@ -1482,6 +1483,7 @@ export default function App() {
       {/* ── PLAN (progress · crash course · roadmap) ── */}
       {tab==="plan" && (() => {
         const pf = portfolio;
+        if (pf?.mode === "milestones") return <ReadinessPlan key={pf.version} plan={pf} view="plan" card={S.card} textColor={txt} mutedColor={txtS} borderColor={brd} />;
         if (!pf) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No portfolio plan found. Run <code>npm run portfolio</code> to build it from crash-course/PORTFOLIO.md.</div>;
         const allDays = pf.projects.flatMap(p => p.days);
         const totalDone = allDays.filter(d => crashDone.has(d.n)).length;
@@ -1948,6 +1950,7 @@ export default function App() {
       {/* ── PROJECTS — biweekly portfolio sprints ── */}
       {tab==="projects" && (() => {
         const pf = portfolio;
+        if (pf?.mode === "milestones") return <ReadinessPlan key={pf.version} plan={pf} view="projects" card={S.card} textColor={txt} mutedColor={txtS} borderColor={brd} />;
         if (!pf) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No portfolio plan found. Run <code>npm run portfolio</code> to build it from crash-course/PORTFOLIO.md.</div>;
         const allDays = pf.projects.flatMap(p => p.days);
         const nextDay = allDays.find(d => !crashDone.has(d.n)) || null;

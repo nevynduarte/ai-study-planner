@@ -1,8 +1,3 @@
-# Superseded 2026-09-03
+# Current study plan
 
-The atlas-fof crash course is archived at `CRASHCOURSE-atlas-fof-archived.md`.
-It stalled because its rows were too vague to start.
-
-**The active plan is [`PORTFOLIO.md`](PORTFOLIO.md):** five production systems,
-built one at a time, every day a named file, a command, and an observable
-"done when." Day 1 is 2026-09-04.
+Follow [November readiness](NOVEMBER_READINESS.md) and [portfolio priorities](PORTFOLIO.md). The old five-system daily sprint and four-system twelve-week program are superseded. Build projects alongside fundamentals and interview practice within the weekly capacity budget.

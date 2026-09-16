@@ -63,10 +63,22 @@ if (phase) {
 // ── Applications open date ─────────────────────────────────────────────────
 const appsOpen = status.applications_open_date || "2026-11-01";
 if (todayStr < appsOpen) {
-  out.push(`APPLICATIONS: NOT OPEN YET — they open ${appsOpen}. The delay is deliberate: build the floor first, land in the Nov–Jan hiring window. Do not schedule applications, networking outreach, or portfolio work before then.`);
+  out.push(`APPLICATIONS: Main campaign target ${appsOpen}. Build the portfolio and practice interviews now. Selective earlier applications and networking are allowed; an active interview takes priority over optional extensions. November is a readiness target, not an application ban.`);
 } else {
-  out.push(`APPLICATIONS: OPEN (since ${appsOpen}). Target cadence 15–20/week, tracked.`);
+  out.push(`APPLICATIONS: Main campaign window (target ${appsOpen}). Fit application volume and interview preparation to actual weekly capacity; track stage outcomes and improve observed weaknesses.`);
 }
+out.push("");
+const path = require("node:path");
+const portfolio = readJSON(path.resolve(__dirname, "../crash-course/november-plan.json"), null);
+if (portfolio) {
+  out.push(`PORTFOLIO: ${portfolio.title}. ${portfolio.capacity_note}`);
+  for (const p of portfolio.projects) out.push(`- ${p.title}: ${p.goal} ${p.estimate}`);
+  out.push(`NEXT BASELINE: ${portfolio.first_session}`);
+  out.push("Use crash-course/NOVEMBER_READINESS.md for acceptance evidence. Projects, foundations, coding and mocks share the same weekly budget; never add a full project sprint on top of it.");
+  out.push("");
+}
+out.push("WEEKLY CADENCE (within the same total budget):");
+for (const [day, task] of Object.entries(cur.day_of_week || {})) out.push(`- ${day}: ${task}`);
 out.push("");
 
 // ── Gate with live countdown ───────────────────────────────────────────────

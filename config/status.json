@@ -1,15 +1,23 @@
 {
   "started_date": "2026-08-06",
-  "plan_version": "v2-mle-200-300k",
+  "plan_version": "november-2026-v1",
   "weekly_target_hours": 10,
   "applications_open_date": "2026-11-01",
   "gate_date": "2026-10-31",
   "total_hours_logged": 0,
-  "notes": "",
+  "notes": "November is the main readiness target. Existing 10h/week is provisional. Build now; selective earlier applications and interviews are allowed. No current interview dates have been confirmed.",
   "tracks": {
-    "dsa":        { "current_month": 1 },
-    "ml-recall":  { "current_month": 1 },
-    "sys-design": { "current_month": 1 },
-    "search":     { "current_month": 1 }
+    "dsa": {
+      "current_month": 1
+    },
+    "ml-recall": {
+      "current_month": 1
+    },
+    "sys-design": {
+      "current_month": 1
+    },
+    "search": {
+      "current_month": 1
+    }
   }
 }

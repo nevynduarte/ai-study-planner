@@ -1,3 +1,5 @@
+> Advanced reference, superseded as the active schedule on 2026-09-16. Follow [November readiness](NOVEMBER_READINESS.md) for required scope and capacity. Use the detailed exercises below selectively; they are not a mandatory three-week checklist.
+
 # Agent Platform — 3-Week Deep Build Plan
 
 **Project 1 of 4. Weeks 1–3.** This expands the original seven-day `agent-platform` sprint into a depth-first build. The objective is not merely to ship the architecture; it is to understand, benchmark, break, repair, and defend every important layer.

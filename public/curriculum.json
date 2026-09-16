@@ -1,12 +1,12 @@
 {
-  "_comment": "v2 plan: 10 hours/week alongside consulting, targeting an MLE role at $200-300K TC. Applications deliberately deferred to November 2026; hard readiness gate 2026-10-31. The year-2 elite curriculum is parked under `archive`.",
+  "_comment": "November 2026 readiness plan; 10h/week provisional baseline. Portfolio source: crash-course/november-plan.json. Historical plans and interview notes are archived, not current factual claims.",
   "student": {
     "name": "Nevyn Duarte",
-    "background": "BS Mathematics (UT Austin), MS Data Science CU Boulder (GPA 3.84). Co-Founder/CTO Bridges AI. Ex-quantitative equity researcher (M Science / Jefferies). Strong Python, RAG systems, LLM workflows, agentic systems.",
-    "commitment": "10 focused hours/week alongside Bridges AI client work (~2h/day, 5 days)",
-    "income_target": "$200K-$300K TC",
-    "thesis": "Not under-skilled for this band — under-legible and under-drilled. The production systems already clear the technical bar for tier-two AI companies. Missing: a coherent public story, DSA sharpness for the coding screen, and a systematic pipeline instead of reactive recruiter outreach.",
-    "dominant_risk": "Time-to-first-offer, not skill. Every month consulting is a month not compounding inside a company with a comp ladder.",
+    "background": "Mathematics and data-science background; experience across financial analysis, software, data and AI work. Use application-engine/FACTS.md and MASTER_RESUME.md for supported claims. Assess current independent implementation and interview skills rather than assuming technical readiness.",
+    "commitment": "10 focused hours/week provisional, including projects and interview preparation; confirm availability before increasing scope.",
+    "income_target": "Prefer $130K+ base; consider a strong $100K+ opportunity on its merits. Evaluate base, bonus and equity separately; higher compensation is an aspiration, not an assumed level.",
+    "thesis": "Convert prior exposure into demonstrated end-to-end ownership, reliable implementation, sound evaluation and clear interview explanations.",
+    "dominant_risk": "Fragmented preparation and unverified independent skill. Prioritize a finished, defensible project plus targeted drills over a large unfinished tool stack.",
     "location_targets": [
       "austin",
       "atx",
@@ -15,536 +15,49 @@
   },
   "roles": [
     {
-      "id": "deshaw-ai",
-      "name": "D.E. Shaw — Applied AI Engineer",
+      "id": "applied-ai",
+      "name": "AI Engineer / Software Engineer, Applied AI — primary",
       "primary_tracks": [
-        "sys-design"
-      ],
-      "note": "Production AI systems + ML engineering rigor."
-    },
-    {
-      "id": "deshaw-alt",
-      "name": "D.E. Shaw — Alternative Data Analyst",
-      "primary_tracks": [
-        "ml-recall"
-      ],
-      "note": "Alt-data sourcing, signal research, statistical rigor."
-    },
-    {
-      "id": "woodline",
-      "name": "Woodline Partners — Sector Data Analyst",
-      "primary_tracks": [
-        "ml-recall"
-      ],
-      "note": "Sector/fundamental modeling, data analysis, communication."
-    },
-    {
-      "id": "aaru",
-      "name": "Aaru — Software Engineer, Data Integration",
-      "primary_tracks": [
-        "ml-recall",
-        "sys-design"
-      ],
-      "note": "Data pipelines, entity resolution, large-scale ingestion, alt-data. Interview Wed Jun 24."
-    },
-    {
-      "id": "equi",
-      "name": "Equi — Founding Engineer, Applied AI Lead",
-      "primary_tracks": [
-        "sys-design"
-      ],
-      "note": "Full-stack AI (RAG, LLM workflows), TypeScript/Next.js, investment domain. Interview Tue Jun 23."
-    },
-    {
-      "id": "mle-general",
-      "name": "MLE - Series B-D applied AI / infra (primary target)",
-      "primary_tracks": [
+        "sys-design",
         "dsa",
         "ml-recall",
-        "sys-design",
         "search"
       ],
-      "note": "$200-300K TC, weakest degree screening, five rounds (coding, ML system design, ML breadth, applied coding, behavioral) — uniformly non-failing beats excellent-at-one."
+      "note": "Prioritize role requirements and independent delivery evidence over title or keyword overlap."
+    },
+    {
+      "id": "fde",
+      "name": "Forward Deployed AI Engineer — selective",
+      "primary_tracks": [
+        "sys-design",
+        "search",
+        "dsa"
+      ],
+      "note": "Verify client-facing experience, travel and production requirements; practice discovery and adoption."
+    },
+    {
+      "id": "mle",
+      "name": "Machine Learning Engineer — secondary",
+      "primary_tracks": [
+        "ml-recall",
+        "sys-design",
+        "dsa",
+        "search"
+      ],
+      "note": "Validation, modeling, serving, monitoring and software fundamentals."
+    },
+    {
+      "id": "data-quant",
+      "name": "Data science / quantitative alternative-data roles — selective",
+      "primary_tracks": [
+        "ml-recall",
+        "dsa",
+        "search"
+      ],
+      "note": "Use domain experience; add specialized prep only for credible opportunities."
     }
   ],
-  "interviews": [
-    {
-      "id": "aaru",
-      "company": "Aaru",
-      "role": "Software Engineer, Data Integration",
-      "date": "2026-06-24",
-      "day": "Wednesday",
-      "location": "NYC (in-person, 5 days/week)",
-      "salary": "$250K–$450K + equity",
-      "about": "Predictive intelligence platform — AI agents simulate entire human populations at scale for geopolitical strategy, product innovation, and marketing. Data Integration is the foundation that powers all simulations.",
-      "stack": [
-        "Python",
-        "SQL",
-        "Snowflake / BigQuery / Databricks",
-        "APIs",
-        "Flat files / Cloud Storage",
-        "dbt / Airflow"
-      ],
-      "your_strengths": [
-        "M Science / Jefferies: processed large-scale alt-data for quant equity signals — entity resolution across fragmented vendor identifiers was core to the job",
-        "Bridges AI CTO: built production data pipelines end-to-end with quality monitoring, docs, and ownership",
-        "MS Data Science (GPA 3.84): statistical rigor — sampling biases, imputation, anomaly detection, validation logic",
-        "Strong Python: transformation code, custom parsers, schema harmonization scripts all in your wheelhouse"
-      ],
-      "prep_areas": [
-        {
-          "area": "Entity Resolution & Deduplication",
-          "items": [
-            "Blocking strategies: sorted neighborhood, LSH (MinHash / SimHash), canopy clustering — why blocking is necessary before pairwise comparison",
-            "Similarity metrics: Jaro-Winkler, token-sort ratio, phonetic (Soundex/Metaphone), embedding cosine similarity",
-            "ML-based ER: Splink (probabilistic, Fellegi-Sunter) vs. Dedupe (active-learning); know when to use each",
-            "Scalable ER at 100M+ record scale: push blocking to Snowflake/Spark, pull candidate pairs for scoring",
-            "Handling fragmented / noisy identifiers: composite keys, fuzzy join, cross-walk tables"
-          ]
-        },
-        {
-          "area": "Pipeline Design at Scale (>100 TB)",
-          "items": [
-            "Medallion architecture: Bronze (raw) → Silver (cleaned/deduped) → Gold (aggregated/linked) — articulate trade-offs",
-            "Incremental vs. full-refresh: CDC (change data capture), watermarks, append-only vs. SCD Type 2 for history",
-            "Schema evolution: backward-compatible changes, additive-only column additions, Avro / Iceberg schema registry patterns",
-            "Idempotent + restartable design: write-audit-publish, dead-letter queues, exactly-once semantics",
-            "Partitioning strategy: date partitions for time-series, hash partitions for entity-keyed data"
-          ]
-        },
-        {
-          "area": "SQL Mastery",
-          "items": [
-            "Window functions: LAG/LEAD, RANK/DENSE_RANK, NTILE, running totals with ROWS BETWEEN",
-            "CTEs and recursive CTEs for hierarchical / graph data (org charts, entity hierarchies)",
-            "Lateral joins and UNNEST for nested / array columns (Snowflake VARIANT, BigQuery ARRAY)",
-            "Query optimization: partition pruning, clustering keys in Snowflake, materialized views, EXPLAIN plan reading",
-            "Slowly Changing Dimensions: Type 1 (overwrite), Type 2 (versioned rows), Type 4 (history table)"
-          ]
-        },
-        {
-          "area": "Data Quality & Validation",
-          "items": [
-            "Core DQ dimensions: completeness, uniqueness, timeliness, consistency, referential integrity",
-            "Tooling: Great Expectations / Soda / Pandera — how to write a data contract and gate a pipeline",
-            "Statistical profiling: null rates, value distribution shifts, cardinality drift, Z-score anomaly detection",
-            "Alerting: p95 row-count thresholds, freshness SLAs, PagerDuty / Slack webhook integration",
-            "Documentation: data dictionaries, lineage graphs (dbt docs, OpenLineage), column-level descriptions"
-          ]
-        },
-        {
-          "area": "Platform & Tooling",
-          "items": [
-            "Snowflake: micro-partitions, clustering keys, zero-copy cloning, Streams + Tasks for CDC, COPY INTO",
-            "BigQuery: partitioned/clustered tables, federated queries, INFORMATION_SCHEMA for metadata, slot reservations",
-            "Databricks: Delta Lake (ACID, time-travel), Unity Catalog, Auto Loader for streaming ingestion",
-            "Orchestration: Airflow (DAGs, sensors, XComs) vs. Dagster (assets, software-defined partitions) — know the difference",
-            "dbt: models (staging/intermediate/marts), tests (not_null, unique, relationships), snapshots for SCD2, macros"
-          ]
-        },
-        {
-          "area": "Alt-Data & Privacy",
-          "items": [
-            "Alt-data types: transaction data, clickstream, geospatial / point-of-interest, satellite imagery, NLP (earnings calls, news)",
-            "Sourcing and linkage: CUSIP/ISIN/ticker cross-walks, address normalization, phone/email hashing for identity resolution",
-            "Data licensing: DUAs, redistribution restrictions, derived-data rules — when you can/can't re-share signals",
-            "PII handling: tokenization, SHA-256 hashing, k-anonymity, pseudonymization vs. anonymization",
-            "Bias awareness: survivorship bias in vendor panels, look-ahead bias in point-in-time data, bot-traffic contamination in clickstream"
-          ]
-        }
-      ],
-      "story_beats": [
-        "M Science / Jefferies: 'At M Science, I ingested and cross-linked multiple alt-data vendor feeds to construct quant signals. Entity resolution across fragmented company identifiers — tickers, CIK, CUSIP — was a core daily challenge at scale.'",
-        "Bridges AI: 'As CTO I owned the full data stack — ingestion, cleaning, validation, and docs. I built the pipeline with data quality gates so downstream AI features had reliable inputs.'",
-        "MS Data Science: 'My stats background shapes how I think about data issues — I treat every new dataset with skepticism: what are the sampling biases, what's the missingness pattern, what would break if this feed went stale?'"
-      ],
-      "likely_questions": [
-        "Walk me through a pipeline you built that handled messy, large-scale data.",
-        "How do you approach entity resolution across two datasets with noisy identifiers?",
-        "What does a good data quality framework look like to you?",
-        "How do you decide between full-refresh and incremental ingestion?",
-        "Tell me about a time a data issue caused a downstream problem — how did you catch and fix it?",
-        "What alt-data sources have you worked with and how did you validate them?",
-        "How do you think about privacy and compliance when integrating third-party data?",
-        "How have you handled schema changes without breaking downstream consumers?",
-        "What's your mental model for debugging a pipeline that's silently producing wrong data?"
-      ],
-      "prep_window_days": 3,
-      "guide_md": "/prep/aaru-guide.md",
-      "rounds": [
-        {
-          "n": 1,
-          "title": "Recruiter / Hiring Screen",
-          "format": "Lead with M Science alt-data (satellite, job postings, POS) -> Bridges AI Valorem pipeline. Have 60s answers cold."
-        },
-        {
-          "n": 2,
-          "title": "Technical Take-Home or Live Data Exercise",
-          "format": "Multi-source CSV/JSON with overlapping, inconsistent entities: clean, join, dedupe, flag quality. Reuse the 9-section skeleton."
-        },
-        {
-          "n": 3,
-          "title": "System Design / Architecture",
-          "format": "Design a pipeline to ingest a new 3rd-party source and integrate it with existing population data at >100TB. Medallion, idempotency, lineage."
-        },
-        {
-          "n": 4,
-          "title": "Behavioral",
-          "format": "Filters for urgency, intellectual honesty, ownership, frontier curiosity. STAR but compressed to ~90s."
-        }
-      ],
-      "questions_to_ask": [
-        {
-          "round": "Screen",
-          "q": "How does the data integration team's work plug into the simulation/agent layer day to day - once-and-done pipelines per partner, or a standardized ingestion framework over time?"
-        },
-        {
-          "round": "Technical",
-          "q": "When you onboard a brand-new third-party data source, what does your validation process look like before it's trusted enough to feed a simulation?"
-        },
-        {
-          "round": "Final",
-          "q": "With the Series A and partners like Accenture and EY depending on simulation accuracy, how has the bar for data quality/governance changed as you've scaled?"
-        },
-        {
-          "round": "Anytime",
-          "q": "What's the messiest data source you've had to integrate so far, and what made it hard?"
-        }
-      ],
-      "behavioral_bank": [
-        {
-          "prompt": "Integrate messy, untrustworthy data under time pressure.",
-          "story": "Woodline take-home (mixed date formats) or M Science Industrials alt-data - pick the one you can speak to with the most technical depth live."
-        },
-        {
-          "prompt": "Own something end-to-end with minimal oversight.",
-          "story": "Bridges AI Valorem build - 13-service architecture, you as CTO, no one to defer to."
-        },
-        {
-          "prompt": "A decision made with incomplete information.",
-          "story": "A Valorem architecture call or the home-lab LiteLLM routing decision - frame as calculated, reversible, fast."
-        },
-        {
-          "prompt": "Handling disagreement about technical approach.",
-          "story": "A real Bridges AI co-founder disagreement or a CU Boulder group project - concrete, resolution-focused."
-        },
-        {
-          "prompt": "Why data integration, why Aaru, why now?",
-          "story": "M Science (alt data as a research lens) -> Bridges AI (you build the pipelines) -> genuine interest in agent-based population simulation as the next frontier."
-        }
-      ],
-      "final_checklist": [
-        "Re-read the Part 3 take-home framework the morning of any take-home",
-        "Practice the entity-resolution notebook end-to-end, timed",
-        "Rehearse the 5 behavioral stories out loud, 90s each",
-        "Have 3 questions ready, tailored to who you're meeting",
-        "Review Aaru's EY and Accenture case studies for fresh, specific language",
-        "Know your M Science and Valorem data-quality stories cold"
-      ],
-      "practice": [
-        {
-          "title": "Entity-resolution take-home",
-          "type": "notebook",
-          "desc": "Timed 9-section skeleton: inspect -> quality log -> entity resolution -> schema harmonization -> join -> validation -> summary, over panel + survey data.",
-          "path": "prep/aaru/practice_takehome.ipynb"
-        },
-        {
-          "title": "Reference solution",
-          "type": "notebook",
-          "desc": "Open only after attempting it cold under a timer.",
-          "path": "prep/aaru/practice_takehome_SOLUTION.ipynb"
-        },
-        {
-          "title": "Synthetic data + generator",
-          "type": "data",
-          "desc": "panel_data.csv + survey_data.csv (same population, two sources) and generate_data.py.",
-          "path": "prep/aaru/"
-        }
-      ]
-    },
-    {
-      "id": "equi",
-      "company": "Equi",
-      "role": "Founding Engineer, Applied AI Lead",
-      "date": "2026-06-23",
-      "day": "Tuesday",
-      "location": "NYC (hybrid)",
-      "salary": "Senior founding engineer comp + equity",
-      "about": "Investment management firm — institutional-quality alternative investments (fund of funds). Builds white-label fund of funds products for multi-family offices and advisory firms. AUM scaling rapidly. You'd be the first/lead engineer building AI systems for manager selection, portfolio construction, and investment workflow automation.",
-      "stack": [
-        "TypeScript",
-        "Next.js",
-        "Python",
-        "Postgres",
-        "GCP (Cloud Run, BigQuery, Cloud Storage)"
-      ],
-      "your_strengths": [
-        "RAG systems and LLM workflows (strong): directly maps to their AI engineering needs — parsing fund docs, building investment intelligence",
-        "Agentic systems: investment workflow automation (due diligence, monitoring, reporting) is exactly what they need",
-        "Co-Founder/CTO Bridges AI: founding engineer mindset — full ownership from ideation through post-launch; you've been this person before",
-        "M Science / Jefferies quant researcher: genuine, deep investment domain credibility — not a stretch, it's your background",
-        "MS Data Science: rigorous thinking about data quality, modeling, and statistical inference that an investment firm values"
-      ],
-      "prep_areas": [
-        {
-          "area": "RAG Systems Deep Dive",
-          "items": [
-            "Chunking strategies: fixed-size (simple), semantic/sentence (coherent context), hierarchical (summary + detail), proposition-level (for dense factual docs)",
-            "Retrieval: dense (embedding cosine sim), sparse (BM25/TF-IDF), hybrid (RRF fusion) — know when hybrid beats dense-only",
-            "Reranking: cross-encoder models (ms-marco-MiniLM), LLM-as-judge reranking, Cohere Rerank / Jina Reranker",
-            "Metadata filtering + query routing: filter by fund type, date range, manager before retrieval to narrow search space",
-            "Evaluation: RAGAS metrics (faithfulness, context recall, answer relevance, context precision) — run an eval before shipping",
-            "Equi-specific: RAG over PPMs, pitchbooks, SEC filings, performance reports, meeting notes — multi-format, multi-source"
-          ]
-        },
-        {
-          "area": "LLM Integration & Agentic Workflows",
-          "items": [
-            "Structured output extraction: tool use / function calling for reliable JSON, pydantic output schemas",
-            "Parsing multi-format docs: PDF (PyMuPDF/pdfplumber), Excel (openpyxl), email → structured investment data",
-            "Multi-step investment analysis pipelines: search → retrieve → analyze → summarize → recommend",
-            "Prompt engineering for financial tasks: few-shot with domain examples, chain-of-thought for quantitative reasoning",
-            "Streaming responses in Next.js: Vercel AI SDK, ReadableStream, incremental UI updates for long analyses",
-            "Tool use patterns: web search, calculator, document retrieval, code execution for quantitative calculations"
-          ]
-        },
-        {
-          "area": "Full-Stack (TypeScript / Next.js / Python / Postgres)",
-          "items": [
-            "Next.js App Router: server components (async, no client JS), server actions, route handlers, streaming UI with Suspense",
-            "TypeScript: strict mode, discriminated unions, Zod for runtime validation, tRPC for type-safe API",
-            "Auth: NextAuth.js / Clerk — JWT sessions, role-based access for client-facing vs. internal tools",
-            "Postgres: schema design for investment data (funds, managers, NAVs, returns), pgvector for embeddings, indexing strategy",
-            "Python backend: FastAPI or Flask for AI inference endpoints, Pydantic models, async with asyncio",
-            "Design a client-facing portfolio dashboard: how would you structure the schema and API?"
-          ]
-        },
-        {
-          "area": "Data Pipelines for Investment Data",
-          "items": [
-            "Alternative investment data: NAV, performance (monthly/quarterly), attribution, factor exposure, drawdown series",
-            "Fund of funds data flow: manager → sub-fund → aggregate portfolio; handling different reporting formats/cadences",
-            "Data normalization: mapping heterogeneous manager reports to a canonical schema",
-            "GCP pipeline: Cloud Storage (raw docs) → Cloud Run (parsing/ETL jobs) → BigQuery (analytics) → Postgres (ops data)",
-            "dbt on BigQuery for transformation layer; Postgres as the operational database for the web app"
-          ]
-        },
-        {
-          "area": "Investment Domain Knowledge",
-          "items": [
-            "Fund of funds structure: LP/GP, management fee (1-2%), carry (10-20%), hurdle rate, waterfall",
-            "Alternative investment types: hedge funds (L/S equity, macro, credit), PE (buyout, growth, venture), real assets, co-investments",
-            "Manager selection criteria: Sharpe ratio, max drawdown, Sortino, Calmar, factor exposure analysis, style drift detection",
-            "White-label fund products: separate accounts, sub-advised vehicles, how reporting changes at scale",
-            "AUM growth implications: more reporting, more due diligence workflows, more client portals → where AI helps most"
-          ]
-        },
-        {
-          "area": "Product Thinking & Founding Engineer Mindset",
-          "items": [
-            "30/60/90-day plan: Day 1-30 — understand the business deeply, map existing data flows, ship one small high-value AI tool. Day 31-60 — RAG over fund docs live. Day 61-90 — automate one due diligence workflow.",
-            "Prioritization framework: effort × impact matrix; what's reversible (build it fast) vs. irreversible (be careful)",
-            "Technical decision-making under ambiguity: spike → validate assumption → decide; avoid analysis paralysis",
-            "Team building vision: hire generalists early, keep the team small; every engineer ships to prod",
-            "Why keep the team small and flat: speed, ownership, direct feedback loop — matches their stated vision"
-          ]
-        }
-      ],
-      "story_beats": [
-        "Why investing (must be authentic): 'I spent years as a quant equity researcher at M Science / Jefferies, working directly with alt-data to build signals. Investing isn't adjacent to my interests — it's the domain I came from. I left to build AI products, and Equi is where those two worlds converge.'",
-        "Bridges AI CTO: 'I've been the founding engineer before — I set the technical direction, built the infra, shipped features, and hired the first engineers. I know what it means to own everything and build without a safety net.'",
-        "RAG + AI systems: 'At Bridges AI I built RAG pipelines and LLM-powered workflows in production. I can take a fund document corpus and have a working retrieval system running within a day — I've done it before.'",
-        "Full-stack: 'I work across the stack. I don't hand off the frontend to someone else — I design, build, and ship the full product from database schema to UI.'"
-      ],
-      "likely_questions": [
-        "Why investing? What draws you to this domain specifically — be specific.",
-        "Walk me through an AI system you built end-to-end in production.",
-        "How would you approach building a RAG system over our fund documents from scratch?",
-        "What would you build in your first 30 days here?",
-        "How do you think about product decisions as an engineer? Give me an example.",
-        "Tell me about a time you had to make a significant technical decision with limited information.",
-        "How do you think about hiring and team-building as we scale?",
-        "Walk me through something you built in TypeScript / Next.js.",
-        "How would you automate the due diligence workflow for manager selection — what would the AI pipeline look like?",
-        "What's the hardest technical problem you've solved?"
-      ],
-      "prep_window_days": 3,
-      "guide_md": "/prep/equi-guide.md",
-      "rounds": [
-        {
-          "n": 1,
-          "title": "Recruiter / Hiring Screen",
-          "format": "Founding-engineer continuity (Bridges AI CTO). Why investing genuinely interests you. 90s solo full-stack walkthrough (Houston Mobile Mixology)."
-        },
-        {
-          "n": 2,
-          "title": "Live Coding / Pairing",
-          "format": "Build a small Next.js + FastAPI feature live, narrating tradeoffs - or a take-home. Server vs Client Components, Zod at boundaries, Pydantic, async."
-        },
-        {
-          "n": 3,
-          "title": "System Design - RAG over investment data",
-          "format": "NL Q&A over fund letters / DD memos with accurate, cited, traceable answers. Highest-leverage thing to prep deeply."
-        },
-        {
-          "n": 4,
-          "title": "System Design - Full-stack / multi-tenant white-label",
-          "format": "Design the white-label fund-of-funds product: multi-tenancy (RLS vs tenant_id), RBAC, partner APIs, GCP (Cloud Run / Cloud SQL / Cloud Storage)."
-        },
-        {
-          "n": 5,
-          "title": "Behavioral & Founder Round",
-          "format": "Product-Minded / High Autonomy / Bias Toward Action. Do they want to build with you for years; do you genuinely love investing."
-        }
-      ],
-      "questions_to_ask": [
-        {
-          "round": "Screen",
-          "q": "How is the engineering function structured today - am I the first technical hire, or joining a very small existing team?"
-        },
-        {
-          "round": "Technical",
-          "q": "What does the current investment data pipeline look like today - mostly manual analyst work the AI tooling would augment first, or existing infrastructure I'd be extending?"
-        },
-        {
-          "round": "System design",
-          "q": "For the white-label product - how much customization do individual MFO/RIA partners need versus a single shared platform experience?"
-        },
-        {
-          "round": "Founder",
-          "q": "With the new LOI and more expected, how do you think about the engineering org's shape over the next 12-18 months - when does 'small and flat' start needing structure?"
-        }
-      ],
-      "behavioral_bank": [
-        {
-          "prompt": "Shipped something with incomplete information. (Bias Toward Action)",
-          "story": "A fast architecture decision at Bridges AI or your home-lab LiteLLM routing - calculated, reversible, iterated quickly."
-        },
-        {
-          "prompt": "Challenged a product or technical assumption. (Product-Minded)",
-          "story": "A Bridges AI client instance (Valorem or Houston Mobile Mixology) where you pushed back on scope/approach with data."
-        },
-        {
-          "prompt": "Owned something end-to-end with no one to defer to. (High Autonomy)",
-          "story": "Bridges AI CTO broadly, or the Houston Mobile Mixology two-part build for a real client, solo."
-        },
-        {
-          "prompt": "Why investing? Why now?",
-          "story": "M Science quant equity research -> Jefferies -> alt data moving from research curiosity to decision input; now build the engineering infrastructure at a platform level."
-        },
-        {
-          "prompt": "Where do you see your career in 2-3 years?",
-          "story": "Match their arc: hands-on building now, growing into leading a small flat team as the platform scales, while staying technical."
-        }
-      ],
-      "final_checklist": [
-        "Rebuild the RAG architecture explanation out loud, twice, without notes",
-        "Walk through the practice full-stack build end to end",
-        "Rehearse the 5 behavioral stories mapped to Product-Minded / Autonomy / Bias Toward Action",
-        "Know fund-of-funds, MFO, LOI, manager selection cold",
-        "Have a genuine, specific answer for why investing - not 'fintech is interesting'",
-        "Prepare 3-4 tailored questions per round"
-      ],
-      "domain_terms": [
-        {
-          "term": "Fund-of-funds",
-          "def": "A fund that invests in other funds (managers) rather than directly in securities - Equi's core white-label product."
-        },
-        {
-          "term": "Multi-family office (MFO)",
-          "def": "A firm managing wealth for several HNW families, often needing alt-investment access they can't source alone - Equi's client base."
-        },
-        {
-          "term": "LOI (Letter of Intent)",
-          "def": "Non-binding agreement signaling a deal is moving forward - Equi's growth narrative is LOI-driven right now."
-        },
-        {
-          "term": "Manager selection / due diligence",
-          "def": "Evaluating which fund managers to allocate capital to - the human expertise the AI tooling augments."
-        }
-      ],
-      "practice": [
-        {
-          "title": "Fund-research RAG app (practice build)",
-          "type": "fullstack",
-          "desc": "FastAPI + Next.js + citation-grounded RAG over synthetic fund docs. Rebuild from memory while narrating, then compare to the reference.",
-          "path": "prep/equi/practice_build/"
-        },
-        {
-          "title": "5 timed extension exercises",
-          "type": "exercises",
-          "desc": "Hybrid retrieval, numeric-verification guardrail, /summary endpoint, multi-tenancy, eval set - 30-45 min each, no reference solution.",
-          "path": "prep/equi/practice_build/README.md"
-        }
-      ]
-    },
-    {
-      "id": "woodline",
-      "company": "Woodline Partners",
-      "role": "Sector Data Analyst",
-      "dormant": true,
-      "location": "San Francisco / NYC",
-      "salary": "Competitive base + bonus",
-      "about": "Woodline Partners is a multi-strategy / multi-manager hedge fund. The Sector Data Analyst role pairs fundamental/sector modeling with data analysis — building the datasets and KPIs that support a portfolio manager's stock-picking in a coverage sector.",
-      "your_strengths": [
-        "M Science / Jefferies quant equity research — sector and fundamental modeling is directly your background",
-        "Strong Python + SQL for sourcing, cleaning, and modeling company/sector KPI data",
-        "MS Data Science — statistical rigor for signal validation and anomaly detection",
-        "Clear communication of analysis to non-technical stakeholders (PMs)"
-      ],
-      "likely_questions": [
-        "Walk me through how you'd build a fundamental model for a sector you cover.",
-        "How do you source and validate a new alternative dataset for a thesis?",
-        "Tell me about a data-driven insight that changed an investment view.",
-        "How do you decide which KPIs actually drive a stock vs. noise?",
-        "How would you communicate a complex analysis to a portfolio manager in 5 minutes?"
-      ]
-    },
-    {
-      "id": "deshaw-ai",
-      "company": "D.E. Shaw",
-      "role": "Applied AI Engineer",
-      "dormant": true,
-      "location": "NYC",
-      "salary": "Top-of-market base + bonus",
-      "about": "The D.E. Shaw group is a global investment and technology firm. The Applied AI Engineer builds production AI systems with ML-engineering rigor — the bar is strong software engineering plus genuine ML/LLM depth, applied to real research and infrastructure problems.",
-      "your_strengths": [
-        "Production RAG and LLM workflow systems built end-to-end at Bridges AI",
-        "ML-engineering discipline — testing, packaging, serving, evaluation, observability",
-        "From-scratch ML/transformer understanding (the AI Engineering track)",
-        "Quant-research background gives domain fluency for a finance-AI firm"
-      ],
-      "likely_questions": [
-        "Design a production RAG / LLM system end-to-end — retrieval, serving, eval.",
-        "How do you evaluate and monitor an LLM system in production?",
-        "Implement and explain a core ML component from scratch (e.g. attention).",
-        "Walk me through a hard engineering bug you debugged in an ML pipeline.",
-        "How do you reason about latency, cost, and reliability for model serving?"
-      ]
-    },
-    {
-      "id": "deshaw-alt",
-      "company": "D.E. Shaw",
-      "role": "Alternative Data Analyst",
-      "dormant": true,
-      "location": "NYC",
-      "salary": "Top-of-market base + bonus",
-      "about": "Sources, evaluates, and onboards alternative datasets for systematic and discretionary strategies — turning messy third-party data into validated, point-in-time signals while reasoning carefully about biases and licensing.",
-      "your_strengths": [
-        "M Science alt-data experience — sourcing, entity resolution, signal construction",
-        "Statistical rigor: look-ahead/survivorship awareness, sampling bias, imputation",
-        "Strong data engineering — pipelines, quality gates, point-in-time correctness",
-        "Factor/IC research intuition from the Quant track"
-      ],
-      "likely_questions": [
-        "How would you evaluate whether a new alt-dataset has alpha?",
-        "Walk me through cleaning and entity-resolving a noisy vendor feed at scale.",
-        "How do you guard against look-ahead and survivorship bias in point-in-time data?",
-        "What are the licensing / derived-data pitfalls of re-selling signals?",
-        "How do you measure a signal's information coefficient and decay?"
-      ]
-    }
-  ],
+  "interviews": [],
   "research": [
     {
       "id": "attention-2017",
@@ -2736,13 +2249,13 @@
     ]
   },
   "day_of_week": {
-    "Monday": "Set weekly goals per track, review last week's deliverables",
-    "Tuesday": "Implementation focus — code runs today",
-    "Wednesday": "Read one complete paper end-to-end",
-    "Thursday": "Push something to GitHub",
-    "Friday": "Write 500+ words technical content, review the week",
-    "Saturday": "Long project block, open-source contribution",
-    "Sunday": "Review notes, plan next week, update GitHub"
+    "Monday": "Two-hour block: build 60m, Python/SQL 30m, foundations 30m.",
+    "Tuesday": "Two-hour block: build 60m, Python/SQL 30m, foundations 30m.",
+    "Wednesday": "Two-hour block: build 60m, Python/SQL 30m, foundations 30m.",
+    "Thursday": "Two-hour block: build 60m, Python/SQL 30m, foundations 30m.",
+    "Friday": "Two-hour block: build/design walkthrough 60m, mock/career review 60m.",
+    "Saturday": "Optional additional capacity only; not assumed in the 10-hour plan.",
+    "Sunday": "Rest or reschedule a missed block; do not double-count hours."
   },
   "coverage_legend": {
     "not-started": "Not yet touched",
@@ -2946,76 +2459,60 @@
   "phases": [
     {
       "n": 1,
-      "name": "Build the Floor",
+      "name": "Build and diagnose",
       "months": "1-3",
-      "window": "Aug–Oct 2026",
-      "goal": "Be demonstrably interview-ready. Not applying yet, deliberately.",
-      "note": "Confidence built purely by studying evaporates on contact with a real loop; the Month 3 gate is the defense."
+      "window": "Through October 2026",
+      "goal": "Build the flagship and demonstrate independent fundamentals; accept suitable earlier interviews.",
+      "note": "November is the main readiness target. All work must fit the actual weekly budget."
     },
     {
       "n": 2,
-      "name": "Apply and Convert",
-      "months": "4-6",
-      "window": "Nov 2026–Jan 2027",
-      "goal": "15–20 applications/week; screens to onsites.",
-      "note": "Nov–Jan is a stronger hiring window than August, so the delay lands him in it."
-    },
-    {
-      "n": 3,
-      "name": "Close",
-      "months": "7-9",
-      "window": "Feb–Apr 2027",
-      "goal": "Cluster offers, negotiate on level, sign by May 2027.",
-      "note": "$210K now beats $280K arriving six months later; the ladder does more work than the starting rung."
-    },
-    {
-      "n": 4,
-      "name": "Land Well, Then Compound",
-      "months": "10-12",
-      "window": "May–Jul 2027",
-      "goal": "Ship visibly in the first 90 days; artifact track begins.",
-      "note": "Artifacts are deferred value — they don't help get THIS job, they make the $500K tier real in years 2–4."
+      "name": "Apply and improve",
+      "months": "4-12",
+      "window": "November 2026 onward",
+      "goal": "Run a targeted application pipeline and improve the weakest observed interview stage.",
+      "note": "Adjust pace to actual capacity; no fixed offer date or assumed seasonal hiring advantage."
     }
   ],
   "gate": {
-    "name": "Month 3 Checkpoint - Ready to Apply",
+    "name": "November readiness review",
     "target_date": "2026-10-31",
     "criteria": [
       {
         "id": "dsa",
-        "text": "LeetCode mediums under 30 min, consistently, on unseen problems",
-        "fail_response": "3 more weeks of DSA only; everything else holds; do NOT extend the whole phase."
+        "text": "Across two sessions, solve 4/5 unseen role-appropriate Python/SQL tasks with tests and explanations; treat this as a local practice rubric.",
+        "fail_response": "Spend the next week on the observed weakness and retest; keep suitable applications and portfolio work active."
       },
       {
         "id": "sysdesign",
-        "text": "5 system design mocks completed without freezing",
-        "fail_response": "Paid mocks with a practicing engineer; external feedback, not more solo reps."
+        "text": "Two consecutive role-specific design mocks without critical omissions; explain requirements, evaluation, failure recovery, cost and changed constraints.",
+        "fail_response": "Get specific feedback, revise one design and repeat a mock; paid coaching is optional."
       },
       {
         "id": "recall",
-        "text": "Anki deck at 90%+ recall on the fundamentals set",
-        "fail_response": "Two weeks of Anki intensity."
+        "text": "Explain and apply core ML concepts in project examples; independently implement or debug a critical component.",
+        "fail_response": "Use targeted exercises and spaced retests, not recall scores alone."
       },
       {
         "id": "assets",
-        "text": "Resume final, GitHub presentable, LinkedIn aligned",
-        "fail_response": "One weekend; this is not a skill gap."
+        "text": "Working reproducible flagship, honest evaluation report, short demo, and six source-backed stories; ML project if capacity permits.",
+        "fail_response": "Freeze new features and close the smallest missing evidence before expanding scope."
       }
     ],
-    "all_fail_response": "The 10 hrs/week wasn't real. Re-plan against actual capacity rather than intended capacity."
+    "all_fail_response": "Reassess actual capacity, scope and learning obstacles without assuming the hours were dishonest. Set a dated review and continue suitable opportunities."
   },
   "tracks": {
     "dsa": {
-      "name": "DSA / Coding",
-      "weight": 0.5,
-      "weekly_hours": 5,
-      "daily_hours": 1.0,
+      "name": "Python and SQL",
+      "weight": 0.2,
+      "weekly_hours": 2,
+      "daily_hours": 0.4,
       "color": {
         "bg": "#FBEAEA",
         "text": "#7A1F1F",
         "border": "#C43333"
       },
-      "summary": "The round that eliminates people. Consulting and founding work does not keep this sharp, and no amount of system-design brilliance survives a failed screen.",
+      "summary": "Timed implementation, tests, complexity, joins/windows and debugging.",
       "skills": [
         "Arrays & hashing",
         "Two pointers",
@@ -3033,81 +2530,81 @@
       "months": [
         {
           "n": 1,
-          "title": "Primer + Arrays, Hashing, Two Pointers",
-          "roi": 95,
-          "focus": "Neetcode primer week, then arrays/hashing/two-pointers/sliding-window/stack. Rule: >35 min on a problem means read the solution, then re-solve from scratch 3 days later. Expect the first two weeks to feel bad — getting stuck IS the mechanism, not a sign the plan is wrong."
+          "title": "Python and SQL",
+          "roi": 90,
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 2,
-          "title": "Binary Search, Linked Lists, Trees, Tries",
-          "roi": 92,
-          "focus": "Binary search, linked lists, trees, tries. Patterns start repeating here; the goal is recognizing which pattern a fresh problem belongs to before writing code."
+          "title": "Python and SQL",
+          "roi": 90,
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 3,
-          "title": "Heap, Backtracking, Graphs, 1D DP",
+          "title": "Python and SQL",
           "roi": 90,
-          "focus": "Heap/priority queue, backtracking, graphs, 1D dynamic programming — the hard stretch. This is where the gate's under-30-minutes criterion is won or lost."
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 4,
-          "title": "Maintenance under live fire",
-          "roi": 70,
-          "focus": "Applications are live; ~2h/week of maintenance reps. Skills decay fast and screens are live now — dropping DSA entirely in Month 4 is how a green gate turns into a failed screen in Month 5."
+          "title": "Python and SQL",
+          "roi": 90,
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 5,
-          "title": "Maintenance",
-          "roi": 65,
-          "focus": "~2h/week maintenance. Re-drill any pattern that fumbles in a real screen the same week it fumbles."
+          "title": "Python and SQL",
+          "roi": 90,
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 6,
-          "title": "Maintenance",
-          "roi": 60,
-          "focus": "~2h/week maintenance through onsite season. Timed sets over new topics."
+          "title": "Python and SQL",
+          "roi": 90,
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 7,
-          "title": "Taper",
-          "roi": 40,
-          "focus": "Taper. Keep one timed set a week while negotiation takes the foreground."
+          "title": "Python and SQL",
+          "roi": 90,
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 8,
-          "title": "Taper",
-          "roi": 35,
-          "focus": "Taper. Enough to stay warm for any late-arriving final loops."
+          "title": "Python and SQL",
+          "roi": 90,
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 9,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off. The job is signed or closing; grinding problems now is avoidance of the actual close."
+          "title": "Python and SQL",
+          "roi": 90,
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 10,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Python and SQL",
+          "roi": 90,
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 11,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Python and SQL",
+          "roi": 90,
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 12,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Python and SQL",
+          "roi": 90,
+          "focus": "Timed implementation, tests, complexity, joins/windows and debugging. Adapt to actual interview feedback and current responsibilities."
         }
       ],
-      "why": "The coding screen is the first gate at every target company; calm pattern recall under a 30-minute clock is what decides whether the rest of your background ever gets seen."
+      "why": "Timed implementation, tests, complexity, joins/windows and debugging."
     },
     "ml-recall": {
-      "name": "ML Fundamentals Recall",
+      "name": "ML foundations and reasoning",
       "weight": 0.2,
       "weekly_hours": 2,
       "daily_hours": 0.4,
@@ -3116,7 +2613,7 @@
         "text": "#0E3A66",
         "border": "#185FA5"
       },
-      "summary": "Breadth under time pressure. Not new material — retrieval speed on material he already scored 98% in.",
+      "summary": "Connect probability, validation, metrics, optimization and models to concrete project decisions.",
       "skills": [
         "Bias-variance",
         "Regularization (L1/L2)",
@@ -3132,90 +2629,90 @@
       "months": [
         {
           "n": 1,
-          "title": "Build the deck",
-          "roi": 85,
-          "focus": "Build the Anki deck from the CU Boulder notes. The goal is 40-second retrieval, which is a different state than having scored 98% — the exam tested recognition, the interview tests production."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 2,
-          "title": "LLM-era cards",
-          "roi": 80,
-          "focus": "Add the LLM-era cards: RAG failure modes, eval design, fine-tune vs prompt vs retrieve. This is the material interviewers actually probe in 2026."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 3,
-          "title": "Drill to 90%",
-          "roi": 85,
-          "focus": "Drill the full deck to 90%+ recall — the gate criterion. Cards that keep lapsing point at real gaps; chase those, not new cards."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 4,
-          "title": "Maintenance + interview feedback loop",
-          "roi": 60,
-          "focus": "Maintenance reps. Every question fumbled in a real interview becomes a card the same day."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 5,
-          "title": "Maintenance",
-          "roi": 55,
-          "focus": "Maintenance; keep folding fumbled interview questions back into the deck."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 6,
-          "title": "Maintenance",
-          "roi": 55,
-          "focus": "Maintenance through onsites."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 7,
-          "title": "Maintenance",
-          "roi": 40,
-          "focus": "Light maintenance."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 8,
-          "title": "Maintenance",
-          "roi": 35,
-          "focus": "Light maintenance."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 9,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 10,
-          "title": "Pull-based foundations",
-          "roi": 50,
-          "focus": "The pull-based foundations lane opens: depth pursued in response to a concrete confusion is retained; depth pursued preemptively mostly isn't. Boyd's Convex Optimization and Murphy chapters get pulled as specific walls appear at work — not read cover to cover on spec."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 11,
-          "title": "Pull-based foundations",
-          "roi": 50,
-          "focus": "Continue pulling foundations against real walls from the job. The job decides the syllabus now."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 12,
-          "title": "Pull-based foundations",
-          "roi": 50,
-          "focus": "Same lane. If nothing at work is forcing depth, that's a signal to take harder problems at work, not to invent coursework."
+          "title": "ML foundations and reasoning",
+          "roi": 90,
+          "focus": "Connect probability, validation, metrics, optimization and models to concrete project decisions. Adapt to actual interview feedback and current responsibilities."
         }
       ],
-      "why": "ML breadth rounds probe tradeoffs, not definitions. The deck keeps ~30 concepts one confident sentence deep so no fundamental catches you cold mid-interview."
+      "why": "Connect probability, validation, metrics, optimization and models to concrete project decisions."
     },
     "sys-design": {
-      "name": "ML System Design",
-      "weight": 0.2,
-      "weekly_hours": 2,
-      "daily_hours": 0.4,
+      "name": "Build, operate and explain",
+      "weight": 0.5,
+      "weekly_hours": 5,
+      "daily_hours": 1.0,
       "color": {
         "bg": "#E7F3E8",
         "text": "#1B4D1F",
         "border": "#2E7D32"
       },
-      "summary": "His strongest round — production systems and client-facing ownership are exactly what it tests. Two gaps: scale and multi-tenancy.",
+      "summary": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs.",
       "skills": [
         "Requirements interrogation",
         "Metric definition",
@@ -3229,81 +2726,81 @@
       "months": [
         {
           "n": 1,
-          "title": "Not yet",
-          "roi": 30,
-          "focus": "Not yet — DSA and positioning own Month 1. Read Chip Huyen in background time; the round is strong enough that starting it later costs little."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 2,
-          "title": "Framework + first four designs",
-          "roi": 85,
-          "focus": "Lock the answer framework, then the first four designs: RAG over enterprise docs, an agentic workflow, a recommender, fraud detection. Narrate each aloud, timed at 45 minutes — reading is not preparation, speaking under pressure is."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 3,
-          "title": "Remaining four + the two known gaps",
-          "roi": 88,
-          "focus": "Remaining four: feature store, LLM eval pipeline, real-time inference, multi-tenant platform. Then drill the two known gaps directly: scale at 10k req/sec (sharding, replication, p99 budgets) and multi-tenancy/cost attribution."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 4,
-          "title": "Mocks scale with onsites",
-          "roi": 75,
-          "focus": "Mocks scale with the onsite calendar, 70/30 mocks-to-reading. Every real interview's design question gets a written post-mortem."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 5,
-          "title": "Mocks",
-          "roi": 70,
-          "focus": "Mocks keyed to upcoming onsites; 70/30 mocks-to-reading holds."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 6,
-          "title": "Mocks",
-          "roi": 70,
-          "focus": "Mocks through peak onsite season."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 7,
-          "title": "Mocks as needed",
-          "roi": 50,
-          "focus": "Mocks only for live final rounds."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 8,
-          "title": "Mocks as needed",
-          "roi": 40,
-          "focus": "Same."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 9,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 10,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off — the first 90 days at the new job are the real system design practice now."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 11,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 12,
-          "title": "Off",
-          "roi": 10,
-          "focus": "Off."
+          "title": "Build, operate and explain",
+          "roi": 90,
+          "focus": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs. Adapt to actual interview feedback and current responsibilities."
         }
       ],
-      "why": "The system-design round is where level and comp get decided — it's the proof you can own a production ML system end to end, not just train a model."
+      "why": "Evidence Workbench first; include deployment, evaluation, failure drills and design walkthroughs."
     },
     "search": {
-      "name": "Positioning & Search",
+      "name": "Interview and application pipeline",
       "weight": 0.1,
       "weekly_hours": 1,
       "daily_hours": 0.2,
@@ -3312,7 +2809,7 @@
         "text": "#43276B",
         "border": "#6A3FA0"
       },
-      "summary": "Front-loaded into Week 1, dormant through Month 3, then owns the plan from Month 4. The bottleneck is execution here, not capability.",
+      "summary": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled.",
       "skills": [
         "Canonical resume",
         "Alt-data swap-in block",
@@ -3326,101 +2823,103 @@
       "months": [
         {
           "n": 1,
-          "title": "Positioning week",
-          "roi": 100,
-          "focus": "Drafting the resume now is not about applying — it's how he finds out which story he actually has. Canonical frame: \"builds production ML systems that make money.\" Lead with Valorem (3M+ property records, 13-service FastAPI/GraphQL pipeline on AWS); M Science is the credibility line. Build the alt-data swap-in bullet block, and pin 3 GitHub repos each stating problem/architecture/one number."
+          "title": "Interview and application pipeline",
+          "roi": 90,
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 2,
-          "title": "Dormant",
-          "roi": 20,
-          "focus": "Dormant. Resist tinkering with the resume — at this stage that's procrastination wearing productivity's clothes."
+          "title": "Interview and application pipeline",
+          "roi": 90,
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 3,
-          "title": "Target list",
-          "roi": 75,
-          "focus": "Build the target list: 60% Series B–D applied-AI/infra, 20% AI-forward mid-size, 10% quant fund engineering (research screens on credentials, engineering doesn't), 10% hyperscaler. Run this as the FLOOR, not the whole bet: in parallel, open a tier-one lane — frontier-lab FDE/applied and quant-fund engineering — applied opportunistically at lower volume. Those are the seats where the $500K tier actually lives; Series B–D is what protects time-to-offer while they cook. Tag every application with its tier so the funnel shows whether tier-one is converting or only the floor is. Decision rule, written now before it is emotional: take the first good floor offer (real comp ladder) UNLESS a tier-one loop is already at onsite — do not let a floor offer expire chasing a tier-one maybe."
+          "title": "Interview and application pipeline",
+          "roi": 90,
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Follow crash-course/NOVEMBER_READINESS.md through the October checkpoint."
         },
         {
           "n": 4,
-          "title": "Applications live",
-          "roi": 95,
-          "focus": "Applications open. 15–20/week, tracked in a spreadsheet. Do NOT build tooling yet — a spreadsheet does the job and tooling is a way to feel productive without applying."
+          "title": "Interview and application pipeline",
+          "roi": 90,
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 5,
-          "title": "Diagnose stalls",
+          "title": "Interview and application pipeline",
           "roi": 90,
-          "focus": "Diagnose stalls by symptom: no screens means resume/targeting; screens but no onsites means the coding round; onsites but no offers means design or behavioral. Fix the failing stage, not everything."
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 6,
-          "title": "Onsites + behavioral narratives",
+          "title": "Interview and application pipeline",
           "roi": 90,
-          "focus": "Onsite season. Tighten the behavioral narratives — founding Bridges AI, the Valorem build, leaving quant research — each with a decision, a tradeoff, and a number."
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 7,
-          "title": "Negotiate on data",
+          "title": "Interview and application pipeline",
           "roi": 90,
-          "focus": "Negotiate on data, not feelings: competing offers, level bands, location-adjusted comps. Level beats base — argue the level first, the number follows."
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 8,
-          "title": "Negotiate / close",
-          "roi": 85,
-          "focus": "Keep offers warm and clustered. The goal is signing well, not squeezing the last $10K out of a single offer."
+          "title": "Interview and application pipeline",
+          "roi": 90,
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 9,
-          "title": "Sign",
-          "roi": 80,
-          "focus": "Sign by May 2027. Done is the deliverable."
+          "title": "Interview and application pipeline",
+          "roi": 90,
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 10,
-          "title": "First 90 days",
-          "roi": 70,
-          "focus": "First 90 days: ship visibly, and own the highest-leverage system nobody owns."
+          "title": "Interview and application pipeline",
+          "roi": 90,
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 11,
-          "title": "First 90 days",
-          "roi": 65,
-          "focus": "Keep shipping; convert early wins into scope."
+          "title": "Interview and application pipeline",
+          "roi": 90,
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Adapt to actual interview feedback and current responsibilities."
         },
         {
           "n": 12,
-          "title": "Artifact track begins",
-          "roi": 60,
-          "focus": "The artifact track opens: reproductions, OSS PRs, writing. This is the years-2–4 compounding lane, started only now, on purpose."
+          "title": "Interview and application pipeline",
+          "roi": 90,
+          "focus": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled. Adapt to actual interview feedback and current responsibilities."
         }
       ],
-      "why": "Converting skill into offers is its own skill: targeting, a legible resume and GitHub, steady application cadence, and negotiating on data instead of hope."
+      "why": "Rotate a mock, factual stories and job verification. Increase practice when interviews are scheduled."
     }
   },
   "not_doing": [
-    "Coursera specializations — an MS at 3.84 already outranks them.",
-    "Additional degrees.",
-    "Measure-theoretic probability — paper fluency needs comfortable, not expert.",
-    "Reading the agentic-AI survey cover to cover — it's a map, not a course.",
-    "CLRS or a full algorithms MOOC — pattern recognition under time pressure is the gap, not proofs.",
-    "Paper reproductions before Month 12 — genuinely valuable, infinitely expandable, and the most comfortable form of avoidance.",
-    "Building a job-pipeline scraper before Month 2 — a spreadsheet does 90% of the job on day one."
+    "Four large platforms in parallel.",
+    "Treating the full CMU self-study curriculum as a prerequisite to applications.",
+    "Adding infrastructure without a measured need or bounded interview-learning objective.",
+    "Presenting generated code, simulated metrics or old interview notes as verified personal accomplishments.",
+    "Requiring all readiness checks to pass before any suitable application."
   ],
   "failure_modes": [
     {
-      "name": "The gate slipping",
-      "detail": "October 31 arrives, criteria are unmet, and 'one more month' gets granted informally. The gate only works if failing it triggers the named fail_response, dated and written down — not a quiet extension of Phase 1."
+      "name": "Scope outruns capacity",
+      "detail": "Compare committed work with actual weekly hours; reduce features before dropping evaluation, coding or mocks."
     },
     {
-      "name": "Depth-chasing as avoidance",
-      "detail": "Hours drift toward intellectually satisfying material — papers, foundations, reproductions — while DSA reps and application counts lag. Everything in not_doing is a flavor of this; the log will show it before it feels like it."
+      "name": "Recognition mistaken for mastery",
+      "detail": "Require independent implementation, explanation and delayed retests."
     },
     {
-      "name": "Holding out for the perfect offer",
-      "detail": "Turning down a good $210K offer to keep searching for $280K. The ladder does more work than the starting rung, and every month of delay is a month of comp and compounding forgone."
+      "name": "Tools replace outcomes",
+      "detail": "Every new component needs a concrete requirement, tradeoff and evidence."
+    },
+    {
+      "name": "Preparation never meets feedback",
+      "detail": "Keep selective opportunities open before November and track application-stage outcomes afterward."
     }
   ],
   "archive": {
@@ -3955,375 +3454,1483 @@
       "background": "BS Mathematics (UT Austin), MS Data Science CU Boulder (GPA 3.84). Co-Founder/CTO Bridges AI. Ex-quantitative equity researcher (M Science / Jefferies). Strong Python, RAG systems, LLM workflows, agentic systems.",
       "commitment": "3 focused hours/day (~21h/week), 12-month elite curriculum across 4 parallel tracks",
       "income_target": "$300K–$600K+"
+    },
+    "before_november_review_20260916": {
+      "student": {
+        "name": "Nevyn Duarte",
+        "background": "BS Mathematics (UT Austin), MS Data Science CU Boulder (GPA 3.84). Co-Founder/CTO Bridges AI. Ex-quantitative equity researcher (M Science / Jefferies). Strong Python, RAG systems, LLM workflows, agentic systems.",
+        "commitment": "10 focused hours/week alongside Bridges AI client work (~2h/day, 5 days)",
+        "income_target": "$200K-$300K TC",
+        "thesis": "Not under-skilled for this band — under-legible and under-drilled. The production systems already clear the technical bar for tier-two AI companies. Missing: a coherent public story, DSA sharpness for the coding screen, and a systematic pipeline instead of reactive recruiter outreach.",
+        "dominant_risk": "Time-to-first-offer, not skill. Every month consulting is a month not compounding inside a company with a comp ladder.",
+        "location_targets": [
+          "austin",
+          "atx",
+          "remote"
+        ]
+      },
+      "roles": [
+        {
+          "id": "deshaw-ai",
+          "name": "D.E. Shaw — Applied AI Engineer",
+          "primary_tracks": [
+            "sys-design"
+          ],
+          "note": "Production AI systems + ML engineering rigor."
+        },
+        {
+          "id": "deshaw-alt",
+          "name": "D.E. Shaw — Alternative Data Analyst",
+          "primary_tracks": [
+            "ml-recall"
+          ],
+          "note": "Alt-data sourcing, signal research, statistical rigor."
+        },
+        {
+          "id": "woodline",
+          "name": "Woodline Partners — Sector Data Analyst",
+          "primary_tracks": [
+            "ml-recall"
+          ],
+          "note": "Sector/fundamental modeling, data analysis, communication."
+        },
+        {
+          "id": "aaru",
+          "name": "Aaru — Software Engineer, Data Integration",
+          "primary_tracks": [
+            "ml-recall",
+            "sys-design"
+          ],
+          "note": "Data pipelines, entity resolution, large-scale ingestion, alt-data. Interview Wed Jun 24."
+        },
+        {
+          "id": "equi",
+          "name": "Equi — Founding Engineer, Applied AI Lead",
+          "primary_tracks": [
+            "sys-design"
+          ],
+          "note": "Full-stack AI (RAG, LLM workflows), TypeScript/Next.js, investment domain. Interview Tue Jun 23."
+        },
+        {
+          "id": "mle-general",
+          "name": "MLE - Series B-D applied AI / infra (primary target)",
+          "primary_tracks": [
+            "dsa",
+            "ml-recall",
+            "sys-design",
+            "search"
+          ],
+          "note": "$200-300K TC, weakest degree screening, five rounds (coding, ML system design, ML breadth, applied coding, behavioral) — uniformly non-failing beats excellent-at-one."
+        }
+      ],
+      "interviews": [
+        {
+          "id": "aaru",
+          "company": "Aaru",
+          "role": "Software Engineer, Data Integration",
+          "date": "2026-06-24",
+          "day": "Wednesday",
+          "location": "NYC (in-person, 5 days/week)",
+          "salary": "$250K–$450K + equity",
+          "about": "Predictive intelligence platform — AI agents simulate entire human populations at scale for geopolitical strategy, product innovation, and marketing. Data Integration is the foundation that powers all simulations.",
+          "stack": [
+            "Python",
+            "SQL",
+            "Snowflake / BigQuery / Databricks",
+            "APIs",
+            "Flat files / Cloud Storage",
+            "dbt / Airflow"
+          ],
+          "your_strengths": [
+            "M Science / Jefferies: processed large-scale alt-data for quant equity signals — entity resolution across fragmented vendor identifiers was core to the job",
+            "Bridges AI CTO: built production data pipelines end-to-end with quality monitoring, docs, and ownership",
+            "MS Data Science (GPA 3.84): statistical rigor — sampling biases, imputation, anomaly detection, validation logic",
+            "Strong Python: transformation code, custom parsers, schema harmonization scripts all in your wheelhouse"
+          ],
+          "prep_areas": [
+            {
+              "area": "Entity Resolution & Deduplication",
+              "items": [
+                "Blocking strategies: sorted neighborhood, LSH (MinHash / SimHash), canopy clustering — why blocking is necessary before pairwise comparison",
+                "Similarity metrics: Jaro-Winkler, token-sort ratio, phonetic (Soundex/Metaphone), embedding cosine similarity",
+                "ML-based ER: Splink (probabilistic, Fellegi-Sunter) vs. Dedupe (active-learning); know when to use each",
+                "Scalable ER at 100M+ record scale: push blocking to Snowflake/Spark, pull candidate pairs for scoring",
+                "Handling fragmented / noisy identifiers: composite keys, fuzzy join, cross-walk tables"
+              ]
+            },
+            {
+              "area": "Pipeline Design at Scale (>100 TB)",
+              "items": [
+                "Medallion architecture: Bronze (raw) → Silver (cleaned/deduped) → Gold (aggregated/linked) — articulate trade-offs",
+                "Incremental vs. full-refresh: CDC (change data capture), watermarks, append-only vs. SCD Type 2 for history",
+                "Schema evolution: backward-compatible changes, additive-only column additions, Avro / Iceberg schema registry patterns",
+                "Idempotent + restartable design: write-audit-publish, dead-letter queues, exactly-once semantics",
+                "Partitioning strategy: date partitions for time-series, hash partitions for entity-keyed data"
+              ]
+            },
+            {
+              "area": "SQL Mastery",
+              "items": [
+                "Window functions: LAG/LEAD, RANK/DENSE_RANK, NTILE, running totals with ROWS BETWEEN",
+                "CTEs and recursive CTEs for hierarchical / graph data (org charts, entity hierarchies)",
+                "Lateral joins and UNNEST for nested / array columns (Snowflake VARIANT, BigQuery ARRAY)",
+                "Query optimization: partition pruning, clustering keys in Snowflake, materialized views, EXPLAIN plan reading",
+                "Slowly Changing Dimensions: Type 1 (overwrite), Type 2 (versioned rows), Type 4 (history table)"
+              ]
+            },
+            {
+              "area": "Data Quality & Validation",
+              "items": [
+                "Core DQ dimensions: completeness, uniqueness, timeliness, consistency, referential integrity",
+                "Tooling: Great Expectations / Soda / Pandera — how to write a data contract and gate a pipeline",
+                "Statistical profiling: null rates, value distribution shifts, cardinality drift, Z-score anomaly detection",
+                "Alerting: p95 row-count thresholds, freshness SLAs, PagerDuty / Slack webhook integration",
+                "Documentation: data dictionaries, lineage graphs (dbt docs, OpenLineage), column-level descriptions"
+              ]
+            },
+            {
+              "area": "Platform & Tooling",
+              "items": [
+                "Snowflake: micro-partitions, clustering keys, zero-copy cloning, Streams + Tasks for CDC, COPY INTO",
+                "BigQuery: partitioned/clustered tables, federated queries, INFORMATION_SCHEMA for metadata, slot reservations",
+                "Databricks: Delta Lake (ACID, time-travel), Unity Catalog, Auto Loader for streaming ingestion",
+                "Orchestration: Airflow (DAGs, sensors, XComs) vs. Dagster (assets, software-defined partitions) — know the difference",
+                "dbt: models (staging/intermediate/marts), tests (not_null, unique, relationships), snapshots for SCD2, macros"
+              ]
+            },
+            {
+              "area": "Alt-Data & Privacy",
+              "items": [
+                "Alt-data types: transaction data, clickstream, geospatial / point-of-interest, satellite imagery, NLP (earnings calls, news)",
+                "Sourcing and linkage: CUSIP/ISIN/ticker cross-walks, address normalization, phone/email hashing for identity resolution",
+                "Data licensing: DUAs, redistribution restrictions, derived-data rules — when you can/can't re-share signals",
+                "PII handling: tokenization, SHA-256 hashing, k-anonymity, pseudonymization vs. anonymization",
+                "Bias awareness: survivorship bias in vendor panels, look-ahead bias in point-in-time data, bot-traffic contamination in clickstream"
+              ]
+            }
+          ],
+          "story_beats": [
+            "M Science / Jefferies: 'At M Science, I ingested and cross-linked multiple alt-data vendor feeds to construct quant signals. Entity resolution across fragmented company identifiers — tickers, CIK, CUSIP — was a core daily challenge at scale.'",
+            "Bridges AI: 'As CTO I owned the full data stack — ingestion, cleaning, validation, and docs. I built the pipeline with data quality gates so downstream AI features had reliable inputs.'",
+            "MS Data Science: 'My stats background shapes how I think about data issues — I treat every new dataset with skepticism: what are the sampling biases, what's the missingness pattern, what would break if this feed went stale?'"
+          ],
+          "likely_questions": [
+            "Walk me through a pipeline you built that handled messy, large-scale data.",
+            "How do you approach entity resolution across two datasets with noisy identifiers?",
+            "What does a good data quality framework look like to you?",
+            "How do you decide between full-refresh and incremental ingestion?",
+            "Tell me about a time a data issue caused a downstream problem — how did you catch and fix it?",
+            "What alt-data sources have you worked with and how did you validate them?",
+            "How do you think about privacy and compliance when integrating third-party data?",
+            "How have you handled schema changes without breaking downstream consumers?",
+            "What's your mental model for debugging a pipeline that's silently producing wrong data?"
+          ],
+          "prep_window_days": 3,
+          "guide_md": "/prep/aaru-guide.md",
+          "rounds": [
+            {
+              "n": 1,
+              "title": "Recruiter / Hiring Screen",
+              "format": "Lead with M Science alt-data (satellite, job postings, POS) -> Bridges AI Valorem pipeline. Have 60s answers cold."
+            },
+            {
+              "n": 2,
+              "title": "Technical Take-Home or Live Data Exercise",
+              "format": "Multi-source CSV/JSON with overlapping, inconsistent entities: clean, join, dedupe, flag quality. Reuse the 9-section skeleton."
+            },
+            {
+              "n": 3,
+              "title": "System Design / Architecture",
+              "format": "Design a pipeline to ingest a new 3rd-party source and integrate it with existing population data at >100TB. Medallion, idempotency, lineage."
+            },
+            {
+              "n": 4,
+              "title": "Behavioral",
+              "format": "Filters for urgency, intellectual honesty, ownership, frontier curiosity. STAR but compressed to ~90s."
+            }
+          ],
+          "questions_to_ask": [
+            {
+              "round": "Screen",
+              "q": "How does the data integration team's work plug into the simulation/agent layer day to day - once-and-done pipelines per partner, or a standardized ingestion framework over time?"
+            },
+            {
+              "round": "Technical",
+              "q": "When you onboard a brand-new third-party data source, what does your validation process look like before it's trusted enough to feed a simulation?"
+            },
+            {
+              "round": "Final",
+              "q": "With the Series A and partners like Accenture and EY depending on simulation accuracy, how has the bar for data quality/governance changed as you've scaled?"
+            },
+            {
+              "round": "Anytime",
+              "q": "What's the messiest data source you've had to integrate so far, and what made it hard?"
+            }
+          ],
+          "behavioral_bank": [
+            {
+              "prompt": "Integrate messy, untrustworthy data under time pressure.",
+              "story": "Woodline take-home (mixed date formats) or M Science Industrials alt-data - pick the one you can speak to with the most technical depth live."
+            },
+            {
+              "prompt": "Own something end-to-end with minimal oversight.",
+              "story": "Bridges AI Valorem build - 13-service architecture, you as CTO, no one to defer to."
+            },
+            {
+              "prompt": "A decision made with incomplete information.",
+              "story": "A Valorem architecture call or the home-lab LiteLLM routing decision - frame as calculated, reversible, fast."
+            },
+            {
+              "prompt": "Handling disagreement about technical approach.",
+              "story": "A real Bridges AI co-founder disagreement or a CU Boulder group project - concrete, resolution-focused."
+            },
+            {
+              "prompt": "Why data integration, why Aaru, why now?",
+              "story": "M Science (alt data as a research lens) -> Bridges AI (you build the pipelines) -> genuine interest in agent-based population simulation as the next frontier."
+            }
+          ],
+          "final_checklist": [
+            "Re-read the Part 3 take-home framework the morning of any take-home",
+            "Practice the entity-resolution notebook end-to-end, timed",
+            "Rehearse the 5 behavioral stories out loud, 90s each",
+            "Have 3 questions ready, tailored to who you're meeting",
+            "Review Aaru's EY and Accenture case studies for fresh, specific language",
+            "Know your M Science and Valorem data-quality stories cold"
+          ],
+          "practice": [
+            {
+              "title": "Entity-resolution take-home",
+              "type": "notebook",
+              "desc": "Timed 9-section skeleton: inspect -> quality log -> entity resolution -> schema harmonization -> join -> validation -> summary, over panel + survey data.",
+              "path": "prep/aaru/practice_takehome.ipynb"
+            },
+            {
+              "title": "Reference solution",
+              "type": "notebook",
+              "desc": "Open only after attempting it cold under a timer.",
+              "path": "prep/aaru/practice_takehome_SOLUTION.ipynb"
+            },
+            {
+              "title": "Synthetic data + generator",
+              "type": "data",
+              "desc": "panel_data.csv + survey_data.csv (same population, two sources) and generate_data.py.",
+              "path": "prep/aaru/"
+            }
+          ]
+        },
+        {
+          "id": "equi",
+          "company": "Equi",
+          "role": "Founding Engineer, Applied AI Lead",
+          "date": "2026-06-23",
+          "day": "Tuesday",
+          "location": "NYC (hybrid)",
+          "salary": "Senior founding engineer comp + equity",
+          "about": "Investment management firm — institutional-quality alternative investments (fund of funds). Builds white-label fund of funds products for multi-family offices and advisory firms. AUM scaling rapidly. You'd be the first/lead engineer building AI systems for manager selection, portfolio construction, and investment workflow automation.",
+          "stack": [
+            "TypeScript",
+            "Next.js",
+            "Python",
+            "Postgres",
+            "GCP (Cloud Run, BigQuery, Cloud Storage)"
+          ],
+          "your_strengths": [
+            "RAG systems and LLM workflows (strong): directly maps to their AI engineering needs — parsing fund docs, building investment intelligence",
+            "Agentic systems: investment workflow automation (due diligence, monitoring, reporting) is exactly what they need",
+            "Co-Founder/CTO Bridges AI: founding engineer mindset — full ownership from ideation through post-launch; you've been this person before",
+            "M Science / Jefferies quant researcher: genuine, deep investment domain credibility — not a stretch, it's your background",
+            "MS Data Science: rigorous thinking about data quality, modeling, and statistical inference that an investment firm values"
+          ],
+          "prep_areas": [
+            {
+              "area": "RAG Systems Deep Dive",
+              "items": [
+                "Chunking strategies: fixed-size (simple), semantic/sentence (coherent context), hierarchical (summary + detail), proposition-level (for dense factual docs)",
+                "Retrieval: dense (embedding cosine sim), sparse (BM25/TF-IDF), hybrid (RRF fusion) — know when hybrid beats dense-only",
+                "Reranking: cross-encoder models (ms-marco-MiniLM), LLM-as-judge reranking, Cohere Rerank / Jina Reranker",
+                "Metadata filtering + query routing: filter by fund type, date range, manager before retrieval to narrow search space",
+                "Evaluation: RAGAS metrics (faithfulness, context recall, answer relevance, context precision) — run an eval before shipping",
+                "Equi-specific: RAG over PPMs, pitchbooks, SEC filings, performance reports, meeting notes — multi-format, multi-source"
+              ]
+            },
+            {
+              "area": "LLM Integration & Agentic Workflows",
+              "items": [
+                "Structured output extraction: tool use / function calling for reliable JSON, pydantic output schemas",
+                "Parsing multi-format docs: PDF (PyMuPDF/pdfplumber), Excel (openpyxl), email → structured investment data",
+                "Multi-step investment analysis pipelines: search → retrieve → analyze → summarize → recommend",
+                "Prompt engineering for financial tasks: few-shot with domain examples, chain-of-thought for quantitative reasoning",
+                "Streaming responses in Next.js: Vercel AI SDK, ReadableStream, incremental UI updates for long analyses",
+                "Tool use patterns: web search, calculator, document retrieval, code execution for quantitative calculations"
+              ]
+            },
+            {
+              "area": "Full-Stack (TypeScript / Next.js / Python / Postgres)",
+              "items": [
+                "Next.js App Router: server components (async, no client JS), server actions, route handlers, streaming UI with Suspense",
+                "TypeScript: strict mode, discriminated unions, Zod for runtime validation, tRPC for type-safe API",
+                "Auth: NextAuth.js / Clerk — JWT sessions, role-based access for client-facing vs. internal tools",
+                "Postgres: schema design for investment data (funds, managers, NAVs, returns), pgvector for embeddings, indexing strategy",
+                "Python backend: FastAPI or Flask for AI inference endpoints, Pydantic models, async with asyncio",
+                "Design a client-facing portfolio dashboard: how would you structure the schema and API?"
+              ]
+            },
+            {
+              "area": "Data Pipelines for Investment Data",
+              "items": [
+                "Alternative investment data: NAV, performance (monthly/quarterly), attribution, factor exposure, drawdown series",
+                "Fund of funds data flow: manager → sub-fund → aggregate portfolio; handling different reporting formats/cadences",
+                "Data normalization: mapping heterogeneous manager reports to a canonical schema",
+                "GCP pipeline: Cloud Storage (raw docs) → Cloud Run (parsing/ETL jobs) → BigQuery (analytics) → Postgres (ops data)",
+                "dbt on BigQuery for transformation layer; Postgres as the operational database for the web app"
+              ]
+            },
+            {
+              "area": "Investment Domain Knowledge",
+              "items": [
+                "Fund of funds structure: LP/GP, management fee (1-2%), carry (10-20%), hurdle rate, waterfall",
+                "Alternative investment types: hedge funds (L/S equity, macro, credit), PE (buyout, growth, venture), real assets, co-investments",
+                "Manager selection criteria: Sharpe ratio, max drawdown, Sortino, Calmar, factor exposure analysis, style drift detection",
+                "White-label fund products: separate accounts, sub-advised vehicles, how reporting changes at scale",
+                "AUM growth implications: more reporting, more due diligence workflows, more client portals → where AI helps most"
+              ]
+            },
+            {
+              "area": "Product Thinking & Founding Engineer Mindset",
+              "items": [
+                "30/60/90-day plan: Day 1-30 — understand the business deeply, map existing data flows, ship one small high-value AI tool. Day 31-60 — RAG over fund docs live. Day 61-90 — automate one due diligence workflow.",
+                "Prioritization framework: effort × impact matrix; what's reversible (build it fast) vs. irreversible (be careful)",
+                "Technical decision-making under ambiguity: spike → validate assumption → decide; avoid analysis paralysis",
+                "Team building vision: hire generalists early, keep the team small; every engineer ships to prod",
+                "Why keep the team small and flat: speed, ownership, direct feedback loop — matches their stated vision"
+              ]
+            }
+          ],
+          "story_beats": [
+            "Why investing (must be authentic): 'I spent years as a quant equity researcher at M Science / Jefferies, working directly with alt-data to build signals. Investing isn't adjacent to my interests — it's the domain I came from. I left to build AI products, and Equi is where those two worlds converge.'",
+            "Bridges AI CTO: 'I've been the founding engineer before — I set the technical direction, built the infra, shipped features, and hired the first engineers. I know what it means to own everything and build without a safety net.'",
+            "RAG + AI systems: 'At Bridges AI I built RAG pipelines and LLM-powered workflows in production. I can take a fund document corpus and have a working retrieval system running within a day — I've done it before.'",
+            "Full-stack: 'I work across the stack. I don't hand off the frontend to someone else — I design, build, and ship the full product from database schema to UI.'"
+          ],
+          "likely_questions": [
+            "Why investing? What draws you to this domain specifically — be specific.",
+            "Walk me through an AI system you built end-to-end in production.",
+            "How would you approach building a RAG system over our fund documents from scratch?",
+            "What would you build in your first 30 days here?",
+            "How do you think about product decisions as an engineer? Give me an example.",
+            "Tell me about a time you had to make a significant technical decision with limited information.",
+            "How do you think about hiring and team-building as we scale?",
+            "Walk me through something you built in TypeScript / Next.js.",
+            "How would you automate the due diligence workflow for manager selection — what would the AI pipeline look like?",
+            "What's the hardest technical problem you've solved?"
+          ],
+          "prep_window_days": 3,
+          "guide_md": "/prep/equi-guide.md",
+          "rounds": [
+            {
+              "n": 1,
+              "title": "Recruiter / Hiring Screen",
+              "format": "Founding-engineer continuity (Bridges AI CTO). Why investing genuinely interests you. 90s solo full-stack walkthrough (Houston Mobile Mixology)."
+            },
+            {
+              "n": 2,
+              "title": "Live Coding / Pairing",
+              "format": "Build a small Next.js + FastAPI feature live, narrating tradeoffs - or a take-home. Server vs Client Components, Zod at boundaries, Pydantic, async."
+            },
+            {
+              "n": 3,
+              "title": "System Design - RAG over investment data",
+              "format": "NL Q&A over fund letters / DD memos with accurate, cited, traceable answers. Highest-leverage thing to prep deeply."
+            },
+            {
+              "n": 4,
+              "title": "System Design - Full-stack / multi-tenant white-label",
+              "format": "Design the white-label fund-of-funds product: multi-tenancy (RLS vs tenant_id), RBAC, partner APIs, GCP (Cloud Run / Cloud SQL / Cloud Storage)."
+            },
+            {
+              "n": 5,
+              "title": "Behavioral & Founder Round",
+              "format": "Product-Minded / High Autonomy / Bias Toward Action. Do they want to build with you for years; do you genuinely love investing."
+            }
+          ],
+          "questions_to_ask": [
+            {
+              "round": "Screen",
+              "q": "How is the engineering function structured today - am I the first technical hire, or joining a very small existing team?"
+            },
+            {
+              "round": "Technical",
+              "q": "What does the current investment data pipeline look like today - mostly manual analyst work the AI tooling would augment first, or existing infrastructure I'd be extending?"
+            },
+            {
+              "round": "System design",
+              "q": "For the white-label product - how much customization do individual MFO/RIA partners need versus a single shared platform experience?"
+            },
+            {
+              "round": "Founder",
+              "q": "With the new LOI and more expected, how do you think about the engineering org's shape over the next 12-18 months - when does 'small and flat' start needing structure?"
+            }
+          ],
+          "behavioral_bank": [
+            {
+              "prompt": "Shipped something with incomplete information. (Bias Toward Action)",
+              "story": "A fast architecture decision at Bridges AI or your home-lab LiteLLM routing - calculated, reversible, iterated quickly."
+            },
+            {
+              "prompt": "Challenged a product or technical assumption. (Product-Minded)",
+              "story": "A Bridges AI client instance (Valorem or Houston Mobile Mixology) where you pushed back on scope/approach with data."
+            },
+            {
+              "prompt": "Owned something end-to-end with no one to defer to. (High Autonomy)",
+              "story": "Bridges AI CTO broadly, or the Houston Mobile Mixology two-part build for a real client, solo."
+            },
+            {
+              "prompt": "Why investing? Why now?",
+              "story": "M Science quant equity research -> Jefferies -> alt data moving from research curiosity to decision input; now build the engineering infrastructure at a platform level."
+            },
+            {
+              "prompt": "Where do you see your career in 2-3 years?",
+              "story": "Match their arc: hands-on building now, growing into leading a small flat team as the platform scales, while staying technical."
+            }
+          ],
+          "final_checklist": [
+            "Rebuild the RAG architecture explanation out loud, twice, without notes",
+            "Walk through the practice full-stack build end to end",
+            "Rehearse the 5 behavioral stories mapped to Product-Minded / Autonomy / Bias Toward Action",
+            "Know fund-of-funds, MFO, LOI, manager selection cold",
+            "Have a genuine, specific answer for why investing - not 'fintech is interesting'",
+            "Prepare 3-4 tailored questions per round"
+          ],
+          "domain_terms": [
+            {
+              "term": "Fund-of-funds",
+              "def": "A fund that invests in other funds (managers) rather than directly in securities - Equi's core white-label product."
+            },
+            {
+              "term": "Multi-family office (MFO)",
+              "def": "A firm managing wealth for several HNW families, often needing alt-investment access they can't source alone - Equi's client base."
+            },
+            {
+              "term": "LOI (Letter of Intent)",
+              "def": "Non-binding agreement signaling a deal is moving forward - Equi's growth narrative is LOI-driven right now."
+            },
+            {
+              "term": "Manager selection / due diligence",
+              "def": "Evaluating which fund managers to allocate capital to - the human expertise the AI tooling augments."
+            }
+          ],
+          "practice": [
+            {
+              "title": "Fund-research RAG app (practice build)",
+              "type": "fullstack",
+              "desc": "FastAPI + Next.js + citation-grounded RAG over synthetic fund docs. Rebuild from memory while narrating, then compare to the reference.",
+              "path": "prep/equi/practice_build/"
+            },
+            {
+              "title": "5 timed extension exercises",
+              "type": "exercises",
+              "desc": "Hybrid retrieval, numeric-verification guardrail, /summary endpoint, multi-tenancy, eval set - 30-45 min each, no reference solution.",
+              "path": "prep/equi/practice_build/README.md"
+            }
+          ]
+        },
+        {
+          "id": "woodline",
+          "company": "Woodline Partners",
+          "role": "Sector Data Analyst",
+          "dormant": true,
+          "location": "San Francisco / NYC",
+          "salary": "Competitive base + bonus",
+          "about": "Woodline Partners is a multi-strategy / multi-manager hedge fund. The Sector Data Analyst role pairs fundamental/sector modeling with data analysis — building the datasets and KPIs that support a portfolio manager's stock-picking in a coverage sector.",
+          "your_strengths": [
+            "M Science / Jefferies quant equity research — sector and fundamental modeling is directly your background",
+            "Strong Python + SQL for sourcing, cleaning, and modeling company/sector KPI data",
+            "MS Data Science — statistical rigor for signal validation and anomaly detection",
+            "Clear communication of analysis to non-technical stakeholders (PMs)"
+          ],
+          "likely_questions": [
+            "Walk me through how you'd build a fundamental model for a sector you cover.",
+            "How do you source and validate a new alternative dataset for a thesis?",
+            "Tell me about a data-driven insight that changed an investment view.",
+            "How do you decide which KPIs actually drive a stock vs. noise?",
+            "How would you communicate a complex analysis to a portfolio manager in 5 minutes?"
+          ]
+        },
+        {
+          "id": "deshaw-ai",
+          "company": "D.E. Shaw",
+          "role": "Applied AI Engineer",
+          "dormant": true,
+          "location": "NYC",
+          "salary": "Top-of-market base + bonus",
+          "about": "The D.E. Shaw group is a global investment and technology firm. The Applied AI Engineer builds production AI systems with ML-engineering rigor — the bar is strong software engineering plus genuine ML/LLM depth, applied to real research and infrastructure problems.",
+          "your_strengths": [
+            "Production RAG and LLM workflow systems built end-to-end at Bridges AI",
+            "ML-engineering discipline — testing, packaging, serving, evaluation, observability",
+            "From-scratch ML/transformer understanding (the AI Engineering track)",
+            "Quant-research background gives domain fluency for a finance-AI firm"
+          ],
+          "likely_questions": [
+            "Design a production RAG / LLM system end-to-end — retrieval, serving, eval.",
+            "How do you evaluate and monitor an LLM system in production?",
+            "Implement and explain a core ML component from scratch (e.g. attention).",
+            "Walk me through a hard engineering bug you debugged in an ML pipeline.",
+            "How do you reason about latency, cost, and reliability for model serving?"
+          ]
+        },
+        {
+          "id": "deshaw-alt",
+          "company": "D.E. Shaw",
+          "role": "Alternative Data Analyst",
+          "dormant": true,
+          "location": "NYC",
+          "salary": "Top-of-market base + bonus",
+          "about": "Sources, evaluates, and onboards alternative datasets for systematic and discretionary strategies — turning messy third-party data into validated, point-in-time signals while reasoning carefully about biases and licensing.",
+          "your_strengths": [
+            "M Science alt-data experience — sourcing, entity resolution, signal construction",
+            "Statistical rigor: look-ahead/survivorship awareness, sampling bias, imputation",
+            "Strong data engineering — pipelines, quality gates, point-in-time correctness",
+            "Factor/IC research intuition from the Quant track"
+          ],
+          "likely_questions": [
+            "How would you evaluate whether a new alt-dataset has alpha?",
+            "Walk me through cleaning and entity-resolving a noisy vendor feed at scale.",
+            "How do you guard against look-ahead and survivorship bias in point-in-time data?",
+            "What are the licensing / derived-data pitfalls of re-selling signals?",
+            "How do you measure a signal's information coefficient and decay?"
+          ]
+        }
+      ],
+      "phases": [
+        {
+          "n": 1,
+          "name": "Build the Floor",
+          "months": "1-3",
+          "window": "Aug–Oct 2026",
+          "goal": "Be demonstrably interview-ready. Not applying yet, deliberately.",
+          "note": "Confidence built purely by studying evaporates on contact with a real loop; the Month 3 gate is the defense."
+        },
+        {
+          "n": 2,
+          "name": "Apply and Convert",
+          "months": "4-6",
+          "window": "Nov 2026–Jan 2027",
+          "goal": "15–20 applications/week; screens to onsites.",
+          "note": "Nov–Jan is a stronger hiring window than August, so the delay lands him in it."
+        },
+        {
+          "n": 3,
+          "name": "Close",
+          "months": "7-9",
+          "window": "Feb–Apr 2027",
+          "goal": "Cluster offers, negotiate on level, sign by May 2027.",
+          "note": "$210K now beats $280K arriving six months later; the ladder does more work than the starting rung."
+        },
+        {
+          "n": 4,
+          "name": "Land Well, Then Compound",
+          "months": "10-12",
+          "window": "May–Jul 2027",
+          "goal": "Ship visibly in the first 90 days; artifact track begins.",
+          "note": "Artifacts are deferred value — they don't help get THIS job, they make the $500K tier real in years 2–4."
+        }
+      ],
+      "gate": {
+        "name": "Month 3 Checkpoint - Ready to Apply",
+        "target_date": "2026-10-31",
+        "criteria": [
+          {
+            "id": "dsa",
+            "text": "LeetCode mediums under 30 min, consistently, on unseen problems",
+            "fail_response": "3 more weeks of DSA only; everything else holds; do NOT extend the whole phase."
+          },
+          {
+            "id": "sysdesign",
+            "text": "5 system design mocks completed without freezing",
+            "fail_response": "Paid mocks with a practicing engineer; external feedback, not more solo reps."
+          },
+          {
+            "id": "recall",
+            "text": "Anki deck at 90%+ recall on the fundamentals set",
+            "fail_response": "Two weeks of Anki intensity."
+          },
+          {
+            "id": "assets",
+            "text": "Resume final, GitHub presentable, LinkedIn aligned",
+            "fail_response": "One weekend; this is not a skill gap."
+          }
+        ],
+        "all_fail_response": "The 10 hrs/week wasn't real. Re-plan against actual capacity rather than intended capacity."
+      },
+      "tracks": {
+        "dsa": {
+          "name": "DSA / Coding",
+          "weight": 0.5,
+          "weekly_hours": 5,
+          "daily_hours": 1.0,
+          "color": {
+            "bg": "#FBEAEA",
+            "text": "#7A1F1F",
+            "border": "#C43333"
+          },
+          "summary": "The round that eliminates people. Consulting and founding work does not keep this sharp, and no amount of system-design brilliance survives a failed screen.",
+          "skills": [
+            "Arrays & hashing",
+            "Two pointers",
+            "Sliding window",
+            "Stack",
+            "Binary search",
+            "Linked lists",
+            "Trees & tries",
+            "Heap / priority queue",
+            "Backtracking",
+            "Graphs",
+            "1D dynamic programming",
+            "Python stdlib fluency"
+          ],
+          "months": [
+            {
+              "n": 1,
+              "title": "Primer + Arrays, Hashing, Two Pointers",
+              "roi": 95,
+              "focus": "Neetcode primer week, then arrays/hashing/two-pointers/sliding-window/stack. Rule: >35 min on a problem means read the solution, then re-solve from scratch 3 days later. Expect the first two weeks to feel bad — getting stuck IS the mechanism, not a sign the plan is wrong."
+            },
+            {
+              "n": 2,
+              "title": "Binary Search, Linked Lists, Trees, Tries",
+              "roi": 92,
+              "focus": "Binary search, linked lists, trees, tries. Patterns start repeating here; the goal is recognizing which pattern a fresh problem belongs to before writing code."
+            },
+            {
+              "n": 3,
+              "title": "Heap, Backtracking, Graphs, 1D DP",
+              "roi": 90,
+              "focus": "Heap/priority queue, backtracking, graphs, 1D dynamic programming — the hard stretch. This is where the gate's under-30-minutes criterion is won or lost."
+            },
+            {
+              "n": 4,
+              "title": "Maintenance under live fire",
+              "roi": 70,
+              "focus": "Applications are live; ~2h/week of maintenance reps. Skills decay fast and screens are live now — dropping DSA entirely in Month 4 is how a green gate turns into a failed screen in Month 5."
+            },
+            {
+              "n": 5,
+              "title": "Maintenance",
+              "roi": 65,
+              "focus": "~2h/week maintenance. Re-drill any pattern that fumbles in a real screen the same week it fumbles."
+            },
+            {
+              "n": 6,
+              "title": "Maintenance",
+              "roi": 60,
+              "focus": "~2h/week maintenance through onsite season. Timed sets over new topics."
+            },
+            {
+              "n": 7,
+              "title": "Taper",
+              "roi": 40,
+              "focus": "Taper. Keep one timed set a week while negotiation takes the foreground."
+            },
+            {
+              "n": 8,
+              "title": "Taper",
+              "roi": 35,
+              "focus": "Taper. Enough to stay warm for any late-arriving final loops."
+            },
+            {
+              "n": 9,
+              "title": "Off",
+              "roi": 10,
+              "focus": "Off. The job is signed or closing; grinding problems now is avoidance of the actual close."
+            },
+            {
+              "n": 10,
+              "title": "Off",
+              "roi": 10,
+              "focus": "Off."
+            },
+            {
+              "n": 11,
+              "title": "Off",
+              "roi": 10,
+              "focus": "Off."
+            },
+            {
+              "n": 12,
+              "title": "Off",
+              "roi": 10,
+              "focus": "Off."
+            }
+          ],
+          "why": "The coding screen is the first gate at every target company; calm pattern recall under a 30-minute clock is what decides whether the rest of your background ever gets seen."
+        },
+        "ml-recall": {
+          "name": "ML Fundamentals Recall",
+          "weight": 0.2,
+          "weekly_hours": 2,
+          "daily_hours": 0.4,
+          "color": {
+            "bg": "#E8F1FA",
+            "text": "#0E3A66",
+            "border": "#185FA5"
+          },
+          "summary": "Breadth under time pressure. Not new material — retrieval speed on material he already scored 98% in.",
+          "skills": [
+            "Bias-variance",
+            "Regularization (L1/L2)",
+            "Gradient boosting mechanics",
+            "Class imbalance",
+            "Cross-validation variants",
+            "Feature leakage",
+            "Convergence failures",
+            "RAG failure modes",
+            "Eval design",
+            "Fine-tune vs prompt vs retrieve"
+          ],
+          "months": [
+            {
+              "n": 1,
+              "title": "Build the deck",
+              "roi": 85,
+              "focus": "Build the Anki deck from the CU Boulder notes. The goal is 40-second retrieval, which is a different state than having scored 98% — the exam tested recognition, the interview tests production."
+            },
+            {
+              "n": 2,
+              "title": "LLM-era cards",
+              "roi": 80,
+              "focus": "Add the LLM-era cards: RAG failure modes, eval design, fine-tune vs prompt vs retrieve. This is the material interviewers actually probe in 2026."
+            },
+            {
+              "n": 3,
+              "title": "Drill to 90%",
+              "roi": 85,
+              "focus": "Drill the full deck to 90%+ recall — the gate criterion. Cards that keep lapsing point at real gaps; chase those, not new cards."
+            },
+            {
+              "n": 4,
+              "title": "Maintenance + interview feedback loop",
+              "roi": 60,
+              "focus": "Maintenance reps. Every question fumbled in a real interview becomes a card the same day."
+            },
+            {
+              "n": 5,
+              "title": "Maintenance",
+              "roi": 55,
+              "focus": "Maintenance; keep folding fumbled interview questions back into the deck."
+            },
+            {
+              "n": 6,
+              "title": "Maintenance",
+              "roi": 55,
+              "focus": "Maintenance through onsites."
+            },
+            {
+              "n": 7,
+              "title": "Maintenance",
+              "roi": 40,
+              "focus": "Light maintenance."
+            },
+            {
+              "n": 8,
+              "title": "Maintenance",
+              "roi": 35,
+              "focus": "Light maintenance."
+            },
+            {
+              "n": 9,
+              "title": "Off",
+              "roi": 10,
+              "focus": "Off."
+            },
+            {
+              "n": 10,
+              "title": "Pull-based foundations",
+              "roi": 50,
+              "focus": "The pull-based foundations lane opens: depth pursued in response to a concrete confusion is retained; depth pursued preemptively mostly isn't. Boyd's Convex Optimization and Murphy chapters get pulled as specific walls appear at work — not read cover to cover on spec."
+            },
+            {
+              "n": 11,
+              "title": "Pull-based foundations",
+              "roi": 50,
+              "focus": "Continue pulling foundations against real walls from the job. The job decides the syllabus now."
+            },
+            {
+              "n": 12,
+              "title": "Pull-based foundations",
+              "roi": 50,
+              "focus": "Same lane. If nothing at work is forcing depth, that's a signal to take harder problems at work, not to invent coursework."
+            }
+          ],
+          "why": "ML breadth rounds probe tradeoffs, not definitions. The deck keeps ~30 concepts one confident sentence deep so no fundamental catches you cold mid-interview."
+        },
+        "sys-design": {
+          "name": "ML System Design",
+          "weight": 0.2,
+          "weekly_hours": 2,
+          "daily_hours": 0.4,
+          "color": {
+            "bg": "#E7F3E8",
+            "text": "#1B4D1F",
+            "border": "#2E7D32"
+          },
+          "summary": "His strongest round — production systems and client-facing ownership are exactly what it tests. Two gaps: scale and multi-tenancy.",
+          "skills": [
+            "Requirements interrogation",
+            "Metric definition",
+            "Data & training loop",
+            "Serving architecture",
+            "Evaluation design",
+            "Failure modes & tradeoffs",
+            "Scale (sharding, replication, p99)",
+            "Multi-tenancy & cost attribution"
+          ],
+          "months": [
+            {
+              "n": 1,
+              "title": "Not yet",
+              "roi": 30,
+              "focus": "Not yet — DSA and positioning own Month 1. Read Chip Huyen in background time; the round is strong enough that starting it later costs little."
+            },
+            {
+              "n": 2,
+              "title": "Framework + first four designs",
+              "roi": 85,
+              "focus": "Lock the answer framework, then the first four designs: RAG over enterprise docs, an agentic workflow, a recommender, fraud detection. Narrate each aloud, timed at 45 minutes — reading is not preparation, speaking under pressure is."
+            },
+            {
+              "n": 3,
+              "title": "Remaining four + the two known gaps",
+              "roi": 88,
+              "focus": "Remaining four: feature store, LLM eval pipeline, real-time inference, multi-tenant platform. Then drill the two known gaps directly: scale at 10k req/sec (sharding, replication, p99 budgets) and multi-tenancy/cost attribution."
+            },
+            {
+              "n": 4,
+              "title": "Mocks scale with onsites",
+              "roi": 75,
+              "focus": "Mocks scale with the onsite calendar, 70/30 mocks-to-reading. Every real interview's design question gets a written post-mortem."
+            },
+            {
+              "n": 5,
+              "title": "Mocks",
+              "roi": 70,
+              "focus": "Mocks keyed to upcoming onsites; 70/30 mocks-to-reading holds."
+            },
+            {
+              "n": 6,
+              "title": "Mocks",
+              "roi": 70,
+              "focus": "Mocks through peak onsite season."
+            },
+            {
+              "n": 7,
+              "title": "Mocks as needed",
+              "roi": 50,
+              "focus": "Mocks only for live final rounds."
+            },
+            {
+              "n": 8,
+              "title": "Mocks as needed",
+              "roi": 40,
+              "focus": "Same."
+            },
+            {
+              "n": 9,
+              "title": "Off",
+              "roi": 10,
+              "focus": "Off."
+            },
+            {
+              "n": 10,
+              "title": "Off",
+              "roi": 10,
+              "focus": "Off — the first 90 days at the new job are the real system design practice now."
+            },
+            {
+              "n": 11,
+              "title": "Off",
+              "roi": 10,
+              "focus": "Off."
+            },
+            {
+              "n": 12,
+              "title": "Off",
+              "roi": 10,
+              "focus": "Off."
+            }
+          ],
+          "why": "The system-design round is where level and comp get decided — it's the proof you can own a production ML system end to end, not just train a model."
+        },
+        "search": {
+          "name": "Positioning & Search",
+          "weight": 0.1,
+          "weekly_hours": 1,
+          "daily_hours": 0.2,
+          "color": {
+            "bg": "#F0EAF8",
+            "text": "#43276B",
+            "border": "#6A3FA0"
+          },
+          "summary": "Front-loaded into Week 1, dormant through Month 3, then owns the plan from Month 4. The bottleneck is execution here, not capability.",
+          "skills": [
+            "Canonical resume",
+            "Alt-data swap-in block",
+            "GitHub legibility",
+            "Target list construction",
+            "Application cadence",
+            "Behavioral narratives",
+            "Negotiation on data",
+            "Level over base"
+          ],
+          "months": [
+            {
+              "n": 1,
+              "title": "Positioning week",
+              "roi": 100,
+              "focus": "Drafting the resume now is not about applying — it's how he finds out which story he actually has. Canonical frame: \"builds production ML systems that make money.\" Lead with Valorem (3M+ property records, 13-service FastAPI/GraphQL pipeline on AWS); M Science is the credibility line. Build the alt-data swap-in bullet block, and pin 3 GitHub repos each stating problem/architecture/one number."
+            },
+            {
+              "n": 2,
+              "title": "Dormant",
+              "roi": 20,
+              "focus": "Dormant. Resist tinkering with the resume — at this stage that's procrastination wearing productivity's clothes."
+            },
+            {
+              "n": 3,
+              "title": "Target list",
+              "roi": 75,
+              "focus": "Build the target list: 60% Series B–D applied-AI/infra, 20% AI-forward mid-size, 10% quant fund engineering (research screens on credentials, engineering doesn't), 10% hyperscaler. Run this as the FLOOR, not the whole bet: in parallel, open a tier-one lane — frontier-lab FDE/applied and quant-fund engineering — applied opportunistically at lower volume. Those are the seats where the $500K tier actually lives; Series B–D is what protects time-to-offer while they cook. Tag every application with its tier so the funnel shows whether tier-one is converting or only the floor is. Decision rule, written now before it is emotional: take the first good floor offer (real comp ladder) UNLESS a tier-one loop is already at onsite — do not let a floor offer expire chasing a tier-one maybe."
+            },
+            {
+              "n": 4,
+              "title": "Applications live",
+              "roi": 95,
+              "focus": "Applications open. 15–20/week, tracked in a spreadsheet. Do NOT build tooling yet — a spreadsheet does the job and tooling is a way to feel productive without applying."
+            },
+            {
+              "n": 5,
+              "title": "Diagnose stalls",
+              "roi": 90,
+              "focus": "Diagnose stalls by symptom: no screens means resume/targeting; screens but no onsites means the coding round; onsites but no offers means design or behavioral. Fix the failing stage, not everything."
+            },
+            {
+              "n": 6,
+              "title": "Onsites + behavioral narratives",
+              "roi": 90,
+              "focus": "Onsite season. Tighten the behavioral narratives — founding Bridges AI, the Valorem build, leaving quant research — each with a decision, a tradeoff, and a number."
+            },
+            {
+              "n": 7,
+              "title": "Negotiate on data",
+              "roi": 90,
+              "focus": "Negotiate on data, not feelings: competing offers, level bands, location-adjusted comps. Level beats base — argue the level first, the number follows."
+            },
+            {
+              "n": 8,
+              "title": "Negotiate / close",
+              "roi": 85,
+              "focus": "Keep offers warm and clustered. The goal is signing well, not squeezing the last $10K out of a single offer."
+            },
+            {
+              "n": 9,
+              "title": "Sign",
+              "roi": 80,
+              "focus": "Sign by May 2027. Done is the deliverable."
+            },
+            {
+              "n": 10,
+              "title": "First 90 days",
+              "roi": 70,
+              "focus": "First 90 days: ship visibly, and own the highest-leverage system nobody owns."
+            },
+            {
+              "n": 11,
+              "title": "First 90 days",
+              "roi": 65,
+              "focus": "Keep shipping; convert early wins into scope."
+            },
+            {
+              "n": 12,
+              "title": "Artifact track begins",
+              "roi": 60,
+              "focus": "The artifact track opens: reproductions, OSS PRs, writing. This is the years-2–4 compounding lane, started only now, on purpose."
+            }
+          ],
+          "why": "Converting skill into offers is its own skill: targeting, a legible resume and GitHub, steady application cadence, and negotiating on data instead of hope."
+        }
+      },
+      "not_doing": [
+        "Coursera specializations — an MS at 3.84 already outranks them.",
+        "Additional degrees.",
+        "Measure-theoretic probability — paper fluency needs comfortable, not expert.",
+        "Reading the agentic-AI survey cover to cover — it's a map, not a course.",
+        "CLRS or a full algorithms MOOC — pattern recognition under time pressure is the gap, not proofs.",
+        "Paper reproductions before Month 12 — genuinely valuable, infinitely expandable, and the most comfortable form of avoidance.",
+        "Building a job-pipeline scraper before Month 2 — a spreadsheet does 90% of the job on day one."
+      ],
+      "failure_modes": [
+        {
+          "name": "The gate slipping",
+          "detail": "October 31 arrives, criteria are unmet, and 'one more month' gets granted informally. The gate only works if failing it triggers the named fail_response, dated and written down — not a quiet extension of Phase 1."
+        },
+        {
+          "name": "Depth-chasing as avoidance",
+          "detail": "Hours drift toward intellectually satisfying material — papers, foundations, reproductions — while DSA reps and application counts lag. Everything in not_doing is a flavor of this; the log will show it before it feels like it."
+        },
+        {
+          "name": "Holding out for the perfect offer",
+          "detail": "Turning down a good $210K offer to keep searching for $280K. The ladder does more work than the starting rung, and every month of delay is a month of comp and compounding forgone."
+        }
+      ],
+      "projects": {
+        "_comment": "Biweekly portfolio sprints, Sep-Nov 2026. Each is deep enough to demo, shows skills+tools recruiters screen for in applied-AI/MLE roles, and carries stretch goals that turn it into an advanced public showpiece. Rendered by the Projects tab; milestone completion is tracked client-side.",
+        "cadence": "One project every two weeks. Weekday build blocks (Tue implementation, Thu ship-to-GitHub) plus the Saturday long block — roughly 12 focused hours per sprint on top of track study.",
+        "list": [
+          {
+            "id": "atlas-evals",
+            "n": 1,
+            "start": "2026-09-01",
+            "end": "2026-09-14",
+            "window": "Sep 1–14",
+            "title": "Atlas Evals — a real eval harness",
+            "tagline": "Give the Atlas-FoF RAG pipeline a 3-layer eval harness with an LLM judge you can prove agrees with humans.",
+            "why": "Evals are the #1 screened-for 2026 applied-AI skill and almost nobody has evidence. A calibrated judge + CI gate on a real system answers 'how do you know your RAG is good?' with numbers instead of adjectives.",
+            "skills": [
+              "Eval design",
+              "RAG failure modes",
+              "Evaluation design"
+            ],
+            "tools": [
+              "pytest",
+              "GitHub Actions",
+              "instructor (structured outputs)",
+              "Ragas-style metrics"
+            ],
+            "week1": [
+              "Build a 30-question golden set from the fund documents (answerable + unanswerable + numeric)",
+              "Hand-roll faithfulness, answer-relevancy, and context-recall metrics over /ask",
+              "Wire the metric run into pytest so `pytest -m eval` prints a scorecard"
+            ],
+            "week2": [
+              "Add an LLM-as-judge grader with structured outputs; grade 30 answers yourself and measure judge–human agreement (target ≥80%)",
+              "Gate CI on the scorecard: a PR that drops faithfulness fails",
+              "Write EVALS.md: method, numbers, one failure the harness caught"
+            ],
+            "stretch": [
+              "Package the harness as a small pip-installable library with a README demo",
+              "Blog post: 'Calibrating an LLM judge against 30 human labels'"
+            ],
+            "resources": [
+              {
+                "name": "Hamel Husain — Your AI Product Needs Evals",
+                "url": "https://hamel.dev/blog/posts/evals/"
+              },
+              {
+                "name": "Ragas docs (metric definitions)",
+                "url": "https://docs.ragas.io/"
+              },
+              {
+                "name": "instructor — structured outputs",
+                "url": "https://python.useinstructor.com/"
+              }
+            ],
+            "prompt": "You're my project coach for a 2-week sprint: adding a 3-layer eval harness (offline CI / online / human) to my existing RAG app (FastAPI + pgvector, /ask endpoint with citations). I want to LEARN this, not have it done for me — so go step by step, one task at a time, checking my work before moving on.\n\nStart by: (1) asking me to describe my /ask pipeline so you know what we're evaluating, (2) helping me design a 30-question golden set with the right mix of answerable, unanswerable, and numeric questions, (3) then walking me through implementing faithfulness, answer relevancy, and context recall by hand — explain each metric's intuition before we code it.\n\nAfter that: LLM-as-judge with structured outputs, calibrating it against my own 30 human grades, and a CI gate. Keep each step small, quiz me on the concepts as we go, and flag anything I build that wouldn't survive an interviewer's follow-up questions."
+          },
+          {
+            "id": "atlas-agent",
+            "n": 2,
+            "start": "2026-09-15",
+            "end": "2026-09-28",
+            "window": "Sep 15–28",
+            "title": "Atlas Agent — tool calling with receipts",
+            "tagline": "Turn /ask into an agent that chooses between a SQL tool and RAG retrieval, with every step traced and failures handled.",
+            "why": "Agent reliability is the single most-demanded skill in the target market (54% of 277 analyzed JDs), and safety/guardrails sit right behind it (34%). A traced agent over your own gold tables that also survives prompt injection beats any framework demo.",
+            "skills": [
+              "Fine-tune vs prompt vs retrieve",
+              "Serving architecture",
+              "Failure modes & tradeoffs",
+              "RAG failure modes"
+            ],
+            "tools": [
+              "Claude tool use (raw API, no framework)",
+              "structured outputs",
+              "trace table (Postgres)",
+              "OpenTelemetry concepts",
+              "OWASP LLM Top 10"
+            ],
+            "week1": [
+              "Define two tools with JSON schemas: query_funds (SQL over gold tables) and search_documents (existing retrieval)",
+              "Implement the agent loop: model picks a tool, executes, observes, answers — max 3 hops",
+              "Log every step (inputs, tool calls, outputs, latency) to an agent_traces table"
+            ],
+            "week2": [
+              "Failure recovery: on tool error, retry once, then degrade to a cited 'here's what I could verify' answer — never hallucinate",
+              "Guardrail the agent: a prompt-injection test suite (10 adversarial inputs seeded in documents), out-of-scope refusal behavior, and the numeric guardrail extended to tool outputs",
+              "Force-fail tests: break each tool and assert graceful degradation",
+              "Run the sprint-1 eval harness against agentic /ask vs plain RAG and publish the comparison"
+            ],
+            "stretch": [
+              "A /traces debug view rendering any answer's full reasoning chain",
+              "Short screen-recorded demo: one question, two tools, one recovered failure"
+            ],
+            "resources": [
+              {
+                "name": "ReAct paper",
+                "url": "https://arxiv.org/abs/2210.03629"
+              },
+              {
+                "name": "OpenTelemetry — traces",
+                "url": "https://opentelemetry.io/docs/concepts/signals/traces/"
+              },
+              {
+                "name": "instructor — structured outputs",
+                "url": "https://python.useinstructor.com/"
+              },
+              {
+                "name": "OWASP Top 10 for LLM applications",
+                "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
+              }
+            ],
+            "prompt": "You're my project coach for a 2-week sprint: converting my RAG endpoint into a tool-calling agent (raw LLM API calls, no LangChain) that chooses between a SQL tool over trusted Postgres tables and a document-retrieval tool — with full tracing and failure recovery.\n\nTeach me as we build, one step at a time, and make me explain each design choice back to you. Sequence: (1) quiz me on the ReAct loop and tool schemas so we share vocabulary, (2) help me design the two tool schemas and critique them, (3) the agent loop with a hop limit, (4) a traces table logging every step, (5) failure injection and graceful degradation, (6) running my existing eval harness over the agent vs plain RAG.\n\nDon't write large code blocks unless I ask — give me the shape, let me implement, then review what I wrote like a staff engineer would."
+          },
+          {
+            "id": "serve-it",
+            "n": 3,
+            "start": "2026-09-29",
+            "end": "2026-10-12",
+            "window": "Sep 29–Oct 12",
+            "title": "Serve It — inference under load",
+            "tagline": "Put an open-weights model behind your own streaming API and make p95 latency a number you measured, not a guess.",
+            "why": "Serving/inference questions (batching, streaming, KV cache, p95 under load) separate MLE candidates from API-callers. Owning one deployment end to end gives you war stories for every serving question.",
+            "skills": [
+              "Serving architecture",
+              "Scale (sharding, replication, p99)",
+              "Metric definition"
+            ],
+            "tools": [
+              "vLLM",
+              "FastAPI (SSE streaming)",
+              "Docker",
+              "Locust"
+            ],
+            "week1": [
+              "Stand up vLLM with a small open model; understand continuous batching + KV cache well enough to explain them",
+              "Wrap it in your own FastAPI endpoint with token streaming",
+              "Containerize; document cold-start time and memory footprint"
+            ],
+            "week2": [
+              "Locust load test: p50/p95/p99 latency and throughput at increasing concurrency; find the knee",
+              "One optimization pass (max batch size, quantized weights, or context cap) and measure the delta",
+              "SERVING.md: architecture diagram, numbers table, what you'd change at 10x scale"
+            ],
+            "stretch": [
+              "Quantization shootout (fp16 vs int8/awq): quality vs latency vs memory, with the eval harness scoring quality",
+              "Grafana-style latency dashboard screenshot for the README"
+            ],
+            "resources": [
+              {
+                "name": "vLLM docs",
+                "url": "https://docs.vllm.ai/en/latest/"
+              },
+              {
+                "name": "Chip Huyen — ML Systems Design",
+                "url": "https://huyenchip.com/machine-learning-systems-design/toc.html"
+              },
+              {
+                "name": "Locust",
+                "url": "https://locust.io/"
+              }
+            ],
+            "prompt": "You're my project coach for a 2-week sprint: serving an open-weights LLM with vLLM behind my own streaming FastAPI endpoint, then load-testing it properly with Locust.\n\nI want to genuinely understand serving, so before each build step, teach the concept and quiz me: continuous batching, KV cache, why p95 ≠ average, where throughput/latency tradeoffs come from. Then guide me hands-on: (1) vLLM up with a small model, (2) my own API wrapper with SSE streaming, (3) Docker, (4) Locust scenarios and reading the latency distribution, (5) one measured optimization.\n\nHold me to writing down real numbers at every step — if I report a vibe instead of a measurement, call it out. End the sprint by mock-interviewing me: 'design a model-serving platform' using what I just built as my material."
+          },
+          {
+            "id": "tune-it",
+            "n": 4,
+            "start": "2026-10-13",
+            "end": "2026-10-26",
+            "window": "Oct 13–26",
+            "title": "Tune It — LoRA with an honest verdict",
+            "tagline": "Fine-tune a small model with LoRA on one narrow task and let the eval harness say whether it beat prompting and RAG.",
+            "why": "'Fine-tune vs prompt vs retrieve' is a guaranteed interview question. Having run the experiment — with training curves, an eval, and an honest conclusion either way — puts you above almost everyone who answers from a blog post.",
+            "skills": [
+              "Fine-tune vs prompt vs retrieve",
+              "Eval design",
+              "Convergence failures"
+            ],
+            "tools": [
+              "HF PEFT (LoRA)",
+              "Weights & Biases",
+              "your sprint-1 eval harness"
+            ],
+            "week1": [
+              "Pick one narrow task from Atlas (e.g. extracting structured fund terms from document snippets); build a ~500-example train set + held-out test set",
+              "Establish the baselines first: zero-shot, few-shot, and RAG on the test set",
+              "LoRA training run with W&B tracking; babysit the loss curve and document one thing that went wrong"
+            ],
+            "week2": [
+              "Evaluate the tuned model vs all baselines on the held-out set with sprint-1 metrics",
+              "Ablate one knob (rank, LR, or data size) and record the effect",
+              "TUNING.md: setup, curves, results table, and an honest verdict — 'when was this worth it?'"
+            ],
+            "stretch": [
+              "Model card + weights published on HF Hub",
+              "Blog post: 'I fine-tuned so you don't have to (here's when you should)'"
+            ],
+            "resources": [
+              {
+                "name": "HF PEFT docs",
+                "url": "https://huggingface.co/docs/peft/index"
+              },
+              {
+                "name": "LoRA paper",
+                "url": "https://arxiv.org/abs/2106.09685"
+              },
+              {
+                "name": "W&B docs",
+                "url": "https://docs.wandb.ai/"
+              }
+            ],
+            "prompt": "You're my project coach for a 2-week sprint: LoRA fine-tuning a small open model on one narrow extraction task, benchmarked honestly against zero-shot, few-shot, and RAG baselines using my own eval harness.\n\nCoach me step by step and make me predict before I run: before every experiment, ask me what I expect and why; after, make me reconcile prediction vs result. Sequence: (1) task selection and dataset design — teach me what makes a fine-tuning dataset good, (2) baselines FIRST, (3) LoRA concepts quiz (what the low-rank update actually is, why it's cheap), (4) the training run with W&B, reading loss curves, debugging one convergence issue, (5) evaluation and an ablation, (6) writing the honest verdict.\n\nIf my tuned model loses to few-shot prompting, help me write THAT up well — the honest negative result is the interview gold."
+          },
+          {
+            "id": "show-it",
+            "n": 5,
+            "start": "2026-10-27",
+            "end": "2026-11-09",
+            "window": "Oct 27–Nov 9",
+            "title": "Show It — the public proof layer",
+            "tagline": "Turn four sprints of work into the portfolio a recruiter actually sees: site, writeups, demos, and a resume that matches.",
+            "why": "This sprint spans the Oct 31 gate and the Nov 1 application open. Work only counts if a screener can find and grasp it in 90 seconds; this converts private repos into public, skimmable evidence exactly when applications go live.",
+            "skills": [
+              "GitHub legibility",
+              "Canonical resume",
+              "Behavioral narratives"
+            ],
+            "tools": [
+              "GitHub Pages / Vercel",
+              "screen recording",
+              "the writeups from sprints 1–4"
+            ],
+            "week1": [
+              "Portfolio page: one screen, four projects, each with a 2-sentence claim + numbers + links",
+              "Polish the four READMEs to a standard template: what/why/architecture/numbers/run-it",
+              "Record a 2-minute demo video for the two strongest projects"
+            ],
+            "week2": [
+              "Rewrite the resume's project section so every bullet has a number from a sprint",
+              "Draft the three behavioral stories (build, debug, tradeoff) anchored in sprint incidents",
+              "Dry-run: someone (or Claude) plays recruiter for 90 seconds per project and reports what landed"
+            ],
+            "stretch": [
+              "Cross-post the two best writeups as blog posts",
+              "A 'systems I've built' architecture-diagram page that doubles as a system-design portfolio"
+            ],
+            "resources": [
+              {
+                "name": "GitHub Pages",
+                "url": "https://pages.github.com/"
+              },
+              {
+                "name": "Tech Interview Handbook — resume",
+                "url": "https://www.techinterviewhandbook.org/resume/"
+              }
+            ],
+            "prompt": "You're my project coach for a 2-week sprint: packaging four completed technical sprints (eval harness, traced agent, model serving, LoRA experiment) into a public portfolio, timed to my Nov 1 application launch.\n\nBe my editor and my recruiter simulator. Sequence: (1) help me write a one-screen portfolio page — challenge every sentence that doesn't carry a number or a claim, (2) README template pass over all four repos, (3) script and critique my two demo videos, (4) resume bullets — rewrite each until it's metric-first, (5) three behavioral stories in STAR shape drawn from real sprint incidents, (6) finish by role-playing a recruiter who has 90 seconds per project: tell me what you retained, then what to cut.\n\nPush back hard on jargon. The audience is a screener who is smart but has 90 seconds."
+          },
+          {
+            "id": "pipeline-proof",
+            "n": 6,
+            "start": "2026-11-10",
+            "end": "2026-11-23",
+            "window": "Nov 10–23",
+            "title": "Pipeline Proof — the job funnel as a case study",
+            "tagline": "Open up the study planner's own scraping + scoring + funnel system as a public data-engineering case study.",
+            "why": "You built a real system: multi-source ingestion (5 boards + 41 ATS APIs), scoring, D1, a funnel with stall diagnostics. Applications are live by now and interviews want a 'walk me through a system you own' — this one you can narrate for an hour.",
+            "skills": [
+              "Data & training loop",
+              "Requirements interrogation",
+              "Multi-tenancy & cost attribution"
+            ],
+            "tools": [
+              "the ai-study-planner repo itself",
+              "Cloudflare Workers + D1",
+              "cron pipelines"
+            ],
+            "week1": [
+              "Write the system-design doc: sources, dedup, scoring, storage, consumers (briefing/app), failure handling",
+              "Add one missing production nicety end to end (per-board yield metrics, or a dead-letter log)",
+              "Diagram it properly — this is your 'design a data pipeline' interview answer"
+            ],
+            "week2": [
+              "Public case-study writeup with real numbers: postings/day, dedup rate, score distribution, funnel conversion so far",
+              "Practice the narration: 15-minute walkthrough answering 'what breaks first at 100x?'",
+              "Fold what you learned into applications — this doc IS an interview artifact"
+            ],
+            "stretch": [
+              "Open-source a cleaned template version of the pipeline",
+              "Comparison post: scraping boards vs polling ATS APIs, with your yield data"
+            ],
+            "resources": [
+              {
+                "name": "Google Cloud — MLOps pipeline levels",
+                "url": "https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning"
+              },
+              {
+                "name": "System Design Primer",
+                "url": "https://github.com/donnemartin/system-design-primer"
+              }
+            ],
+            "prompt": "You're my project coach for a 2-week sprint: turning my real job-search data pipeline (nightly scraper over 5 job boards + 41 ATS APIs, curriculum-based scoring, Cloudflare D1 storage, a briefing consumer, and an application funnel with stall diagnostics) into a polished public case study and a rehearsed system-design narrative.\n\nWork with me like a staff engineer prepping me for interviews: (1) interrogate my design — make me justify dedup strategy, scoring weights, failure handling, and storage choices, (2) help me write the system-design doc and diagram to the standard of a design review, (3) pick ONE production gap (observability or dead-lettering) and coach me through closing it, (4) then run me through the 15-minute walkthrough twice — once friendly, once adversarial ('what breaks at 100x? why not a queue? why D1?').\n\nInterrupt me whenever my narration hides a number I should know."
+          },
+          {
+            "id": "voice-agent",
+            "n": 7,
+            "start": "2026-11-24",
+            "end": "2026-12-07",
+            "window": "Nov 24–Dec 7 (optional)",
+            "title": "Say It — a realtime voice agent",
+            "tagline": "Put a voice on the Atlas agent: speech in, tool-calling reasoning in the middle, natural speech out, under a strict latency budget.",
+            "why": "Voice/speech shows up in 23% of analyzed JDs and demos better than anything else you can build — a recruiter who talks to your agent for 30 seconds remembers you. Optional: run it when applications are out and interviews are quiet; skip it in a busy week.",
+            "skills": [
+              "Serving architecture",
+              "Failure modes & tradeoffs",
+              "Scale (sharding, replication, p99)"
+            ],
+            "tools": [
+              "streaming STT (Deepgram or Whisper)",
+              "TTS (ElevenLabs or open)",
+              "WebSockets",
+              "your sprint-2 agent"
+            ],
+            "week1": [
+              "Wire streaming speech-to-text → the sprint-2 agent → text-to-speech behind one WebSocket endpoint",
+              "Set and measure a latency budget: time-to-first-audio under 1.5s, and know where every 100ms goes",
+              "Handle barge-in (user interrupts mid-answer) without losing agent state"
+            ],
+            "week2": [
+              "Failure modes: garbled audio, STT confidence thresholds, the agent falling back to 'let me show you instead' with a citation",
+              "A one-page web client (mic button + live transcript + spoken answer)",
+              "Record the 60-second demo video — this is the portfolio's front door"
+            ],
+            "stretch": [
+              "Phone-number front end (Twilio) so anyone can call your agent",
+              "Latency writeup: the full budget breakdown and what you traded to hit it"
+            ],
+            "resources": [
+              {
+                "name": "Pipecat — voice agent patterns",
+                "url": "https://docs.pipecat.ai/"
+              },
+              {
+                "name": "Deepgram docs (streaming STT)",
+                "url": "https://developers.deepgram.com/docs"
+              },
+              {
+                "name": "ElevenLabs docs (TTS)",
+                "url": "https://elevenlabs.io/docs"
+              }
+            ],
+            "prompt": "You're my project coach for a 2-week sprint: giving my existing tool-calling agent a realtime voice interface — streaming STT in, agent reasoning in the middle, streaming TTS out, over WebSockets, with a hard time-to-first-audio budget of 1.5 seconds.\n\nTeach me the realtime concepts before we build each piece: why streaming beats request/response here, where latency actually accumulates (VAD, STT finalization, LLM first token, TTS first byte), what barge-in requires. Then build with me step by step — one component at a time, measuring latency after each addition so I always know my budget.\n\nMake me handle the ugly parts: interruptions, low-confidence transcripts, and what the agent says when a tool fails mid-conversation. Finish by helping me script a 60-second demo video that shows one question, one tool call, and one graceful interruption."
+          }
+        ],
+        "evidence": {
+          "date": "2026-08-30",
+          "method": "Frequency analysis of 277 AI/ML-titled job descriptions pulled from the 41 ATS boards in config/ats-boards.txt (last 60 days), cross-checked against hiring-manager guidance on portfolio quality.",
+          "top_demands": [
+            "agents / tool use — 54%",
+            "serving & inference — 39%",
+            "observability / tracing — 34%",
+            "safety & guardrails — 34%",
+            "evals — 32%",
+            "voice / speech — 23%",
+            "A/B & experimentation — 19%",
+            "RAG / retrieval — 17%",
+            "multimodal — 16%",
+            "fine-tuning — 16%"
+          ],
+          "notes": "LangChain named in only 5% — raw-API fluency reads better. 'Forward deployed engineer' is a fast-growing title (customer-facing, full-stack + LLM, demo-heavy) that maps to the Equi founding-engineer role. Qualitative consensus: 2-4 deep projects with evals, failure handling, deployment, and an honest writeup beat any number of tutorial clones; a generic chatbot is an anti-signal."
+        }
+      },
+      "day_of_week": {
+        "Monday": "Set weekly goals per track, review last week's deliverables",
+        "Tuesday": "Implementation focus — code runs today",
+        "Wednesday": "Read one complete paper end-to-end",
+        "Thursday": "Push something to GitHub",
+        "Friday": "Write 500+ words technical content, review the week",
+        "Saturday": "Long project block, open-source contribution",
+        "Sunday": "Review notes, plan next week, update GitHub"
+      }
     }
   },
   "projects": {
-    "_comment": "Biweekly portfolio sprints, Sep-Nov 2026. Each is deep enough to demo, shows skills+tools recruiters screen for in applied-AI/MLE roles, and carries stretch goals that turn it into an advanced public showpiece. Rendered by the Projects tab; milestone completion is tracked client-side.",
-    "cadence": "One project every two weeks. Weekday build blocks (Tue implementation, Thu ship-to-GitHub) plus the Saturday long block — roughly 12 focused hours per sprint on top of track study.",
+    "source": "crash-course/november-plan.json",
+    "cadence": "10 hours/week is the existing provisional setting; availability is not yet confirmed. Milestones are not single-day tasks. Selective earlier applications remain welcome.",
     "list": [
       {
-        "id": "atlas-evals",
-        "n": 1,
-        "start": "2026-09-01",
-        "end": "2026-09-14",
-        "window": "Sep 1–14",
-        "title": "Atlas Evals — a real eval harness",
-        "tagline": "Give the Atlas-FoF RAG pipeline a 3-layer eval harness with an LLM judge you can prove agrees with humans.",
-        "why": "Evals are the #1 screened-for 2026 applied-AI skill and almost nobody has evidence. A calibrated judge + CI gate on a real system answers 'how do you know your RAG is good?' with numbers instead of adjectives.",
-        "skills": [
-          "Eval design",
-          "RAG failure modes",
-          "Evaluation design"
-        ],
-        "tools": [
-          "pytest",
-          "GitHub Actions",
-          "instructor (structured outputs)",
-          "Ragas-style metrics"
-        ],
-        "week1": [
-          "Build a 30-question golden set from the fund documents (answerable + unanswerable + numeric)",
-          "Hand-roll faithfulness, answer-relevancy, and context-recall metrics over /ask",
-          "Wire the metric run into pytest so `pytest -m eval` prints a scorecard"
-        ],
-        "week2": [
-          "Add an LLM-as-judge grader with structured outputs; grade 30 answers yourself and measure judge–human agreement (target ≥80%)",
-          "Gate CI on the scorecard: a PR that drops faithfulness fails",
-          "Write EVALS.md: method, numbers, one failure the harness caught"
-        ],
-        "stretch": [
-          "Package the harness as a small pip-installable library with a README demo",
-          "Blog post: 'Calibrating an LLM judge against 30 human labels'"
-        ],
-        "resources": [
+        "id": "evidence-workbench-v1",
+        "title": "1. Evidence Workbench",
+        "priority": "First priority · AI engineering / FDE",
+        "estimate": "30–45 focused build hours for a narrow version if usable code exists; reassess after the baseline audit.",
+        "goal": "Turn financial or industrial documents into structured, source-backed answers and reviewed draft reports.",
+        "stack": "Python API, Postgres, a worker, a minimal web interface, one model provider and one deployment environment.",
+        "milestones": [
           {
-            "name": "Hamel Husain — Your AI Product Needs Evals",
-            "url": "https://hamel.dev/blog/posts/evals/"
+            "id": "scope",
+            "text": "Confirm one user workflow, public/licensed data, schema, baseline and reproducible local run."
           },
           {
-            "name": "Ragas docs (metric definitions)",
-            "url": "https://docs.ragas.io/"
+            "id": "slice",
+            "text": "Ingest and deduplicate documents; extract/index; return source-backed answers with a human review step."
           },
           {
-            "name": "instructor — structured outputs",
-            "url": "https://python.useinstructor.com/"
+            "id": "eval",
+            "text": "Create 30–50 reviewed evaluation tasks with separate held-out documents; compare baseline and improved workflow."
+          },
+          {
+            "id": "recovery",
+            "text": "Demonstrate duplicate, timeout, worker interruption, malformed output and authorization failure handling."
+          },
+          {
+            "id": "ship",
+            "text": "Deploy, measure latency and cost per successful task, capture redacted traces and demonstrate rollback."
+          },
+          {
+            "id": "defend",
+            "text": "Record a five-minute demo, three architecture decisions and one failure analysis; independently rebuild a critical function."
           }
         ],
-        "prompt": "You're my project coach for a 2-week sprint: adding a 3-layer eval harness (offline CI / online / human) to my existing RAG app (FastAPI + pgvector, /ask endpoint with citations). I want to LEARN this, not have it done for me — so go step by step, one task at a time, checking my work before moving on.\n\nStart by: (1) asking me to describe my /ask pipeline so you know what we're evaluating, (2) helping me design a 30-question golden set with the right mix of answerable, unanswerable, and numeric questions, (3) then walking me through implementing faithfulness, answer relevancy, and context recall by hand — explain each metric's intuition before we code it.\n\nAfter that: LLM-as-judge with structured outputs, calibrating it against my own 30 human grades, and a CI gate. Keep each step small, quiz me on the concepts as we go, and flag anything I build that wouldn't survive an interviewer's follow-up questions."
+        "defer": "Go gateway, Kafka, Spark, Kubernetes and multiple agents until a measured constraint or specific interview justifies them."
       },
       {
-        "id": "atlas-agent",
-        "n": 2,
-        "start": "2026-09-15",
-        "end": "2026-09-28",
-        "window": "Sep 15–28",
-        "title": "Atlas Agent — tool calling with receipts",
-        "tagline": "Turn /ask into an agent that chooses between a SQL tool and RAG retrieval, with every step traced and failures handled.",
-        "why": "Agent reliability is the single most-demanded skill in the target market (54% of 277 analyzed JDs), and safety/guardrails sit right behind it (34%). A traced agent over your own gold tables that also survives prompt injection beats any framework demo.",
-        "skills": [
-          "Fine-tune vs prompt vs retrieve",
-          "Serving architecture",
-          "Failure modes & tradeoffs",
-          "RAG failure modes"
-        ],
-        "tools": [
-          "Claude tool use (raw API, no framework)",
-          "structured outputs",
-          "trace table (Postgres)",
-          "OpenTelemetry concepts",
-          "OWASP LLM Top 10"
-        ],
-        "week1": [
-          "Define two tools with JSON schemas: query_funds (SQL over gold tables) and search_documents (existing retrieval)",
-          "Implement the agent loop: model picks a tool, executes, observes, answers — max 3 hops",
-          "Log every step (inputs, tool calls, outputs, latency) to an agent_traces table"
-        ],
-        "week2": [
-          "Failure recovery: on tool error, retry once, then degrade to a cited 'here's what I could verify' answer — never hallucinate",
-          "Guardrail the agent: a prompt-injection test suite (10 adversarial inputs seeded in documents), out-of-scope refusal behavior, and the numeric guardrail extended to tool outputs",
-          "Force-fail tests: break each tool and assert graceful degradation",
-          "Run the sprint-1 eval harness against agentic /ask vs plain RAG and publish the comparison"
-        ],
-        "stretch": [
-          "A /traces debug view rendering any answer's full reasoning chain",
-          "Short screen-recorded demo: one question, two tools, one recovered failure"
-        ],
-        "resources": [
+        "id": "decision-model-v1",
+        "title": "2. Decision Model",
+        "priority": "Second priority · MLE / data science",
+        "estimate": "20–30 focused build hours after data access is confirmed. At 10 hours/week, continue into November.",
+        "goal": "Demonstrate the complete lifecycle of one useful tabular prediction problem, from validation to serving and rollback.",
+        "stack": "Python, a simple baseline and one stronger model, reproducible feature code, a versioned model artifact, API or batch scoring.",
+        "milestones": [
           {
-            "name": "ReAct paper",
-            "url": "https://arxiv.org/abs/2210.03629"
+            "id": "data",
+            "text": "Define decision, label and leakage risks; select a defensible temporal, grouped or random split based on the data."
           },
           {
-            "name": "OpenTelemetry — traces",
-            "url": "https://opentelemetry.io/docs/concepts/signals/traces/"
+            "id": "model",
+            "text": "Compare a simple baseline and one stronger model on held-out data; analyze errors and uncertainty."
           },
           {
-            "name": "instructor — structured outputs",
-            "url": "https://python.useinstructor.com/"
+            "id": "serve",
+            "text": "Use consistent training/serving features; validate inputs, version artifacts and measure performance."
           },
           {
-            "name": "OWASP Top 10 for LLM applications",
-            "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
+            "id": "operate",
+            "text": "Demonstrate monitoring and rollback; explain when evidence warrants retraining."
+          },
+          {
+            "id": "defend",
+            "text": "Reproduce results from a clean run and defend model selection, limitations and deployment tradeoffs."
           }
         ],
-        "prompt": "You're my project coach for a 2-week sprint: converting my RAG endpoint into a tool-calling agent (raw LLM API calls, no LangChain) that chooses between a SQL tool over trusted Postgres tables and a document-retrieval tool — with full tracing and failure recovery.\n\nTeach me as we build, one step at a time, and make me explain each design choice back to you. Sequence: (1) quiz me on the ReAct loop and tool schemas so we share vocabulary, (2) help me design the two tool schemas and critique them, (3) the agent loop with a hop limit, (4) a traces table logging every step, (5) failure injection and graceful degradation, (6) running my existing eval harness over the agent vs plain RAG.\n\nDon't write large code blocks unless I ask — give me the shape, let me implement, then review what I wrote like a staff engineer would."
-      },
-      {
-        "id": "serve-it",
-        "n": 3,
-        "start": "2026-09-29",
-        "end": "2026-10-12",
-        "window": "Sep 29–Oct 12",
-        "title": "Serve It — inference under load",
-        "tagline": "Put an open-weights model behind your own streaming API and make p95 latency a number you measured, not a guess.",
-        "why": "Serving/inference questions (batching, streaming, KV cache, p95 under load) separate MLE candidates from API-callers. Owning one deployment end to end gives you war stories for every serving question.",
-        "skills": [
-          "Serving architecture",
-          "Scale (sharding, replication, p99)",
-          "Metric definition"
-        ],
-        "tools": [
-          "vLLM",
-          "FastAPI (SSE streaming)",
-          "Docker",
-          "Locust"
-        ],
-        "week1": [
-          "Stand up vLLM with a small open model; understand continuous batching + KV cache well enough to explain them",
-          "Wrap it in your own FastAPI endpoint with token streaming",
-          "Containerize; document cold-start time and memory footprint"
-        ],
-        "week2": [
-          "Locust load test: p50/p95/p99 latency and throughput at increasing concurrency; find the knee",
-          "One optimization pass (max batch size, quantized weights, or context cap) and measure the delta",
-          "SERVING.md: architecture diagram, numbers table, what you'd change at 10x scale"
-        ],
-        "stretch": [
-          "Quantization shootout (fp16 vs int8/awq): quality vs latency vs memory, with the eval harness scoring quality",
-          "Grafana-style latency dashboard screenshot for the README"
-        ],
-        "resources": [
-          {
-            "name": "vLLM docs",
-            "url": "https://docs.vllm.ai/en/latest/"
-          },
-          {
-            "name": "Chip Huyen — ML Systems Design",
-            "url": "https://huyenchip.com/machine-learning-systems-design/toc.html"
-          },
-          {
-            "name": "Locust",
-            "url": "https://locust.io/"
-          }
-        ],
-        "prompt": "You're my project coach for a 2-week sprint: serving an open-weights LLM with vLLM behind my own streaming FastAPI endpoint, then load-testing it properly with Locust.\n\nI want to genuinely understand serving, so before each build step, teach the concept and quiz me: continuous batching, KV cache, why p95 ≠ average, where throughput/latency tradeoffs come from. Then guide me hands-on: (1) vLLM up with a small model, (2) my own API wrapper with SSE streaming, (3) Docker, (4) Locust scenarios and reading the latency distribution, (5) one measured optimization.\n\nHold me to writing down real numbers at every step — if I report a vibe instead of a measurement, call it out. End the sprint by mock-interviewing me: 'design a model-serving platform' using what I just built as my material."
-      },
-      {
-        "id": "tune-it",
-        "n": 4,
-        "start": "2026-10-13",
-        "end": "2026-10-26",
-        "window": "Oct 13–26",
-        "title": "Tune It — LoRA with an honest verdict",
-        "tagline": "Fine-tune a small model with LoRA on one narrow task and let the eval harness say whether it beat prompting and RAG.",
-        "why": "'Fine-tune vs prompt vs retrieve' is a guaranteed interview question. Having run the experiment — with training curves, an eval, and an honest conclusion either way — puts you above almost everyone who answers from a blog post.",
-        "skills": [
-          "Fine-tune vs prompt vs retrieve",
-          "Eval design",
-          "Convergence failures"
-        ],
-        "tools": [
-          "HF PEFT (LoRA)",
-          "Weights & Biases",
-          "your sprint-1 eval harness"
-        ],
-        "week1": [
-          "Pick one narrow task from Atlas (e.g. extracting structured fund terms from document snippets); build a ~500-example train set + held-out test set",
-          "Establish the baselines first: zero-shot, few-shot, and RAG on the test set",
-          "LoRA training run with W&B tracking; babysit the loss curve and document one thing that went wrong"
-        ],
-        "week2": [
-          "Evaluate the tuned model vs all baselines on the held-out set with sprint-1 metrics",
-          "Ablate one knob (rank, LR, or data size) and record the effect",
-          "TUNING.md: setup, curves, results table, and an honest verdict — 'when was this worth it?'"
-        ],
-        "stretch": [
-          "Model card + weights published on HF Hub",
-          "Blog post: 'I fine-tuned so you don't have to (here's when you should)'"
-        ],
-        "resources": [
-          {
-            "name": "HF PEFT docs",
-            "url": "https://huggingface.co/docs/peft/index"
-          },
-          {
-            "name": "LoRA paper",
-            "url": "https://arxiv.org/abs/2106.09685"
-          },
-          {
-            "name": "W&B docs",
-            "url": "https://docs.wandb.ai/"
-          }
-        ],
-        "prompt": "You're my project coach for a 2-week sprint: LoRA fine-tuning a small open model on one narrow extraction task, benchmarked honestly against zero-shot, few-shot, and RAG baselines using my own eval harness.\n\nCoach me step by step and make me predict before I run: before every experiment, ask me what I expect and why; after, make me reconcile prediction vs result. Sequence: (1) task selection and dataset design — teach me what makes a fine-tuning dataset good, (2) baselines FIRST, (3) LoRA concepts quiz (what the low-rank update actually is, why it's cheap), (4) the training run with W&B, reading loss curves, debugging one convergence issue, (5) evaluation and an ablation, (6) writing the honest verdict.\n\nIf my tuned model loses to few-shot prompting, help me write THAT up well — the honest negative result is the interview gold."
-      },
-      {
-        "id": "show-it",
-        "n": 5,
-        "start": "2026-10-27",
-        "end": "2026-11-09",
-        "window": "Oct 27–Nov 9",
-        "title": "Show It — the public proof layer",
-        "tagline": "Turn four sprints of work into the portfolio a recruiter actually sees: site, writeups, demos, and a resume that matches.",
-        "why": "This sprint spans the Oct 31 gate and the Nov 1 application open. Work only counts if a screener can find and grasp it in 90 seconds; this converts private repos into public, skimmable evidence exactly when applications go live.",
-        "skills": [
-          "GitHub legibility",
-          "Canonical resume",
-          "Behavioral narratives"
-        ],
-        "tools": [
-          "GitHub Pages / Vercel",
-          "screen recording",
-          "the writeups from sprints 1–4"
-        ],
-        "week1": [
-          "Portfolio page: one screen, four projects, each with a 2-sentence claim + numbers + links",
-          "Polish the four READMEs to a standard template: what/why/architecture/numbers/run-it",
-          "Record a 2-minute demo video for the two strongest projects"
-        ],
-        "week2": [
-          "Rewrite the resume's project section so every bullet has a number from a sprint",
-          "Draft the three behavioral stories (build, debug, tradeoff) anchored in sprint incidents",
-          "Dry-run: someone (or Claude) plays recruiter for 90 seconds per project and reports what landed"
-        ],
-        "stretch": [
-          "Cross-post the two best writeups as blog posts",
-          "A 'systems I've built' architecture-diagram page that doubles as a system-design portfolio"
-        ],
-        "resources": [
-          {
-            "name": "GitHub Pages",
-            "url": "https://pages.github.com/"
-          },
-          {
-            "name": "Tech Interview Handbook — resume",
-            "url": "https://www.techinterviewhandbook.org/resume/"
-          }
-        ],
-        "prompt": "You're my project coach for a 2-week sprint: packaging four completed technical sprints (eval harness, traced agent, model serving, LoRA experiment) into a public portfolio, timed to my Nov 1 application launch.\n\nBe my editor and my recruiter simulator. Sequence: (1) help me write a one-screen portfolio page — challenge every sentence that doesn't carry a number or a claim, (2) README template pass over all four repos, (3) script and critique my two demo videos, (4) resume bullets — rewrite each until it's metric-first, (5) three behavioral stories in STAR shape drawn from real sprint incidents, (6) finish by role-playing a recruiter who has 90 seconds per project: tell me what you retained, then what to cut.\n\nPush back hard on jargon. The audience is a screener who is smart but has 90 seconds."
-      },
-      {
-        "id": "pipeline-proof",
-        "n": 6,
-        "start": "2026-11-10",
-        "end": "2026-11-23",
-        "window": "Nov 10–23",
-        "title": "Pipeline Proof — the job funnel as a case study",
-        "tagline": "Open up the study planner's own scraping + scoring + funnel system as a public data-engineering case study.",
-        "why": "You built a real system: multi-source ingestion (5 boards + 41 ATS APIs), scoring, D1, a funnel with stall diagnostics. Applications are live by now and interviews want a 'walk me through a system you own' — this one you can narrate for an hour.",
-        "skills": [
-          "Data & training loop",
-          "Requirements interrogation",
-          "Multi-tenancy & cost attribution"
-        ],
-        "tools": [
-          "the ai-study-planner repo itself",
-          "Cloudflare Workers + D1",
-          "cron pipelines"
-        ],
-        "week1": [
-          "Write the system-design doc: sources, dedup, scoring, storage, consumers (briefing/app), failure handling",
-          "Add one missing production nicety end to end (per-board yield metrics, or a dead-letter log)",
-          "Diagram it properly — this is your 'design a data pipeline' interview answer"
-        ],
-        "week2": [
-          "Public case-study writeup with real numbers: postings/day, dedup rate, score distribution, funnel conversion so far",
-          "Practice the narration: 15-minute walkthrough answering 'what breaks first at 100x?'",
-          "Fold what you learned into applications — this doc IS an interview artifact"
-        ],
-        "stretch": [
-          "Open-source a cleaned template version of the pipeline",
-          "Comparison post: scraping boards vs polling ATS APIs, with your yield data"
-        ],
-        "resources": [
-          {
-            "name": "Google Cloud — MLOps pipeline levels",
-            "url": "https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning"
-          },
-          {
-            "name": "System Design Primer",
-            "url": "https://github.com/donnemartin/system-design-primer"
-          }
-        ],
-        "prompt": "You're my project coach for a 2-week sprint: turning my real job-search data pipeline (nightly scraper over 5 job boards + 41 ATS APIs, curriculum-based scoring, Cloudflare D1 storage, a briefing consumer, and an application funnel with stall diagnostics) into a polished public case study and a rehearsed system-design narrative.\n\nWork with me like a staff engineer prepping me for interviews: (1) interrogate my design — make me justify dedup strategy, scoring weights, failure handling, and storage choices, (2) help me write the system-design doc and diagram to the standard of a design review, (3) pick ONE production gap (observability or dead-lettering) and coach me through closing it, (4) then run me through the 15-minute walkthrough twice — once friendly, once adversarial ('what breaks at 100x? why not a queue? why D1?').\n\nInterrupt me whenever my narration hides a number I should know."
-      },
-      {
-        "id": "voice-agent",
-        "n": 7,
-        "start": "2026-11-24",
-        "end": "2026-12-07",
-        "window": "Nov 24–Dec 7 (optional)",
-        "title": "Say It — a realtime voice agent",
-        "tagline": "Put a voice on the Atlas agent: speech in, tool-calling reasoning in the middle, natural speech out, under a strict latency budget.",
-        "why": "Voice/speech shows up in 23% of analyzed JDs and demos better than anything else you can build — a recruiter who talks to your agent for 30 seconds remembers you. Optional: run it when applications are out and interviews are quiet; skip it in a busy week.",
-        "skills": [
-          "Serving architecture",
-          "Failure modes & tradeoffs",
-          "Scale (sharding, replication, p99)"
-        ],
-        "tools": [
-          "streaming STT (Deepgram or Whisper)",
-          "TTS (ElevenLabs or open)",
-          "WebSockets",
-          "your sprint-2 agent"
-        ],
-        "week1": [
-          "Wire streaming speech-to-text → the sprint-2 agent → text-to-speech behind one WebSocket endpoint",
-          "Set and measure a latency budget: time-to-first-audio under 1.5s, and know where every 100ms goes",
-          "Handle barge-in (user interrupts mid-answer) without losing agent state"
-        ],
-        "week2": [
-          "Failure modes: garbled audio, STT confidence thresholds, the agent falling back to 'let me show you instead' with a citation",
-          "A one-page web client (mic button + live transcript + spoken answer)",
-          "Record the 60-second demo video — this is the portfolio's front door"
-        ],
-        "stretch": [
-          "Phone-number front end (Twilio) so anyone can call your agent",
-          "Latency writeup: the full budget breakdown and what you traded to hit it"
-        ],
-        "resources": [
-          {
-            "name": "Pipecat — voice agent patterns",
-            "url": "https://docs.pipecat.ai/"
-          },
-          {
-            "name": "Deepgram docs (streaming STT)",
-            "url": "https://developers.deepgram.com/docs"
-          },
-          {
-            "name": "ElevenLabs docs (TTS)",
-            "url": "https://elevenlabs.io/docs"
-          }
-        ],
-        "prompt": "You're my project coach for a 2-week sprint: giving my existing tool-calling agent a realtime voice interface — streaming STT in, agent reasoning in the middle, streaming TTS out, over WebSockets, with a hard time-to-first-audio budget of 1.5 seconds.\n\nTeach me the realtime concepts before we build each piece: why streaming beats request/response here, where latency actually accumulates (VAD, STT finalization, LLM first token, TTS first byte), what barge-in requires. Then build with me step by step — one component at a time, measuring latency after each addition so I always know my budget.\n\nMake me handle the ugly parts: interruptions, low-confidence transcripts, and what the agent says when a tool fails mid-conversation. Finish by helping me script a 60-second demo video that shows one question, one tool call, and one graceful interruption."
+        "defer": "Distributed training and multiple GPU runtimes; choose at most one targeted serving or fine-tuning lab after core readiness."
       }
-    ],
-    "evidence": {
-      "date": "2026-08-30",
-      "method": "Frequency analysis of 277 AI/ML-titled job descriptions pulled from the 41 ATS boards in config/ats-boards.txt (last 60 days), cross-checked against hiring-manager guidance on portfolio quality.",
-      "top_demands": [
-        "agents / tool use — 54%",
-        "serving & inference — 39%",
-        "observability / tracing — 34%",
-        "safety & guardrails — 34%",
-        "evals — 32%",
-        "voice / speech — 23%",
-        "A/B & experimentation — 19%",
-        "RAG / retrieval — 17%",
-        "multimodal — 16%",
-        "fine-tuning — 16%"
-      ],
-      "notes": "LangChain named in only 5% — raw-API fluency reads better. 'Forward deployed engineer' is a fast-growing title (customer-facing, full-stack + LLM, demo-heavy) that maps to the Equi founding-engineer role. Qualitative consensus: 2-4 deep projects with evals, failure handling, deployment, and an honest writeup beat any number of tutorial clones; a generic chatbot is an anti-signal."
-    }
+    ]
   }
 }

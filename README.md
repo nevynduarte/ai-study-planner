@@ -1,12 +1,14 @@
 # AI Study Planner — nevynduarte
 
-Elite engineering study planner across **4 parallel, daily-weighted tracks** — AI Engineering (40%), ML Engineering (25%), Data Science (20%), Quant/Alt-Data (15%) — targeting D.E. Shaw (Applied AI Engineer + Alt Data Analyst) and Woodline (Sector Data Analyst). Claude-powered tutoring, per-track frontier search, daily 6am push briefings, and a **skill-coverage matrix** that tracks ground covered vs. remaining.
+A personal preparation planner targeting **AI engineering interviews in November 2026**, with MLE and selected data/quant roles as adjacent paths. Build one defensible AI flagship, practice fundamentals and interviews alongside it, and add a compact ML lifecycle project when capacity permits.
 
-**Total annual cost: $0** — all Claude intelligence runs locally on P620 (Claude Max, no API key). Results are written to Cloudflare D1; the web app just reads them.
+Start with [the November readiness plan](crash-course/NOVEMBER_READINESS.md), including the job-tracker audit, project scope, capacity options and interview checks. The current **10 hours/week is provisional**, not a promise to finish four platforms.
 
 ## Curriculum model
 
-`public/curriculum.json` is the **single source of truth**: student profile, target roles → tracks mapping, the 4 tracks (each with weight, 12 months, and a skills list), ROI priorities, and day-of-week cadence. Both the P620 scripts and the web app read it (the scripts at `public/curriculum.json`, the browser at `/curriculum.json`), so there is exactly one place to edit the plan.
+`public/curriculum.json` supplies the profile, learning tracks and coaching context. `crash-course/november-plan.json` supplies the milestone plan shown in the Plan and Projects tabs; `npm run portfolio` validates and generates `public/portfolio.json`. The detailed guide is `crash-course/NOVEMBER_READINESS.md`. Historical plans are retained under `archive` and in the archived portfolio document.
+
+The former daily sprint's completion records are preserved, but do not mark the new milestones complete. November is a readiness target; projects and selective applications can happen before then.
 
 Live state lives separately so the curriculum file stays static:
 - `config/status.json` — per-track current month, hours, notes.
