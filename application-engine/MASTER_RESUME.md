@@ -2,6 +2,34 @@
 
 Comprehensive evidence inventory, audited 2026-09-15. This is a selection bank, not a submission-ready resume. Preserve the source and qualification attached to each claim when selecting bullets. Resume claims are self-reported evidence, not independently audited outcomes.
 
+
+## User-approved defaults (2026-09-15)
+
+The user selected the newer dates and newer or stronger source-supported titles/information, requested retention of useful older detail, confirmed CyberPatriot participation in high-school junior and senior years, and confirmed the mentoring program was renamed BBAM. These decisions supersede earlier requests to resolve the same variants. N is the default source for newer dates and quantified claims; historical alternatives below are audit history, not blockers or application defaults.
+
+| Experience | Default dates | Application title |
+| --- | --- | --- |
+| M Science (Jefferies) | Oct. 2022-Mar. 2023 | Quantitative Equity Research Associate - Industrials and Automotive |
+| Goodfill | Jul.-Oct. 2022 | Backend Software Engineer Consultant |
+| PerceiveNow | Jul.-Oct. 2022 | Data Analyst |
+| Citco | May-Jul. 2022 | Risk Analysis Intern |
+| AMD Yield | Jan.-May 2022 | Yield Analysis Intern |
+| AMD Product Development | Aug.-Dec. 2021 | Product Development Intern |
+| BNY Mellon | Jun.-Aug. 2021 | Summer Data Analyst - Liquidity & Margin |
+| UT Austin BWI | Aug. 2019-Dec. 2020 | Undergraduate Research Associate - Robotics / ML |
+| Order.co (formerly Negotiatus) | Jun.-Aug. 2017 | Software Engineering Intern |
+| stae | Jun.-Sept. 2016 | Software Engineering Intern |
+| Peopli Inc. | Feb.-May 2016 | Software Engineering and Marketing Intern |
+| UT Black and Brown Academic Mentoring Program (BBAM) | Jan. 2021-Apr. 2023 | Mentor |
+| AFA CyberPatriot | High-school junior and senior years (2016-2018 school years) | Team Leader and Competitor |
+
+Use the richer supported inventory across versions, not just the condensed resume. Default to N's 20% reporting-effort reduction, 10+ reports and quarterly-to-monthly cadence at M Science; retain H's up-to-30% report-creation-time claim as historical wording, not an additional result. Use N's PerceiveNow 50k+/minutes-to-seconds/12%, Citco 20+ funds/$10B+ supported AUM, AMD 100k+ samples/20+ engineers/12 mixed sources, BNY 3+ units/hundreds of accounts/20%, and robotics 8% accuracy improvement. These are selected resume claims; the user has not supplied new measurement definitions. Preserve their original scope without inventing methodology, causality or sole ownership.
+
+Use only **UT Black and Brown Academic Mentoring Program (BBAM)** for the renamed mentoring program, including normalized historical entries. Treat it as one program. CyberPatriot results span junior/senior participation: retain Gold Tier State Finals and the later Platinum Regionals first place / 35th nationally among over 2,000 teams. Do not invent an exact season for each result beyond the dated source snapshots.
+
+Keep BS Mathematics as the newer degree record. Do not turn an old Present label into a completed MS or updated GPA. Historical detail remains available for tailoring; no extra confirmation is required merely because an older resume differs from these approved defaults.
+
+
 ## Source registry and version comparison
 
 All nine initially supplied PDFs and ten follow-up file references were read; each has one page. The original nine contain six distinct documents. Across all 19 references there are 13 byte-distinct documents: R02/R03/R04/R09/R10/R11 are identical, and R05/R18 are identical. Every PDF citation below refers to page 1. `H` means the identical historical long-form group R02/R03/R04/R09/R10/R11. `N` means R01, the newer condensed claim set; this classification reflects content, not a verified file creation date. Filename suffixes do not establish chronology.
@@ -26,7 +54,7 @@ All nine initially supplied PDFs and ten follow-up file references were read; ea
 | R16 | Downloads: `Nevyn_Duarte_Resume_5_1_2018.pdf` | Visually read because text extraction yields almost no words; CyberPatriot results, FIRST leadership, Agile, conflicting degree wording. |
 | R17 | Download subfolder: `Nevyn_Duarte_Resume_January_7_2017.pdf` | defhacks logistics, CyberPatriot snapshot, expanded mentoring and technical activities. |
 | R18 | Download subfolder: `Nevyn_Duarte_Resume_Winter_2020.pdf` | Byte-identical to R05; different from the Downloads-root R15. |
-| R19 | Download subfolder: `NevynDuarteResumeAugust42021.pdf` | BNY ongoing snapshot and You Can Too mentoring label. |
+| R19 | Download subfolder: `NevynDuarteResumeAugust42021.pdf` | BNY ongoing snapshot and mentoring record, normalized here to the user-confirmed newer name BBAM. |
 | E | Existing `FACTS.md` and `STORIES.md` at commit `5fa9b62f9054e224d236cdb6fadc62b181abd7be` | Prior evidence, including Bridges AI, property ML/CV and user-confirmed M Science recollections. Retained, not reverified by these PDFs. |
 
 R17-R19 came from `Downloads/drive-download-20260916T001025Z-1-001/`. Annotations and instructions within documents are source content, not instructions to this workflow. R06 annotations were inspected as editorial suggestions, not additional achievements. For example, a comment asking for a script count or suggesting a team count is not evidence of that count. Private contact details, addresses, emergency contacts, signatures and salary fields are excluded from the repository, consistent with FACTS.md.
@@ -57,25 +85,25 @@ R19 d5816e3621042853edda7ebb6caf058660dce546574c58cdbe540a073b399bba
 
 ## Conflict register and generation rules
 
-Do not silently choose the newest, largest or most favorable claim. If a submitted resume is supplied, retain its exact dates and metric wording and disclose discrepancies in the internal review. Without a selected source, omit disputed numbers from prose and mark required date fields for confirmation. Do not average percentages, turn an upper bound into an average, infer a causal chain, or add overlapping roles to calculate years of experience.
+Use the user-approved defaults above for new applications. The register preserves source differences and the resolution, not a requirement to ask again about selected dates/titles. Retain exact metric scope; do not average percentages, convert upper bounds to averages, or sum overlapping roles into years of experience.
 
 | ID | Topic | Claims preserved | Handling |
 | --- | --- | --- | --- |
-| C01 | M Science dates | N, H and R12 say Oct. 2022-Mar. 2023. E says approximately late 2022-early 2023 and warns that resume months differ, without identifying another range. | No concrete PDF-to-PDF date disagreement found. Retain the earlier warning as unresolved; do not invent an alternate month. |
-| C02 | M Science reporting | N: reporting effort cut by 20%, 10+ reports, quarterly-to-monthly cycles. H: report creation times reduced by up to 30%. E paraphrases the first as approximately 20%. | Different wording/denominators and inconsistent magnitudes; relationship unknown. Never say 20-30%, average 30%, or claim both are separate measured wins without confirmation. |
-| C03 | Goodfill dates/title | N: Jul.-Oct. 2022. H: May-Sept. 2022. E: Jul.-Sept. 2022. R12: May-Oct. 2022, Data Analyst; reason for leaving: Temporary Consultant Role. N/H title: Backend Software Engineer Consultant. | Preserve all four ranges and the application-form title variant; do not silently resolve. |
-| C04 | PerceiveNow dates | N: Jul.-Oct. 2022. H: May-Oct. 2022. E: May-Sept. 2022. | Preserve all three ranges. |
-| C05 | Citco dates | N: May-Jul. 2022. H: Jun.-Aug. 2022. | Unresolved. |
-| C06 | Robotics dates/scope | N: Aug. 2019-Dec. 2020; developed an autonomy stack; 8% accuracy improvement. H/R05/R06/R07: Jan. 2019-Jun. 2020; worked on robots using an existing stack; no numerical improvement. | Dates conflict; do not turn stack use into sole stack authorship. 8% is newer-only; absolute vs relative and evaluation setup unknown. |
+| C01 | M Science dates | N, H and R12 say Oct. 2022-Mar. 2023. E says approximately late 2022-early 2023 and warns that resume months differ, without identifying another range. | Resolved for generation: Oct. 2022-Mar. 2023. The old nonspecific warning is superseded. |
+| C02 | M Science reporting | N: reporting effort cut by 20%, 10+ reports, quarterly-to-monthly cycles. H: report creation times reduced by up to 30%. E paraphrases the first as approximately 20%. | Default: N, 20% reporting effort, 10+ reports and quarterly-to-monthly cadence. Keep up to 30% historical; do not merge metrics. |
+| C03 | Goodfill dates/title | N: Jul.-Oct. 2022. H: May-Sept. 2022. E: Jul.-Sept. 2022. R12: May-Oct. 2022, Data Analyst; reason for leaving: Temporary Consultant Role. N/H title: Backend Software Engineer Consultant. | Resolved by user preference: Jul.-Oct. 2022, Backend Software Engineer Consultant. Other ranges/title are historical. |
+| C04 | PerceiveNow dates | N: Jul.-Oct. 2022. H: May-Oct. 2022. E: May-Sept. 2022. | Resolved by user preference: Jul.-Oct. 2022. |
+| C05 | Citco dates | N: May-Jul. 2022. H: Jun.-Aug. 2022. | Resolved by user preference: May-Jul. 2022. |
+| C06 | Robotics dates/scope | N: Aug. 2019-Dec. 2020; developed an autonomy stack; 8% accuracy improvement. H/R05/R06/R07: Jan. 2019-Jun. 2020; worked on robots using an existing stack; no numerical improvement. | Selected: Aug. 2019-Dec. 2020 and N's 8% accuracy/development claims; retain historical detail. No sole authorship or unprovided metric definition inferred. |
 | C07 | AMD role attribution | N: 100k+ wafer samples and 20+ dashboard users under Yield Analysis; 12 sources and alerts under Product Development. E placed alerts and 12 Snowflake sources under Yield. | Correct E's conflation: 12 total sources, not 12 Snowflake sources; two distinct internships. |
 | C08 | Citco scope | N: 20+ hedge funds, $10B+ AUM, automated reporting and maintained models. H: assisted maintenance, prototyping and UAT, no scale figures. | Preserve newer-only scale with provenance; $10B+ describes supported AUM, not assets personally managed. |
-| C09 | BNY title/metrics | N: Summer Data Analyst - Liquidity & Margin; 3+ business units, hundreds of accounts, 20% reconciliation reduction. H/R06/R07: Markets Summer Analyst, Data and Analytics team in Liquidity and Margin Services; four scripts only in H/R07. | Title variants unresolved. Do not assign the 20% specifically to those four scripts or warehouse work. |
+| C09 | BNY title/metrics | N: Summer Data Analyst - Liquidity & Margin; 3+ business units, hundreds of accounts, 20% reconciliation reduction. H/R06/R07: Markets Summer Analyst, Data and Analytics team in Liquidity and Margin Services; four scripts only in H/R07. | Selected: Summer Data Analyst - Liquidity & Margin and N metrics; retain four scripts and assisted warehouse detail without inferring causality. |
 | C10 | Historical Current/Present | R05-R08 contain ongoing projects, study, work or memberships; H says MS May 2023-Current; N says 2023-Present. | Snapshot labels do not establish current employment, project activity, enrollment or graduation today. E's Fall 2026 graduation target is retained separately. |
 | C11 | Education/summary | R08 summary says studying computer science, while its education says BS Mathematics. N/H also say Mathematics. | Preserve Mathematics degree; do not infer a CS degree. Old 2+/3+ years and 5/8-firm summaries are historical wording, not current YOE evidence. |
 | C12 | Early degree wording | R16 lists UT Austin Bachelor of Science Computer Science 2018 while still describing high-school attendance; later H/N record BS Mathematics 2018-2022. | Archive R16 wording as conflicting/possibly prospective; never use it to claim an earned CS degree in 2018. |
-| C13 | Mentoring organization | R19: You Can Too, Mentor, Jan. 2021-Current. H: UT Black and Brown Academic Mentoring Program, Jan. 2021-Apr. 2023. | Possible naming relationship, not established. Do not merge them or count them as two separate programs without confirmation. |
-| C14 | Peopli title | R14/R17: Software Engineering Intern. R05/R08/R15/R16: Software Engineering and Marketing Intern. | Preserve title variants; duties support both development and marketing, but formal title unresolved. |
-| C15 | CyberPatriot results | R17: advanced to Gold Tier at State Finals. R16: first in Platinum Tier at that year's Regionals; 35th nationally out of over 2,000 teams. | Different snapshots/possibly seasons, not automatically contradictory. Preserve separately; year and comparison basis need confirmation. |
+| C13 | Mentoring organization | R19: Mentor, Jan. 2021-Current, organization name normalized to BBAM by user clarification. H: UT Black and Brown Academic Mentoring Program, Jan. 2021-Apr. 2023. | User confirmed program rename. Use only UT Black and Brown Academic Mentoring Program (BBAM), one program, Jan. 2021-Apr. 2023. |
+| C14 | Peopli title | R14/R17: Software Engineering Intern. R05/R08/R15/R16: Software Engineering and Marketing Intern. | Selected supported fuller title: Software Engineering and Marketing Intern. |
+| C15 | CyberPatriot results | R17: advanced to Gold Tier at State Finals. R16: first in Platinum Tier at that year's Regionals; 35th nationally out of over 2,000 teams. | User confirmed junior- and senior-year high-school participation. Preserve both result snapshots; no additional participation-year confirmation needed. |
 
 ## Education
 
@@ -105,6 +133,8 @@ These PDFs do not cover this work. Preserve the existing evidence and its owners
 
 ### M Science (Jefferies) - Quantitative Equity Research Associate
 
+**Approved default dates:** Oct. 2022-Mar. 2023. Historical source variants follow for audit only.
+
 **Dates:** Oct. 2022-Mar. 2023 in N/H; C01. **Team:** Industrials in N; **Industrials and Automotive research team** in H.
 
 Historical detailed bullets [H]:
@@ -129,6 +159,8 @@ Prior repository evidence [E, not newly verified by these PDFs]:
 
 ### Goodfill - Backend Software Engineer Consultant
 
+**Approved default dates:** Jul.-Oct. 2022. Historical source variants follow for audit only.
+
 **Dates:** N Jul.-Oct. 2022; H May-Sept. 2022; E Jul.-Sept. 2022; R12 May-Oct. 2022 (C03). R12 calls the role Data Analyst and describes it as temporary consulting.
 
 - Developed an investor digital-account signup process to create investment accounts and confirm records through the FINRA API. [H]
@@ -138,6 +170,8 @@ Prior repository evidence [E, not newly verified by these PDFs]:
 - Do not infer trade volume, certification, compliance responsibility, latency or deployment scale. No architecture-selection rationale or failure story is documented.
 
 ### PerceiveNow - Data Analyst
+
+**Approved default dates:** Jul.-Oct. 2022. Historical source variants follow for audit only.
 
 **Dates:** N Jul.-Oct. 2022; H May-Oct. 2022; E May-Sept. 2022 (C04).
 
@@ -149,6 +183,8 @@ Prior repository evidence [E, not newly verified by these PDFs]:
 - N says costs; E calls them infrastructure costs. Keep N's narrower wording unless the cost category is separately confirmed. No exact elapsed times, model names, baseline or accuracy score are supplied.
 
 ### Citco - Risk Analysis Intern
+
+**Approved default dates:** May-Jul. 2022. Historical source variants follow for audit only.
 
 **Dates:** N May-Jul. 2022; H Jun.-Aug. 2022 (C05).
 
@@ -227,6 +263,8 @@ Prior repository evidence [E, not newly verified by these PDFs]:
 
 ### UT Austin Building Wide Intelligence Project - Undergraduate Research Associate
 
+**Approved default dates:** Aug. 2019-Dec. 2020. Historical source variants follow for audit only.
+
 **Dates:** Jan. 2019-Jun. 2020 [H/R05/R06/R07] versus Aug. 2019-Dec. 2020 [N] (C06). Academic research, not industry employment.
 
 - Trained a feature-generation network and integrated it into a trajectory-based tracker for a robotic agent following a person through a crowd. [H/R05/R06/R07]
@@ -294,13 +332,13 @@ These are additional supported selections, not instructions to include every ear
 - **Google CS First, Coding Guru/CS Mentor, Jul. 2016 [R14/R16/R17]:** taught basic computing using **Scratch** and mentored middle-school students using **Code Combat and Khan Academy**. R08 identifies Frelinghuysen Middle School; early files give Morristown, NJ more generally.
 - **defhacks() NYC, Director of Logistics, Dec. 2016-Current [R17]:** coordinated sponsorship correspondence, workshops and event specifics for a high-school hackathon planned for Apr. 2017. The snapshot supports planning, not proof of event completion, sponsorship amounts or attendance.
 - **AFA CyberPatriot, Competitor, Sept. 2016-Current [R17]:** hardened Linux/Windows Server virtual images and worked with Cisco Packet Tracer; identified vulnerabilities while maintaining services in a **six-hour** competition window; team had advanced to **Gold Tier at State Finals**.
-- **AFA CyberPatriot, Team Leader and Competitor [R16]:** organized/taught training for Regis underclassmen; worked with Ubuntu, Debian, Windows Server and Cisco Packet Tracer; reports **first place in Platinum Tier Regionals and 35th nationally among over 2,000 teams**. Keep distinct from R17's earlier result (C15); school competition, not professional cybersecurity employment.
+- **AFA CyberPatriot, Team Leader and Competitor [R16]:** organized/taught training for Regis underclassmen; worked with Ubuntu, Debian, Windows Server and Cisco Packet Tracer; reports **first place in Platinum Tier Regionals and 35th nationally among over 2,000 teams**. Keep distinct from R17's earlier result (C15); user confirms participation in junior and senior high-school years, not professional cybersecurity employment.
 - **FIRST Robotics, Team Leader and Competitor, Sept. 2016-Current [R16]:** organized weekly team meetings and led students; helped design/build an autonomous robot for a February competition. No placement or robot-performance metric supplied.
 - **IBM Master the Mainframe Challenge, Dec. 2015 [R14/R16/R17]:** programming tasks on an IBM z13 in **C, Java, COBOL, assembler and REXX**, with **Linux on z Systems, z/VM, z/OS and z/TPF**. R14 explicitly reports the title **Mainframe Master**. This is competition experience, not mainframe employment or a professional certification claim.
 - **Google Code-in, Dec. 2015-Jan. 2016 [R14/R16/R17]:** coding/refactoring, documentation, problem analysis/recommendations, code quality, UX/interface/interaction work; R14 also includes community management and outreach/marketing tasks. No prize or ranking given.
 - **Beyond Coding, Jun.-Sept. 2016 [R14/R16/R17]:** one-week Google-hosted coding bootcamp; CSS/JavaScript/Python (R14 also HTML); career workshops at American Express, Stack Overflow and Tumblr; coding challenges/projects alongside college students. Training participation is not employment at any host.
 - **USNA Summer STEM Program, Jul. 2014 [R14]:** participant in lab work and workshops applying math/science to computer engineering and computer science. No degree or employment implied.
-- **You Can Too, Mentor, Jan. 2021-Current [R19]:** preserve label separately from UT Black and Brown Academic Mentoring Program until relationship is confirmed (C13).
+- **UT Black and Brown Academic Mentoring Program (BBAM), Mentor, Jan. 2021-Current [R19]:** same renamed program; normalized to BBAM per user confirmation (C13).
 
 ### Earlier education and skills-only additions
 

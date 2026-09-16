@@ -2,7 +2,35 @@
 
 This file is the evidence bank for application answers and interview preparation. Every statement must be supported by `FACTS.md`, the submitted resume, a project record, or direct user notes. Unknown details stay explicit; the application generator must not fill them in.
 
-Source key: [MASTER_RESUME.md](MASTER_RESUME.md) defines N (newer R01 resume), H (identical detailed historical versions), R05-R19 (individual sources), E (prior repository evidence), and conflicts C01-C15. Resume-supported means self-reported, not independently audited. Preserve the selected source's dates/metrics; unresolved alternatives belong in review notes, not a blended application answer. Stories 1, 4, 7 and 8 carry forward E and were not newly verified by these PDFs.
+Source key: [MASTER_RESUME.md](MASTER_RESUME.md) defines N (newer R01 resume), H (identical detailed historical versions), R05-R19 (individual sources), E (prior repository evidence), and conflicts C01-C15. Resume-supported means self-reported, not independently audited. Apply the User-approved defaults section; older variants are retained as audit history, not blockers. Stories 1, 4, 7 and 8 carry forward E and were not newly verified by these PDFs.
+
+
+## User-approved defaults (2026-09-15)
+
+The user selected the newer dates and newer or stronger source-supported titles/information, requested retention of useful older detail, confirmed CyberPatriot participation in high-school junior and senior years, and confirmed the mentoring program was renamed BBAM. These decisions supersede earlier requests to resolve the same variants. N is the default source for newer dates and quantified claims; historical alternatives below are audit history, not blockers or application defaults.
+
+| Experience | Default dates | Application title |
+| --- | --- | --- |
+| M Science (Jefferies) | Oct. 2022-Mar. 2023 | Quantitative Equity Research Associate - Industrials and Automotive |
+| Goodfill | Jul.-Oct. 2022 | Backend Software Engineer Consultant |
+| PerceiveNow | Jul.-Oct. 2022 | Data Analyst |
+| Citco | May-Jul. 2022 | Risk Analysis Intern |
+| AMD Yield | Jan.-May 2022 | Yield Analysis Intern |
+| AMD Product Development | Aug.-Dec. 2021 | Product Development Intern |
+| BNY Mellon | Jun.-Aug. 2021 | Summer Data Analyst - Liquidity & Margin |
+| UT Austin BWI | Aug. 2019-Dec. 2020 | Undergraduate Research Associate - Robotics / ML |
+| Order.co (formerly Negotiatus) | Jun.-Aug. 2017 | Software Engineering Intern |
+| stae | Jun.-Sept. 2016 | Software Engineering Intern |
+| Peopli Inc. | Feb.-May 2016 | Software Engineering and Marketing Intern |
+| UT Black and Brown Academic Mentoring Program (BBAM) | Jan. 2021-Apr. 2023 | Mentor |
+| AFA CyberPatriot | High-school junior and senior years (2016-2018 school years) | Team Leader and Competitor |
+
+Use the richer supported inventory across versions, not just the condensed resume. Default to N's 20% reporting-effort reduction, 10+ reports and quarterly-to-monthly cadence at M Science; retain H's up-to-30% report-creation-time claim as historical wording, not an additional result. Use N's PerceiveNow 50k+/minutes-to-seconds/12%, Citco 20+ funds/$10B+ supported AUM, AMD 100k+ samples/20+ engineers/12 mixed sources, BNY 3+ units/hundreds of accounts/20%, and robotics 8% accuracy improvement. These are selected resume claims; the user has not supplied new measurement definitions. Preserve their original scope without inventing methodology, causality or sole ownership.
+
+Use only **UT Black and Brown Academic Mentoring Program (BBAM)** for the renamed mentoring program, including normalized historical entries. Treat it as one program. CyberPatriot results span junior/senior participation: retain Gold Tier State Finals and the later Platinum Regionals first place / 35th nationally among over 2,000 teams. Do not invent an exact season for each result beyond the dated source snapshots.
+
+Keep BS Mathematics as the newer degree record. Do not turn an old Present label into a completed MS or updated GPA. Historical detail remains available for tailoring; no extra confirmation is required merely because an older resume differs from these approved defaults.
+
 
 ## Story 1 — Production LLM / automation system: Bridges AI / AppRise
 
@@ -41,7 +69,7 @@ Source key: [MASTER_RESUME.md](MASTER_RESUME.md) defines N (newer R01 resume), H
 
 ## Story 2 — Alternative-data quantitative research: M Science / Jefferies
 
-**Context:** Quantitative Equity Research Associate — Industrials [N]; Industrials and Automotive research team [H]. N/H/R12 agree on Oct. 2022-Mar. 2023; E's nonspecific date warning remains unresolved (C01).
+**Context:** Quantitative Equity Research Associate — Industrials [N]; Industrials and Automotive research team [H]. N/H/R12 agree on Oct. 2022-Mar. 2023; these dates are the approved default (C01).
 
 **Problem:** Use large alternative datasets to develop quantitative signals/features and research company/industry fundamentals for institutional equity research.
 
@@ -60,7 +88,7 @@ Source key: [MASTER_RESUME.md](MASTER_RESUME.md) defines N (newer R01 resume), H
 **Source-specific outputs:**
 - N: 10+ research reports; FactSet/REST workflows cut reporting effort by 20%; cadence moved from quarterly to monthly.
 - H: report creation times reduced by up to 30% through automation of querying, extraction, cleaning and writing using Python/PySpark/SQL and Excel VLOOKUPs, pivot tables and streaming sources.
-- These are unresolved metric variants (C02), not a 20-30% range or two independently measured wins. Use a metric-free account when no source has been selected.
+- N is the user-selected default (C02): use 20% reporting effort, 10+ reports and quarterly-to-monthly cadence. Retain up to 30% as historical wording, not a second win or a 20-30% range.
 
 **Recovered historical detail [H]:** Built predictive financial models with Python/Excel; wrote reports investigating and predicting sales, job listings and other statistics. pandas, Databricks and Tableau also appear in the source. The millions-of-observations scale is N; satellite/POS detail and SKU/cart recollections are E.
 
@@ -85,7 +113,7 @@ Source key: [MASTER_RESUME.md](MASTER_RESUME.md) defines N (newer R01 resume), H
 
 ## Story 3 — Backend engineering: Goodfill
 
-**Context:** Backend Software Engineer Consultant [N/H]. Dates/title conflict C03 includes R12's Data Analyst wording; do not choose a timeline automatically.
+**Context:** Backend Software Engineer Consultant [N/H]. Approved dates are Jul.-Oct. 2022; C03 preserves older variants, including R12's superseded Data Analyst title.
 
 **Problem / domain:** Backend and investor-onboarding/integration work in a financial-services environment.
 
@@ -146,7 +174,7 @@ Source key: [MASTER_RESUME.md](MASTER_RESUME.md) defines N (newer R01 resume), H
 **Verified actions / evidence:**
 - H: classified/summarized scientific text; optimized API/data management and cross-source research-article/author records; Python 3, Flask, Jupyter, REST, AWS Lambda/microservices and Hugging Face.
 - N: Hugging Face on AWS Lambda over 50k+ articles; Python REST/Jupyter reporting from minutes to seconds; costs reduced by 12%.
-- N does not specify the cost category or exact latency/accuracy. E called the costs infrastructure costs; avoid adding that specificity without confirmation. Dates conflict C04.
+- N does not specify the cost category or exact latency/accuracy. E called the costs infrastructure costs; avoid adding that specificity without confirmation. Approved dates: Jul.-Oct. 2022 (C04).
 
 **Safe short answer:** I worked on classifying and summarizing scientific texts with Hugging Face models, and optimized API calls and data handling for research-article and author records. The work combined NLP with the reporting pipeline around it. [H paraphrase]
 
@@ -227,14 +255,14 @@ Measured result:
 - For MLE/CV roles, use Story 4; Story 5/6 can provide additional professional ML evidence.
 - Never promote an `Unknown`, `TODO`, or reconstruction note into a factual claim.
 - Do not combine metrics from separate stories as if they describe one system.
-- Consult the master's conflicts before using any story with dates or metrics. Historical qualitative bullets do not corroborate newer numerical results by themselves.
+- Apply the master's user-approved defaults for dates, titles and metrics. Retain older qualitative detail without inventing support for measurement methodology.
 - Stories 9-17 below recover additional evidence; personal projects, academic work, competitions and application-letter recollections retain their classifications.
 
 ---
 
 ## Story 9 — Regulatory analytics and valuation-tool support: Citco
 
-**Evidence:** H historical; N newer-only scale. Dates conflict C05.
+**Evidence:** H historical; N newer-only scale. Approved dates: May-Jul. 2022 (C05).
 
 **Context/problem:** Risk Analysis Intern supporting risk/fund-performance reporting for hedge-fund clients, investors and regulatory bodies.
 
@@ -262,7 +290,7 @@ Measured result:
 
 ## Story 11 — Cross-team analytics and automation: BNY Mellon
 
-**Evidence:** H/R06/R07/R19; newer scale N. Jun.-Aug. 2021; title variants C09.
+**Evidence:** H/R06/R07/R19; newer scale N. Jun.-Aug. 2021; approved title Summer Data Analyst - Liquidity & Margin (C09).
 
 **Context:** Data and Analytics team, Liquidity and Margin Services Division.
 
@@ -308,11 +336,11 @@ Keep these as two separate examples; they do not describe one system.
 
 ## Story 15 — Academic person-following research: UT Austin BWI
 
-**Evidence:** H/R05/R06/R07/R18/R19; N adds 8% metric and stronger stack-development wording. Dates/ownership conflict C06.
+**Evidence:** H/R05/R06/R07/R18/R19; N adds 8% metric and stronger stack-development wording. Approved dates Aug. 2019-Dec. 2020 and newer claims selected (C06); do not infer sole stack ownership.
 
 **Actions:** Trained a feature-generation network, integrated it with a trajectory tracker for following people through a crowd, co-authored DeepSORT/Triplet Loss research, and worked on Segway robots using Python/C++/ROS/PyTorch. Received the UT CNS Award for Excellence in Computer Science at the Undergraduate Research Forum.
 
-**Outcome:** Integration, paper contribution and award supported by historical resumes. N claims 8% accuracy improvement, with no baseline, metric definition or relative/absolute basis. Use only with that source qualification; otherwise omit the number.
+**Outcome:** Integration, paper contribution and award supported by historical resumes. N claims 8% accuracy improvement, with no baseline, metric definition or relative/absolute basis. The user selected the newer 8% claim for applications; keep its provenance in the evidence bank without inventing a metric definition.
 
 **Safe answer:** In UT Austin's Building Wide Intelligence project, I trained a feature-generation network and integrated it with a trajectory tracker for person-following. I co-authored research combining DeepSORT with Triplet Loss and worked with the Python, C++ and ROS stack on the robots. [historical paraphrase]
 
@@ -322,7 +350,7 @@ Keep these as two separate examples; they do not describe one system.
 
 **Union City [R14/R16/R17]:** Founded/organized a high-school-led elementary mentoring program, Apr.-Aug. 2016; pitched to superintendent/mayor; coordinated mentors, mentees and venue; created third/fourth-grade curriculum. No attendance or learning-outcome number supplied.
 
-**CyberPatriot [R16/R17]:** Virtual OS hardening with critical services preserved; team training/leadership in R16. Keep R17's Gold State Finals snapshot separate from R16's Platinum Regionals first place and national 35th of over 2,000 teams; season not established (C15).
+**CyberPatriot [R16/R17]:** Virtual OS hardening with critical services preserved; team training/leadership in R16. Keep R17's Gold State Finals snapshot separate from R16's Platinum Regionals first place and national 35th of over 2,000 teams; user confirms junior- and senior-year high-school participation (C15).
 
 **FIRST [R16]:** Led weekly meetings and helped build an autonomous robot. **defhacks [R17]:** Planned logistics/workshops/sponsor outreach for a future April 2017 event; do not claim delivery or sponsor revenue.
 
@@ -330,7 +358,7 @@ Keep these as two separate examples; they do not describe one system.
 
 ## Story 17 — Early product and commercial thinking: Peopli
 
-**Evidence:** R05/R08/R14-R17; Feb.-May 2016 internship; title variation C14.
+**Evidence:** R05/R08/R14-R17; Feb.-May 2016 internship; approved title Software Engineering and Marketing Intern (C14).
 
 **Actions:** Helped improve web/mobile UX/UI for CareerThesaurus and VisiFood; developed marketing/promotion strategies; compared restaurant monetization approaches and pitched them to the CEO.
 
