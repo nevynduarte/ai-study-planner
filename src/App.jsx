@@ -6,6 +6,7 @@ import DocReader from "./components/DocReader.jsx";
 import TechStack from "./components/TechStack.jsx";
 import ArchFlow from "./components/ArchFlow.jsx";
 import MediaRail from "./components/MediaRail.jsx";
+import ResourcesTab from "./components/ResourcesTab.jsx";
 import { trackGlyph, kindGlyph, topicGlyph } from "./lib/glyphs.js";
 import { detectTech } from "./lib/techIcons.js";
 import { usePersisted } from "./hooks/usePersisted.js";
@@ -524,7 +525,7 @@ export default function App() {
   );
 
   const TAB_LABELS = { jobs: "Jobs", research: "Research" };
-  const TABS = ["today","plan","projects","progress","jobs","tutor","research","practice","advisory","log"];
+  const TABS = ["today","plan","projects","progress","jobs","tutor","research","resources","practice","advisory","log"];
 
   // Small read-only card for P620-generated content with a freshness stamp.
   // `accent` tints the title dot + a soft gradient header strip.
@@ -1747,6 +1748,11 @@ export default function App() {
       })()}
 
       {/* ── PRACTICE (problem banks: DSA, SQL, DS/ML, system design, quant, behavioral) ── */}
+      {/* ── RESOURCES — bundled reference docs (crash course, reading list, state of AI) ── */}
+      {tab==="resources" && (
+        <ResourcesTab Md={Md} S={S} hexA={hexA} dark={dark} brd={brd} surface={surface} txtS={txtS} />
+      )}
+
       {tab==="practice" && (() => {
         const sections = cur?.practice?.sections || [];
         if (!sections.length) return <div style={{ fontSize:13, color:txtT, padding:"0.5rem 0.25rem" }}>No practice bank in curriculum.json yet.</div>;
