@@ -8,7 +8,8 @@
     "build": "node scripts/build-icons.cjs && node scripts/build-portfolio-json.cjs && vite build",
     "preview": "vite preview",
     "portfolio": "node scripts/build-portfolio-json.cjs",
-    "icons": "node scripts/build-icons.cjs"
+    "icons": "node scripts/build-icons.cjs",
+    "test": "node --test test/**/*.test.js"
   },
   "dependencies": {
     "react": "^18.3.1",
