@@ -59,37 +59,39 @@ const VALID_KINDS = ["reproduction", "oss-pr", "blog-post", "system", "resume"];
 const VALID_ARTIFACT_STATUS = ["planned", "in-progress", "shipped"];
 const VALID_CRITERIA = ["dsa", "sysdesign", "recall", "assets"];
 
-export default {
-  async fetch(request, env) {
-    if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: CORS_HEADERS });
-    }
+export { authorized, safeJson };
 
-    if (!authorized(request, env)) {
-      return new Response("Authentication required.", {
-        status: 401,
-        headers: { "WWW-Authenticate": 'Basic realm="ai-study-planner"', ...CORS_HEADERS },
-      });
-    }
+export async function handleRequest(request, env) {
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
 
-    const { pathname } = new URL(request.url);
-    const m = request.method;
+  if (!authorized(request, env)) {
+    return new Response("Authentication required.", {
+      status: 401,
+      headers: { "WWW-Authenticate": 'Basic realm="ai-study-planner"', ...CORS_HEADERS },
+    });
+  }
 
-    if (pathname === "/api/data" && m === "GET")  return getData(env);
-    if (pathname === "/api/log"  && m === "POST") return postLog(request, env);
-    if (pathname === "/api/ask"  && m === "POST") return postAsk(request, env);
-    if (pathname === "/api/application" && m === "POST")  return postApplication(request, env);
-    if (pathname === "/api/application" && m === "PATCH") return patchApplication(request, env);
-    if (pathname === "/api/artifact" && m === "POST")  return postArtifact(request, env);
-    if (pathname === "/api/artifact" && m === "PATCH") return patchArtifact(request, env);
-    if (pathname === "/api/gate" && m === "PATCH") return patchGate(request, env);
-    if (pathname === "/api/posting" && m === "PATCH") return patchPosting(request, env);
-    if (pathname.startsWith("/api/")) return json({ error: "Not found" }, 404);
+  const { pathname } = new URL(request.url);
+  const m = request.method;
 
-    // Non-API requests → static assets (React app)
-    return env.ASSETS.fetch(request);
-  },
-};
+  if (pathname === "/api/data" && m === "GET")  return getData(env);
+  if (pathname === "/api/log"  && m === "POST") return postLog(request, env);
+  if (pathname === "/api/ask"  && m === "POST") return postAsk(request, env);
+  if (pathname === "/api/application" && m === "POST")  return postApplication(request, env);
+  if (pathname === "/api/application" && m === "PATCH") return patchApplication(request, env);
+  if (pathname === "/api/artifact" && m === "POST")  return postArtifact(request, env);
+  if (pathname === "/api/artifact" && m === "PATCH") return patchArtifact(request, env);
+  if (pathname === "/api/gate" && m === "PATCH") return patchGate(request, env);
+  if (pathname === "/api/posting" && m === "PATCH") return patchPosting(request, env);
+  if (pathname.startsWith("/api/")) return json({ error: "Not found" }, 404);
+
+  // Non-API requests → static assets (React app)
+  return env.ASSETS.fetch(request);
+}
+
+export default { fetch: handleRequest };
 
 async function getData(env) {
   try {
@@ -137,10 +139,11 @@ async function getData(env) {
   }
 }
 
-async function postLog(request, env) {
+export async function postLog(request, env) {
   try {
     const { hours, topic, track, notes } = await request.json();
-    if (!topic || !hours || Number(hours) <= 0) {
+    // Validate hours: must be a finite positive number (rejects strings, NaN, Infinity, negatives, zero)
+    if (!topic || typeof hours !== "number" || !Number.isFinite(hours) || hours <= 0) {
       return json({ error: "topic and positive hours required" }, 400);
     }
     const trackVal = VALID_TRACKS.includes(track) ? track : null;
@@ -148,7 +151,7 @@ async function postLog(request, env) {
     const now = new Date().toISOString();
     const res = await env.DB
       .prepare("INSERT INTO study_log (date, hours, topic, track, notes, created_at) VALUES (?, ?, ?, ?, ?, ?)")
-      .bind(date, Number(hours), String(topic), trackVal, notes ? String(notes) : "", now)
+      .bind(date, hours, String(topic), trackVal, notes ? String(notes) : "", now)
       .run();
     return json({ ok: true, id: res.meta?.last_row_id });
   } catch (e) {
@@ -156,17 +159,18 @@ async function postLog(request, env) {
   }
 }
 
-async function postAsk(request, env) {
+export async function postAsk(request, env) {
   try {
     const { question } = await request.json();
-    if (!question || !String(question).trim()) {
+    // Validate question: must be a non-empty string
+    if (typeof question !== "string" || !question.trim()) {
       return json({ error: "question required" }, 400);
     }
     const date = new Date().toISOString().slice(0, 10);
     const now = new Date().toISOString();
     const res = await env.DB
       .prepare("INSERT INTO tutor_qa (date, question, created_at) VALUES (?, ?, ?)")
-      .bind(date, String(question).trim(), now)
+      .bind(date, question.trim(), now)
       .run();
     return json({ ok: true, id: res.meta?.last_row_id });
   } catch (e) {
@@ -174,7 +178,7 @@ async function postAsk(request, env) {
   }
 }
 
-async function postApplication(request, env) {
+export async function postApplication(request, env) {
   try {
     const b = await request.json();
     if (!b.company || !b.role) return json({ error: "company and role required" }, 400);
@@ -207,7 +211,7 @@ async function postApplication(request, env) {
   }
 }
 
-async function patchApplication(request, env) {
+export async function patchApplication(request, env) {
   try {
     const b = await request.json();
     if (!b.id) return json({ error: "id required" }, 400);
@@ -235,7 +239,7 @@ async function patchApplication(request, env) {
   }
 }
 
-async function postArtifact(request, env) {
+export async function postArtifact(request, env) {
   try {
     const b = await request.json();
     if (!b.title || !b.kind) return json({ error: "title and kind required" }, 400);
@@ -265,7 +269,7 @@ async function postArtifact(request, env) {
   }
 }
 
-async function patchArtifact(request, env) {
+export async function patchArtifact(request, env) {
   try {
     const b = await request.json();
     if (!b.id) return json({ error: "id required" }, 400);
@@ -300,7 +304,7 @@ async function patchArtifact(request, env) {
   }
 }
 
-async function patchGate(request, env) {
+export async function patchGate(request, env) {
   try {
     const b = await request.json();
     if (!b.criterion || !VALID_CRITERIA.includes(b.criterion)) {
@@ -332,7 +336,7 @@ async function patchGate(request, env) {
  * applications that never happened. Marking a posting `promoted` records that
  * YOU applied; creating the application row stays an explicit POST /api/application.
  */
-async function patchPosting(request, env) {
+export async function patchPosting(request, env) {
   const b = await request.json().catch(() => ({}));
   const id = Number(b.id);
   if (!Number.isInteger(id) || id <= 0) return json({ error: "id required" }, 400);

@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "test": "node --test test/worker.test.js",
     "dev": "vite",
     "build": "node scripts/build-icons.cjs && node scripts/build-portfolio-json.cjs && vite build",
     "preview": "vite preview",
